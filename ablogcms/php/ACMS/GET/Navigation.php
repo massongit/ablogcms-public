@@ -17,8 +17,9 @@ class ACMS_GET_Navigation extends ACMS_GET
 
         if ( !$labels = configArray('navigation_label') ) return '';
 
-        $Parent = array();
+        $Parent     = array();
         $notPublish = array();
+        $levelLabel = configArray('navigation_ul_level');
 
         foreach ( $labels as $i => $label ) {
             $id     = $i + 1;
@@ -32,6 +33,7 @@ class ACMS_GET_Navigation extends ACMS_GET
                     'uri'       => config('navigation_uri', null, $i),
                     'target'    => config('navigation_target', null, $i),
                     'attr'      => config('navigation_attr', null, $i),
+                    'a_attr'      => config('navigation_a_attr', null, $i),
                     'end'       => array(),
                 );
             } else {
@@ -76,10 +78,11 @@ class ACMS_GET_Navigation extends ACMS_GET
             }
         }
 
-        $Tpl->add('ul#front');
+        $lvLabel    = isset($levelLabel[0]) ? $levelLabel[0] : '1';
+        $Tpl->add('ul#front', array('ulLevel' => $lvLabel));
         foreach ( $all as $row ) {
-            $uri    = $row['uri'];
-            $label  = $row['label'];
+            $uri        = $row['uri'];
+            $label      = $row['label'];
 
             if ( !preg_match('/^#$/', $uri) ) { 
                 $acmsPath   = preg_replace('@^acms://@', '', $uri);
@@ -105,9 +108,15 @@ class ACMS_GET_Navigation extends ACMS_GET
                     $label  = setGlobalVars($label);
                 }
                 $_target    = $row['target'];
+                $lvBlock    = 'level_'.strval($this->buildLevel(intval($row['id'])));
+                $Tpl->add(array($lvBlock, 'link#front', 'navigation:loop'));
+                if ( in_array('ul#front', $row['end']) ) {
+                    $Tpl->add(array('childNavi', 'link#front', 'navigation:loop'));
+                }
                 $Tpl->add(array('link#front', 'navigation:loop'), array(
                     'url'       => $uri,
                     'target'    => $_target,
+					'attr'  => (substr($row['a_attr'], 0, 1) !== ' ' ? ' ' : '').$row['a_attr'],
                 ));
                 $Tpl->add(array('link#rear', 'navigation:loop'));
             }
@@ -138,15 +147,29 @@ class ACMS_GET_Navigation extends ACMS_GET
                 }
             }
 
+            $level      = $this->buildLevel(intval($row['id']));
+            $lvLabel    = isset($levelLabel[$level]) ? $levelLabel[$level] : strval($level);
+            $lvBlock    = 'level_'.strval($level);
+
             $vars   = array(
                 'attr'  => (substr($row['attr'], 0, 1) !== ' ' ? ' ' : '').$row['attr'],
                 'label' => $label,
                 'level' => strval($this->buildLevel(intval($row['id']))),
             );
+			
+            $Tpl->add(array($lvBlock, 'navigation:loop'));
             $Tpl->add('navigation:loop', $vars);
 
             foreach ( $row['end'] as $block ) {
-                $Tpl->add(array($block, 'navigation:loop'));
+                if ($block === 'ul#front') {
+                    $Tpl->add(array($lvBlock, 'ul#front', 'navigation:loop'));
+                    $Tpl->add(array('ul#front', 'navigation:loop'), array(
+                        'ulLevel'   => $lvLabel,
+                    ));
+                } else {
+                    $Tpl->add(array($lvBlock, $block, 'navigation:loop'));
+                    $Tpl->add(array($block, 'navigation:loop'));
+                }
                 $Tpl->add('navigation:loop');
             }
 

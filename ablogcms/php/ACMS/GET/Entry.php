@@ -26,6 +26,11 @@ class ACMS_GET_Entry extends ACMS_GET
             $group  = $data['group'];
             $utid   = $data['clid'];
 
+            // 特定指定子を含むユニットタイプ
+            $actualType = $type;
+            // 特定指定子を除外した、一般名のユニット種別
+            $type = detectUnitTypeSpecifier($type);
+
             if ( !$showInvisible && 'hidden' === $align ) {
                 continue;
             }
@@ -90,13 +95,11 @@ class ACMS_GET_Entry extends ACMS_GET
                     $vars['attr']   = $data['attr'];
                     $vars['class']  = $data['attr']; // legacy
                 }
-//                if ( !empty($data['class']) ) {
-//                    $vars['class']  = ' class="'.$data['class'].'"';
-//                }
+
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add(array($data['tag'], 'column#text'), $vars);
-                $Tpl->add('column#text', array(
+                $Tpl->add(array($data['tag'], 'column#'.$actualType), $vars);
+                $Tpl->add('column#'.$actualType, array(
                     'align' => $data['align'],
                 ));
 
@@ -105,7 +108,7 @@ class ACMS_GET_Entry extends ACMS_GET
             } else if ( 'image' == $type ) {
                 if ( empty($data['path']) ) continue;
                 $path   = ARCHIVES_DIR.$data['path'];
-                $xy     = getimagesize($path);
+                $xy     = @getimagesize($path);
 
                 $vars   = array();
                 $vars['path']   = $path;
@@ -118,19 +121,19 @@ class ACMS_GET_Entry extends ACMS_GET
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
                 if ( !empty($data['link']) ) {
-                    $Tpl->add(array('link#front', 'column#image'), array(
+                    $Tpl->add(array('link#front', 'column#'.$actualType), array(
                         'url'   => $data['link'],
                     ));
-                    $Tpl->add(array('link#rear', 'column#image'));
+                    $Tpl->add(array('link#rear', 'column#'.$actualType));
                 } else {
                     $name   = basename($path);
                     $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
                     if ( $xy = @getimagesize($large) ) {
-                        $Tpl->add(array('link#front', 'column#image'), array(
+                        $Tpl->add(array('link#front', 'column#'.$actualType), array(
                             'url'   => BASE_URL.$large,
                             'viewer'=> str_replace('{unit_eid}', $eid, config('entry_body_image_viewer')),
                         ));
-                        $Tpl->add(array('link#rear', 'column#image'));
+                        $Tpl->add(array('link#rear', 'column#'.$actualType));
                     }
                 }
 
@@ -150,7 +153,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#image', $vars);
+                $Tpl->add('column#'.$actualType, $vars);
 
             //------
             // file
@@ -172,7 +175,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#file', $vars);
+                $Tpl->add('column#'.$actualType, $vars);
 
             //-----
             // map
@@ -197,7 +200,43 @@ class ACMS_GET_Entry extends ACMS_GET
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#map', $vars);
+                $Tpl->add('column#'.$actualType, $vars);
+
+            //------
+            // yolp
+            } else if ( 'yolp' == $type ) {
+                if ( empty($data['lat']) ) continue;
+                list($x, $y) = explode('x', $data['size']);
+                $msg    = str_replace(array(
+                    '"', '<', '>', '&'
+                ), array(
+                    '[[:quot:]]', '[[:lt:]]', '[[:gt:]]', '[[:amp:]]'
+                ), $data['msg']);
+                $layer = $data['layer'];
+                if ( in_array($layer, array('railway', 'monotone', 'bold', 'midnight')) ) {
+                    $mode   = 'map';
+                    $style  = 'base:'.$layer;
+                } else {
+                    $mode   = $layer;
+                    $style  = '';
+                }
+
+                $vars   = array(
+                    'lat'   => $data['lat'],
+                    'lng'   => $data['lng'],
+                    'zoom'  => $data['zoom'],
+                    'mode'  => $mode,
+                    'style' => $style,
+                    'msg'   => $msg,
+                    'msgRaw'    => $data['msg'],
+                    'x'     => $x,
+                    'y'     => $y,
+                    'align' => $data['align'],
+                );
+                if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
+                $vars['utid']       = $utid;
+                $vars['unit_eid']   = $eid;
+                $Tpl->add('column#'.$actualType, $vars);
 
             //---------
             // youtube
@@ -213,7 +252,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#youtube', $vars);
+                $Tpl->add('column#'.$actualType, $vars);
 
             //---------
             // eximage
@@ -226,8 +265,8 @@ class ACMS_GET_Entry extends ACMS_GET
                         'url'   => $url,
                     );
                     if ( empty($data['link']) ) $vars['viewer'] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
-                    $Tpl->add(array('link#front', 'column#eximage'), $vars);
-                    $Tpl->add(array('link#rear', 'column#eximage'));
+                    $Tpl->add(array('link#front', 'column#'.$actualType), $vars);
+                    $Tpl->add(array('link#rear', 'column#'.$actualType));
                 }
 
                 $vars   = array(
@@ -244,7 +283,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
-                $Tpl->add(array('column#eximage'), $vars);
+                $Tpl->add(array('column#'.$actualType), $vars);
             
             //-------
             // break
@@ -264,7 +303,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 $vars['align']      = $data['align'];
 
-                $Tpl->add(array('column#break'), $vars);
+                $Tpl->add(array('column#'.$actualType), $vars);
 
             } else {
                 continue;
@@ -286,7 +325,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 )
             ) {
                 $vars  = array();
-                $vars['column:loop.type']     = $type;
+                $vars['column:loop.type']     = $actualType;
                 $vars['column:loop.utid']     = $utid;
                 $vars['column:loop.unit_eid'] = $eid;
                 $vars['column:loop.sort']     = $sort;

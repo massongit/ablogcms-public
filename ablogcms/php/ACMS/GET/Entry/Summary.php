@@ -47,6 +47,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             'mainImageOn'           => config('entry_summary_image_on'),
             'detailDateOn'          => config('entry_summary_date'),
             'fullTextOn'            => config('entry_summary_fulltext'),
+            'hiddenCurrentEntry'    => config('entry_summary_hidden_current_entry'),
         );
     }
 
@@ -106,7 +107,13 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 
         $Amount = new SQL_Select($SQL);
         $Amount->setSelect('*', 'entry_amount', null, 'count');
-        if ( !$itemsAmount = intval($DB->query($Amount->get(dsn()), 'one')) ) {
+        $itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'));
+
+        $from   = ($this->page - 1) * $config['limit'] + $config['offset'];
+        $limit  = ((($from + $config['limit']) > $itemsAmount) ? ($itemsAmount - $from) : $config['limit']);
+        $over   = $itemsAmount <= $from;
+
+        if ( !$itemsAmount || $over ) {
             if ( 'on' == $config['notfound'] ) {
                 $Tpl->add('notFound');
                 $blogName   = ACMS_RAM::blogName($this->bid);
@@ -132,11 +139,6 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         }
 
         ACMS_Filter::entryOrder($SQL, $config['order'], $this->uid, $this->cid);
-        $from   = ($this->page - 1) * $config['limit'] + $config['offset'];
-
-        $limit  = ((($from + $config['limit']) > $itemsAmount) ? ($itemsAmount - $from) : $config['limit']);
-        if ( 1 > $limit ) return '';
-
         $SQL->setLimit($limit, ($from));
         $q  = $SQL->get(dsn());
 
@@ -147,9 +149,16 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 
         $i = 0;
         $DB->query($q, 'fetch');
+        $hiddenCurrentEntry = $config['hiddenCurrentEntry'] !== 'on';
         while ( $row = $DB->fetch($q) ) {
             $i++;
-            $this->buildSummary($Tpl, $row, $i, $gluePoint, $config);
+            if ( 0
+                or $hiddenCurrentEntry
+                or !EID
+                or intval($row['entry_id']) !== intval(EID)
+            ) {
+                $this->buildSummary($Tpl, $row, $i, $gluePoint, $config);
+            }
         }
 
         $blogName   = ACMS_RAM::blogName($this->bid);
@@ -171,6 +180,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             //-------
             // pager
             if ( !isset($config['pagerOn']) or $config['pagerOn'] === 'on' ) {
+                $itemsAmount -= $config['offset'];
                 $vars += $this->buildPager($this->page, $config['limit'], $itemsAmount, $config['pagerDelta'], $config['pagerCurAttr'], $Tpl);
             }
         }

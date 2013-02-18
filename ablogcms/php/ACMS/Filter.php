@@ -632,12 +632,13 @@ class ACMS_Filter
             foreach ( $aryOperator as $i => $operator ) {
                 $value  = $Field->get($fd, '', $i);
                 if ( 1
-                    and '' === $value
-                    and 'em' <> $operator
-                    and 'nem' <> $operator
+                    and ''    === $value
+                    and 'em'  <>  $operator
+                    and 'nem' <>  $operator
                 ) {
                     continue;
                 }
+
                 switch ( $operator ) {
                     case 'eq':
                         $operator   = '=';
@@ -647,19 +648,19 @@ class ACMS_Filter
                         break;
                     case 'lt':
                         $operator   = '<';
-                        $value      = intval($value);
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'lte':
                         $operator   = '<=';
-                        $value      = intval($value);
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'gt':
                         $operator   = '>';
-                        $value      = intval($value);
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'gte':
                         $operator   = '>=';
-                        $value      = intval($value);
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'lk':
                         $operator   = 'LIKE';
@@ -743,6 +744,229 @@ class ACMS_Filter
                 $SQL->addWhereOpr('fulltext_value', '%'.$word.'%', 'LIKE');
             }
             $SQL->addLeftJoin('fulltext', $fulltextKey, $tableKey);
+        }
+    }
+
+    /**
+     * エントリーの特定フィールドを指定して，昇順または降順で並び替えます
+     *
+     * [example]
+     * id-desc     : ID降順
+     * code-asc    : コード昇順
+     *
+     * ACMS_Filter::formbuildOrder($SQL, 'code-asc');
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param string $order asc|desc
+     * @param null $uid
+     * @param null $cid
+     * @return void
+     */
+    public static function formbuildOrder(& $SQL, $order, $uid=null, $cid=null)
+    {
+        $aryOrder   = explode('-', $order);
+        $fd         = isset($aryOrder[0]) ? $aryOrder[0] : null;
+        $seq        = isset($aryOrder[1]) ? $aryOrder[1] : null;
+
+        if ( 'random' == $fd ) {
+            $SQL->setOrder(SQL::newFunction(null, 'random'));
+        } else {
+            switch ( $fd ) {
+                case 'id':
+                    break;
+                case 'sort':
+                    if ( !empty($uid) ) {
+                        $SQL->addOrder('formbuild_user_sort', $seq);
+                    } else if ( !empty($cid) ) {
+                        $SQL->addOrder('formbuild_category_sort', $seq);
+                    } else {
+                        $SQL->addOrder('formbuild_sort', $seq);
+                    }
+                    break;
+                case 'code':
+                case 'status':
+                case 'user_sort':
+                case 'category_sort':
+                case 'title':
+                case 'link':
+                case 'datetime':
+                case 'start_datetime':
+                case 'end_datetime':
+                case 'posted_datetime':
+                case 'updated_datetime':
+                case 'summary_range':
+                case 'indexing':
+                case 'primary_image':
+                case 'category_id':
+                case 'user_id':
+                case 'blog_id':
+                    $SQL->addOrder('formbuild_'.$fd, $seq);
+                    break;
+                case 'field':
+                    if ( false !== strpos($SQL->get(), 'field_sort') ) {
+                        $SQL->addOrder('field_sort', $seq);
+                    }
+                    break;
+                case 'intfield':
+                    if ( false !== strpos($SQL->get(), 'intfield_sort') ) {
+                        $SQL->addOrder('intfield_sort', $seq);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            $SQL->addOrder('formbuild_id', $seq);
+        }
+    }
+    /**
+     * 現在の日時が，公開期間に含まれていて，アクセス中の権限で表示可能なエントリーを絞り込みます
+     *
+     * ACMS_Filter::formbuildSession($SQL);
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param null $scp
+     * @return void
+     */
+    public static function formbuildSession(& $SQL, $scp=null)
+    {
+        if ( !sessionWithCompilation() ) {
+            
+            $SQLWhereSession    = SQL::newWhere();
+
+            //------------
+            // valid span
+            // @todo issue: 秒のタイムスタンプを 00 に丸めてMySQLキャッシュを効かせるオプションが必要
+            $SQLWhereSession->addWhereOpr('formbuild_start_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '<=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('formbuild_end_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '>=', 'AND', $scp);
+
+            //--------
+            // status
+            $SQLWhereSession->addWhereOpr('formbuild_status', 'open', '=', 'AND', $scp);
+            if ( sessionWithContribution() ) {
+                $SQLWhereStatus = SQL::newWhere();       
+                
+                if ( 'on' == config('session_contributor_only_own_entry') ) {
+                    $connector  = 'AND';
+                } else {
+                    $SQLWhereStatus->addWhere($SQLWhereSession);
+                    $connector  = 'OR';
+                }
+                $SQLWhereStatus->addWhereOpr('formbuild_user_id', SUID, '=', $connector, $scp);
+
+                $SQL->addWhere($SQLWhereStatus);
+            } else {
+                $SQL->addWhere($SQLWhereSession);
+            }
+        }
+    }
+    /**
+     * 開始〜終了の指定による期間の該当する日付のエントリーを絞り込みます
+     *
+     * ACMS_Filter::formbuildSpan($SQL, '2010-01-01', '2010-12-31');
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param string $start '1001-01-01 00:00:00'
+     * @param string $end '9999-12-31 23:59:59'
+     * @param null $scope
+     * @return void
+     */
+    public static function formbuildSpan(& $SQL, $start, $end, $scope=null)
+    {
+        $SQL->addWhereBw('formbuild_datetime', $start, $end, 'AND', $scope);
+    }
+    
+    /**
+     * エントリーをfieldテーブルから，指定されたフィールドで検索します
+     *
+     * ACMS_Filter::formbuildField($SQL, $Field);
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param Field $Field
+     * @return void
+     */
+    public static function formbuildField(& $SQL, $Field)
+    {
+        ACMS_Filter::_field($SQL, $Field, 'field_eid', 'formbuild_id');
+    }
+
+    public static function crmMailField(& $SQL, $Field)
+    {
+        foreach ( $Field->listFields() as $j => $fd ) {
+            $Where          = SQL::newWhere();
+            $aryOperator    = $Field->getOperator($fd, null);
+            foreach ( $aryOperator as $i => $operator ) {
+                $value      = $Field->get($fd, '', $i);
+                $notexist   = false;
+                
+                if ( '' == $value ) {
+                    continue;
+                }
+                switch ( $operator ) {
+                    case 'eq':
+                        $operator   = '=';
+                        break;
+                    case 'neq':
+                        $operator   = '<>';
+                        break;
+                    case 'lt':
+                        $operator   = '<';
+                        $value      = $value;
+                        break;
+                    case 'lte':
+                        $operator   = '<=';
+                        $value      = $value;
+                        break;
+                    case 'gt':
+                        $operator   = '>';
+                        $value      = $value;
+                        break;
+                    case 'gte':
+                        $operator   = '>=';
+                        $value      = $value;
+                        break;
+                    case 'lk':
+                        $operator   = 'LIKE';
+                        break;
+                    case 'nlk':
+                        $operator   = 'NOT LIKE';
+                        break;
+                    case 're':
+                        $operator   = 'REGEXP';
+                        break;
+                    case 'nre':
+                        $operator   = 'NOT REGEXP';
+                        break;
+                    case 'em':
+                        $operator   = '=';
+                        $value      = '';
+                        break;
+                    case 'nem':
+                        $operator   = '<>';
+                        $value      = '';
+                        break;
+                    default:    // exception
+                        continue 2;
+                }
+                if ( $operator === 'LIKE' and !preg_match('@^%|%$@', $value) ) {
+                    $value = '%'.$value.'%';
+                }
+
+                $Where->addWhereOpr($fd, $value, $operator,
+                    ('OR' != strtoupper($Field->getConnector($fd, $i))) ? 'AND' : 'OR');
+            }
+            
+            $DB         = DB::singleton(dsn());
+            $Customer   = SQL::newSelect('crm_thread');
+            
+            $res        = $DB->query($Customer->get(dsn()), 'exec');
+            $fieldCount = mysql_num_fields($res);
+            $cfields    = array();
+            for ( $i=0; $i<$fieldCount; $i++ ) {
+                $cfields[]  = mysql_field_name($res, $i);
+            }
+            if ( array_search($fd, $cfields) !== false ) {
+                $SQL->addWhere($Where);
+            }
         }
     }
 

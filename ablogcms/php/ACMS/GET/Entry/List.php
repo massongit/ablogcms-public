@@ -29,6 +29,7 @@ class ACMS_GET_Entry_List extends ACMS_GET_Entry_Summary
             'imageCenter'      => config('entry_list_image_center'),
             'pagerDelta'       => config('entry_list_pager_delta'),
             'pagerCurAttr'     => config('entry_list_pager_cur_attr'),
+            'hiddenCurrentEntry'    => config('entry_list_hidden_current_entry'),
         );
     }
 }

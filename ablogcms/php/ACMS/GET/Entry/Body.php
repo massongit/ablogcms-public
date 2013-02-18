@@ -338,6 +338,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Tpl->add('blogField', $this->buildField($Field, $Tpl));
         }
 
+        $link   = ( config('entry_body_link_url') === 'on' ) ? $row['entry_link'] : '';
         $vars   += array(
             'status'    => $row['entry_status'],
             'titleUrl'  => !empty($link) ? $link : $inheritUrl,
@@ -707,6 +708,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 $vars       = array();
                 $delta      = intval($this->pager_delta);
                 $curAttr    = $this->pager_cur_attr;
+                $itemsAmount -= $this->offset;
                 $vars       += $this->buildPager($this->page, $limit, $itemsAmount, $delta, $curAttr, $Tpl);
             }
 

@@ -112,11 +112,11 @@ class Field
 
     function get($fd, $def=null, $i=0)
     {
-        return strval(
-            (!empty($this->_aryField[$fd][$i]) or (isset($this->_aryField[$fd][$i]) and ('0' === $this->_aryField[$fd][$i])))
+        $fdvalue = (!empty($this->_aryField[$fd][$i]) or (isset($this->_aryField[$fd][$i]) and ('0' === $this->_aryField[$fd][$i])))
                 ? $this->_aryField[$fd][$i]
-                : (!is_null($def) ? $def : (isset($this->_aryField[$fd][$i]) ? $this->_aryField[$fd][$i] : $def))
-        );
+                : (!is_null($def) ? $def : (isset($this->_aryField[$fd][$i]) ? $this->_aryField[$fd][$i] : $def));
+
+        return is_array($fdvalue) ? '' : strval($fdvalue);
     }
 
     function getArray($fd, $strict=false)
