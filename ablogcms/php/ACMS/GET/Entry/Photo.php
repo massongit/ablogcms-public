@@ -29,6 +29,7 @@ class ACMS_GET_Entry_Photo extends ACMS_GET_Entry_Summary
             'imageCenter'      => config('entry_photo_image_center'),
             'pagerDelta'       => config('entry_photo_pager_delta'),
             'pagerCurAttr'     => config('entry_photo_pager_cur_attr'),
+            'hiddenCurrentEntry'    => config('entry_photo_hidden_current_entry'),
         );
     }
 }

@@ -120,6 +120,7 @@ class ACMS_Validator
 
     function all_unique($ary)
     {
+		if ( ! is_array($ary) )return true;
         $_ary = array_unique($ary);
         return count($ary) === count($_ary);
     }

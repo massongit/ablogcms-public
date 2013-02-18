@@ -21,6 +21,7 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('cid', CID);
         jsModule('eid', EID);
         jsModule('bcd', ACMS_RAM::blogCode(BID));
+        jsModule('yahooApiKey', config('yahoo_search_api_key'));
         jsModule('jQuery', config('jquery_version'));
 
         jsModule('umfs', ini_get('upload_max_filesize'));

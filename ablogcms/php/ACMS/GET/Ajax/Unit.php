@@ -14,6 +14,17 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
         if ( !($column = $this->Get->get('column')) ) { return false; }
         list($pfx, $type)   = explode('-', $column, 2);
 
+        // typeで参照できるラベルの連想配列
+        $aryTypeLabel    = array();
+        foreach ( configArray('column_add_type') as $i => $_type ) {
+            $aryTypeLabel[$_type]    = config('column_add_type_label', '', $i);
+        }
+
+        // 特定指定子を含むユニットタイプ
+        $actualType = $type;
+        // 特定指定子を除外した、一般名のユニット種別
+        $type = detectUnitTypeSpecifier($type);
+
         $Config = new Field(Field::singleton('config'));
         if ( $rid = intval($this->Get->get('rid')) ) {
             $Config->overload(loadConfig(BID, $rid));
@@ -47,6 +58,20 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                     $Tpl->add(array('size:loop', $type), array(
                         'value' => $size,
                         'label' => $Config->get('column_map_size_label', '', $j),
+                    ));
+                }
+                break;
+            case 'yolp':
+                foreach ( $Config->getArray('column_map_size') as $j => $size ) {
+                    $Tpl->add(array('size:loop', $type), array(
+                        'value' => $size,
+                        'label' => $Config->get('column_map_size_label', '', $j),
+                    ));
+                }
+                foreach ( $Config->getArray('column_map_layer_type') as $j => $layer ) {
+                    $Tpl->add(array('layer:loop', $type), array(
+                        'value' => $size,
+                        'label' => $Config->get('column_map_layer_type_label', '', $j),
                     ));
                 }
                 break;
@@ -88,6 +113,10 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
         }
 
         $vars   = $this->buildField($Column, $Tpl, $type, 'column');
+        $vars  += array(
+            'actualType'  => $actualType,
+            'actualLabel' => $aryTypeLabel[$actualType],
+        );
 
         $Tpl->add($type, $vars);
         return $Tpl->get();

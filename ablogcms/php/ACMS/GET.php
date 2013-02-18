@@ -90,8 +90,12 @@ class ACMS_GET
         if ( !$this->Q->isNull('uid') ) {
             $this->uid  = intval($this->Q->get('uid'));
         }
+        
+        $keyword    = $this->Q->get('keyword');
+        $qkeyword   = $this->Get->get(KEYWORD_SEGMENT);
+        if ( !empty($qkeyword) &&  config('query_keyword') == 'on' ) $keyword = $qkeyword;
 
-        $this->keyword  = $this->Q->get('keyword');
+        $this->keyword  = $keyword;
         $this->start    = $this->Q->get('start');
         $this->end      = $this->Q->get('end');
         $this->page     = $this->Q->get('page');
@@ -125,6 +129,36 @@ class ACMS_GET
 
     function fire()
     {
+        //----------------
+        // module link
+        if ( isSessionAdministrator() ) {
+            $className  = str_replace(array('ACMS_GET_', 'ACMS_User_GET_'), '', get_class($this));
+            $config     = 'config_'.strtolower(preg_replace('@(?<=[a-zA-Z0-9])([A-Z])@', '-$1', $className));
+            $bid        = !empty($this->mbid) ? $this->mbid : BID;
+
+            $url = acmsLink(array(
+                'bid'   => $bid,
+                'admin' => $config,
+                'query' => array(
+                    'mid'   => $this->mid,
+                ),
+            ));
+
+            $this->tpl = str_replace(array(
+                '{admin_module_bid}',
+                '{admin_module_mid}',
+                '{admin_module_url}',
+                '{admin_module_name}',
+            ), array(
+                $bid,
+                $this->mid,
+                $url,
+                $className,
+            ), $this->tpl);
+
+            $this->tpl = preg_replace('@<!--[\t 　]*(BEGIN|END)[\t 　]module_setting[\t 　]-->@', '', $this->tpl);
+        }
+
         //----------------
         // execute & hook
         if (HOOK_ENABLE) {
@@ -173,9 +207,6 @@ class ACMS_GET
             $c = $formats[$p];
             $vars[$prefix.$c] = $val;
         }
-/*
-        foreach ( $formats as $c ) $vars[$prefix.$c]  = date($c, $datetime);
-*/
 
         $vars[$prefix.'week']   = config('week_label', '', intval($w));
         return $vars;
@@ -237,7 +268,7 @@ class ACMS_GET
                 //-------
                 // value
                 foreach ( $row as $key => $value ) {
-                    if ( !empty($value) ) {
+                    if ( $value !== '' ) {
                         $_vars[$key]    = $value;
                         $_vars[$key.':checked#'.$value]     = config('attr_checked');
                         $_vars[$key.':selected#'.$value]    = config('attr_selected');
@@ -267,9 +298,6 @@ class ACMS_GET
                     $vars[$key] = $val;
                     $Tpl->add(array_merge(array($key), $block), array($key => $val));
                 }
-//                $key    = $fd.':validator';
-//                $vars[$key] = $val;
-//                $Tpl->add(array_merge(array($key), $block), array($key => $val));
 
                 $aryMethod  = $Field->getMethods($fd);
                 foreach ( $aryMethod as $method ) {
@@ -280,10 +308,6 @@ class ACMS_GET
                             $Tpl->add(array_merge(array($key), $block), array($key => $val));
                         }
 
-//                        $key    = $fd.':validator#'.$method;
-//                        $vars[$key] = $val;
-//                        $Tpl->add(array_merge(array($key), $block), array($key => $val));
-
                         $cnt    = count($Field->getArray($fd));
                         for ( $i=0; $i<$cnt; $i++ ) {
                             if ( !$val = intval($Field->isValid($fd, $method, $i)) ) {
@@ -292,9 +316,6 @@ class ACMS_GET
                                     $vars[$key] = $val;
                                     $Tpl->add(array_merge(array($key), $block), array($key => $val));
                                 }
-//                                $key    = $fd.'['.$i.']'.':validator#'.$method;
-//                                $vars[$key] = $val;
-//                                $Tpl->add(array_merge(array($key), $block), array($key => $val));
                             } else {
                                 continue;
                             }
@@ -316,9 +337,13 @@ class ACMS_GET
             }
             foreach ( $vals as $i => $val ) {
                 if ( empty($i) ) {
-                    $Tpl->add(array_merge(array($fd.':touch#'.$val), $block));
+                    if ( !is_array($val) ) {
+                        $Tpl->add(array_merge(array($fd.':touch#'.$val), $block));
+                    }
                 }
-                $Tpl->add(array_merge(array($fd.'['.$i.']'.':touch#'.$val), $block));
+                if ( !is_array($val) ) {
+                    $Tpl->add(array_merge(array($fd.'['.$i.']'.':touch#'.$val), $block));
+                }
             }
         }
 
@@ -377,13 +402,15 @@ class ACMS_GET
         foreach ( $data as $key => $vals ) {
             if ( !is_array($vals) ) $vals   = array($vals);
             foreach ( $vals as $i => $val ) {
-                foreach ( array(
-                    $key.':checked#'.$val,
-                    $key.'['.$i.']'.':checked#'.$val,
-                ) as $name ) {
-                    $vars[$name]    = config('attr_checked');
-                    if ( !empty($Tpl) ) {
-                        $Tpl->add(array_merge(array($name), $block));
+                if ( !is_array($val) ) {
+                    foreach ( array(
+                        $key.':checked#'.$val,
+                        $key.'['.$i.']'.':checked#'.$val,
+                    ) as $name ) {
+                        $vars[$name]    = config('attr_checked');
+                        if ( !empty($Tpl) ) {
+                            $Tpl->add(array_merge(array($name), $block));
+                        }
                     }
                 }
             }
@@ -398,13 +425,15 @@ class ACMS_GET
         foreach ( $data as $key => $vals ) {
             if ( !is_array($vals) ) $vals   = array($vals);
             foreach ( $vals as $i => $val ) {
-                foreach ( array(
-                    $key.':selected#'.$val,
-                    $key.'['.$i.']'.':selected#'.$val,
-                ) as $name ) {
-                    $vars[$name]    = config('attr_selected');
-                    if ( !empty($Tpl) ) {
-                        $Tpl->add(array_merge(array($name), $block));
+                if ( !is_array($val) ) {
+                    foreach ( array(
+                        $key.':selected#'.$val,
+                        $key.'['.$i.']'.':selected#'.$val,
+                    ) as $name ) {
+                        $vars[$name]    = config('attr_selected');
+                        if ( !empty($Tpl) ) {
+                            $Tpl->add(array_merge(array($name), $block));
+                        }
                     }
                 }
             }
@@ -513,10 +542,14 @@ class ACMS_GET
         // image
         if ( !empty($pimageId) ) {
             $SQL    = SQL::newSelect('column');
-            $SQL->setSelect('column_field_2');
+            $SQL->addSelect('column_field_2');
+            $SQL->addSelect('column_align');
             $SQL->addWhereOpr('column_id', $pimageId);
-            $filename   = $DB->query($SQL->get(dsn()), 'one');
+            $pimage = $DB->query($SQL->get(dsn()), 'row');
+            $filename   = $pimage['column_field_2'];
+            $align      = $pimage['column_align'];
             $path       = ARCHIVES_DIR.$filename;
+            if ( $align === 'hidden' ) $path = null;
         } else {
             $path   = null;
         }

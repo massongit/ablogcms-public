@@ -7,7 +7,7 @@
  *
  * (c) appleple inc. <info@appleple.com>
  */
-class ACMS_User_Hook extends ACMS_Hook
+class ACMS_User_Hook
 {
     /**
      * GETモジュール処理前
@@ -84,5 +84,15 @@ class ACMS_User_Hook extends ACMS_Hook
     public function beforeShutdown()
     {
 
+    }
+
+    /**
+     * グローバル変数の拡張
+     *
+     * @param array $globalVars
+     */
+    public function extendsGlobalVars($globalVars)
+    {
+        // $globalVars->set('key', 'var');
     }
 }

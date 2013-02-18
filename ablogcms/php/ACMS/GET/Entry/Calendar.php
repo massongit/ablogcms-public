@@ -129,9 +129,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $DB = DB::singleton(dsn());
         $SQL = SQL::newSelect('entry');
         $SQL->addSelect(SQL::newFunction('entry_datetime', array('SUBSTR', 0, 10)), 'entry_date', null, 'DISTINCT');
-        $SQL->addSelect('entry_id', null, null, null);
-        $SQL->addSelect('entry_title', null, null, null);
-        $SQL->addSelect('entry_category_id', null, null, null);
+        $SQL->addSelect('entry_id');
+        $SQL->addSelect('entry_title');
+        $SQL->addSelect('entry_category_id');
+        $SQL->addSelect('entry_link');
+        $SQL->addSelect('entry_status');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
         ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
         ACMS_Filter::blogStatus($SQL);
@@ -148,11 +150,25 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $all = $DB->query($q, 'all');
         
         foreach($all as $row){
+            $status     = $row['entry_status'];
+            $title      = $row['entry_title'];
+            switch ( $status ) {
+                case 'draft' :
+                    $title = '【下書き】'.$title;
+                    break;
+                case 'close' :
+                    $title = '【非公開】'.$title;
+                    break;
+                default :
+                    break;
+            }
             $entry_list[] = array(
-                'eid'   => $row['entry_id'],
-                'cid'   => $row['entry_category_id'],
-                'date'  => $row['entry_date'],
-                'title' => $row['entry_title']
+                'eid'       => $row['entry_id'],
+                'cid'       => $row['entry_category_id'],
+                'date'      => $row['entry_date'],
+                'title'     => $title,
+                'link'      => $row['entry_link'],
+                'status'    => $status,
             );
         }
         
@@ -185,9 +201,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         
                             if ( $list['date'] == $date ) {
                                 $current_entry_list[] = array(
-                                    'eid'   => $list['eid'],
-                                    'cid'   => $list['cid'],
-                                    'title' => $list['title']
+                                    'eid'       => $list['eid'],
+                                    'cid'       => $list['cid'],
+                                    'title'     => $list['title'],
+                                    'link'      => $list['link'],
+                                    'status'    => $list['status'],
                                 );
                                 if ( count($current_entry_list) == $max_entry_count ) {
                                     break;
@@ -197,14 +215,21 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         
                         if ( count($current_entry_list) !== 0 ) {
                             foreach ( $current_entry_list as $entry ) {
+                                $link   = $entry['link'];
+                                $link   = !empty($link) ? $link : acmsLink(array(
+                                    'bid' => $this->bid,
+                                    'eid' => $entry['eid'],
+                                ));
                                 $entry_vars = array(
-                                    'url' => acmsLink(array(
-                                        'bid' => $this->bid,
-                                        'eid' => $entry['eid'],
-                                    )),
-                                    'title' => $entry['title'],
-                                    'cid'   => $entry['cid']
+                                    'title'     => $entry['title'],
+                                    'cid'       => $entry['cid'],
+                                    'status'    => $entry['status'],
                                 );
+                                if ( $link != '#' ) {
+                                    $Tpl->add(array('url#rear', 'foreEntry:loop'));
+                                    $entry_vars['url']  = $link;
+                                }
+
                                 $entry_vars += $this->buildField(loadEntryField($entry['eid']), $Tpl);
                                 if ( !empty($label[$pw]) and $around_entry == 'on' ) {
                                     $Tpl->add('foreEntry:loop', $entry_vars);
@@ -244,9 +269,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             foreach ( $entry_list as $list ) {
                 if ( $list['date'] == $date ) {
                     $current_entry_list[] = array(
-                        'eid'   => $list['eid'],
-                        'cid'   => $list['cid'],
-                        'title' => $list['title']
+                        'eid'       => $list['eid'],
+                        'cid'       => $list['cid'],
+                        'title'     => $list['title'],
+                        'link'      => $list['link'],
+                        'status'    => $list['status'],
                     );
                     if ( count($current_entry_list) == $max_entry_count ) {
                         break;
@@ -256,14 +283,21 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             
             if ( count($current_entry_list) !== 0 ) {
                 foreach ( $current_entry_list as $entry ) {
+                    $link   = $entry['link'];
+                    $link   = !empty($link) ? $link : acmsLink(array(
+                        'bid' => $this->bid,
+                        'eid' => $entry['eid'],
+                    ));
                     $entry_vars = array(
-                        'url' => acmsLink(array(
-                            'bid' => $this->bid,
-                            'eid' => $entry['eid'],
-                        )),
-                        'title' => $entry['title'],
-                        'cid'   => $entry['cid']
+                        'title'     => $entry['title'],
+                        'cid'       => $entry['cid'],
+                        'status'    => $entry['status'],
                     );
+                    if ( $link != '#' ) {
+                        $Tpl->add(array('url#rear', 'entry:loop'));
+                        $entry_vars['url']  = $link;
+                    }
+                    
                     $entry_vars += $this->buildField(loadEntryField($entry['eid']), $Tpl);
                     if ( !empty($label[$curW]) ) {
                         $Tpl->add('entry:loop', $entry_vars);
@@ -283,23 +317,24 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             // spacer
             $lastW  = ($curW + 6) % 7;
             $date = substr($end_date, 0, 10);
+            list($end_y, $end_m, $end_d) = preg_split('/-/', $date);
+            $date = date('Y-m-t', mktime(0, 0, 0, $end_m, 1, $end_y));
             
             if ( $span = 6 - ($lastW + (7 - $beginW)) % 7) {
                 $nws = ($beginW + ( 7 - $span)) % 7;
                 for ( $i=0; $i<$span; $i++ ) {
                     $nw = ($nws + $i) % 7;
                     if ( !empty($label[$nw]) ) {
-                        
                         $date = $this->computeDate((int)substr($date, 0, 4), (int)substr($date, 5, 2), (int)substr($date, 8, 2), 1);
-                        
                         $current_entry_list = array();
                         foreach ( $entry_list as $list ) {
-                        
                             if ( $list['date'] == $date ) {
                                 $current_entry_list[] = array(
-                                    'eid'   => $list['eid'],
-                                    'cid'   => $list['cid'],
-                                    'title' => $list['title']
+                                    'eid'       => $list['eid'],
+                                    'cid'       => $list['cid'],
+                                    'title'     => $list['title'],
+                                    'link'      => $list['link'],
+                                    'status'    => $list['status'],
                                 );
                                 if ( count($current_entry_list) == $max_entry_count ) {
                                     break;
@@ -309,14 +344,21 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         
                         if ( count($current_entry_list) !== 0 ) {
                             foreach ( $current_entry_list as $entry ) {
+                                $link   = $entry['link'];
+                                $link   = !empty($link) ? $link : acmsLink(array(
+                                    'bid' => $this->bid,
+                                    'eid' => $entry['eid'],
+                                ));
                                 $entry_vars = array(
-                                    'url' => acmsLink(array(
-                                        'bid' => $this->bid,
-                                        'eid' => $entry['eid'],
-                                    )),
-                                    'title' => $entry['title'],
-                                    'cid'   => $entry['cid']
+                                    'title'     => $entry['title'],
+                                    'cid'       => $entry['cid'],
+                                    'status'    => $entry['status'],
                                 );
+                                if ( $link != '#' ) {
+                                    $Tpl->add(array('url#rear', 'rearEntry:loop'));
+                                    $entry_vars['url']  = $link;
+                                }
+
                                 $entry_vars += $this->buildField(loadEntryField($entry['eid']), $Tpl);
                                 if ( !empty($label[$nw]) and $around_entry == 'on' ) {
                                     $Tpl->add('rearEntry:loop', $entry_vars);

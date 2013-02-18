@@ -531,6 +531,7 @@ class SQL_Select extends SQL_Where
     var $_limit     = null;
     var $_orders    = array();
     var $_where     = null;
+    var $_union     = array();
 
     function addTable($tb, $als=null)
     {
@@ -613,6 +614,11 @@ class SQL_Select extends SQL_Where
             $this->addInnerJoin($tb, $a, $b, $als, $scp);
         }
         return true;
+    }
+    
+    function addUnion($select)
+    {
+        $this->_union[] = $select;
     }
 
     /**
@@ -780,6 +786,16 @@ class SQL_Select extends SQL_Where
             }
             if ( !empty($t['alias']) ) {
                 $q  .= ' AS '.$t['alias'];
+            }
+        }
+        
+        //----------
+        // union
+        $q  .= "\n ";
+        foreach ( $this->_union as $val ) {
+            if ( SQL::isClass($val, 'SQL_Select') ) {
+                $q  .= 'UNION '.$val->get($dsn);
+                $q  .= "\n";
             }
         }
 
@@ -1084,6 +1100,7 @@ class SQL_Sequence extends SQL
     var $_method    = 'nextval';
     var $_sequence  = null;
     var $_value     = null;
+    var $_plugin    = false;
 
     function setSequence($seq)
     {
@@ -1102,12 +1119,17 @@ class SQL_Sequence extends SQL
         $this->_value   = $val;
         return true;
     }
+    
+    function setPluginFlag($plugin)
+    {
+        $this->_plugin  = $plugin;
+        return true;
+    }
 
     function get($dsn=null)
     {
         if ( empty($this->_sequence) ) return false;
-
-        $tb = 'sequence';
+        $tb = ($this->_plugin) ? 'sequence_plugin' : 'sequence';
         $fd = 'sequence_'.$this->_sequence;
 
         $q  = '';
@@ -1115,20 +1137,34 @@ class SQL_Sequence extends SQL
         switch ( $this->_method ) {
             case 'currval':
                 $SQL    = SQL::newSelect($tb);
-                $SQL->setSelect($fd);
+                if ( $this->_plugin ) {
+                    $SQL->setSelect('sequence_value');
+                    $SQL->addWhereOpr('sequence_key', $fd);
+                } else {
+                    $SQL->setSelect($fd);
+                }
                 $q  = $SQL->get($dsn);
                 break;
             case 'setval':
                 $SQL    = SQL::newUpdate($tb);
-                $SQL->setUpdate($fd, $this->_value);
+                if ( $this->_plugin ) {
+                    $SQL->addUpdate('sequence_value', $this->_value);
+                    $SQL->addWhereOpr('sequence_key', $fd);
+                } else {
+                    $SQL->setUpdate($fd, $this->_value);
+                }
                 $q  = $SQL->get($dsn);
                 break;
             default:
             case 'nextval':
                 $SQL    = SQL::newUpdate($tb);
-                $SQL->setUpdate($fd, //SQL::newOpr($fd, 1, '+')
-                    SQL::newFunction(SQL::newOpr($fd, 1, '+'), 'LAST_INSERT_ID')
-                );
+                if ( $this->_plugin ) {
+                    $SQL->addUpdate('sequence_value', SQL::newFunction(SQL::newOpr('sequence_value', 1, '+'), 'LAST_INSERT_ID'));
+                    $SQL->addWhereOpr('sequence_key', $fd);
+                } else {
+                    $SQL->setUpdate($fd, //SQL::newOpr($fd, 1, '+')
+                    SQL::newFunction(SQL::newOpr($fd, 1, '+'), 'LAST_INSERT_ID'));
+                }
                 $q  = $SQL->get($dsn);
         }
 
@@ -1202,7 +1238,7 @@ class SQL
      * @param null $dsn
      * @return int
      */
-    public static function nextval($seq, $dsn=null)
+    public static function nextval($seq, $dsn=null, $plugin=false)
     {
         if ( SQL::isClass($seq, 'SQL_Sequence') ) {
             $Seq    = $seq;
@@ -1210,6 +1246,7 @@ class SQL
         } else {
             $Seq    = SQL::newSeq($seq, 'nextval');
         }
+        if ( $plugin ) $Seq->setPluginFlag($plugin);
         return $Seq->get($dsn);
     }
 
@@ -1223,7 +1260,7 @@ class SQL
      * @param null $dsn
      * @return int
      */
-    public static function currval($seq, $dsn=null)
+    public static function currval($seq, $dsn=null, $plugin=false)
     {
         if ( SQL::isClass($seq, 'SQL_Sequence') ) {
             $Seq    = $seq;
@@ -1231,6 +1268,7 @@ class SQL
         } else {
             $Seq    = SQL::newSeq($seq, 'currval');
         }
+        if ( $plugin ) $Seq->setPluginFlag($plugin);
         return $Seq->get($dsn);
     }
 
@@ -1244,7 +1282,7 @@ class SQL
      * @param null $dsn
      * @return int
      */
-    public static function setval($seq, $val, $dsn=null)
+    public static function setval($seq, $val, $dsn=null, $plugin=false)
     {
         if ( SQL::isClass($seq, 'SQL_Sequence') ) {
             $Seq    = $seq;
@@ -1253,6 +1291,7 @@ class SQL
         } else {
             $Seq    = SQL::newSeq($seq, 'setval', $val);
         }
+        if ( $plugin ) $Seq->setPluginFlag($plugin);
         return $Seq->get($dsn);
     }
 

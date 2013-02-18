@@ -22,6 +22,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
             'categoryEntryListLevel'        => config('category_entry_list_level'),
             'categoryIndexing'              => config('category_entry_list_category_indexing'),
             'entryAmountZero'               => config('category_entry_list_entry_amount_zero'),
+            'entryActiveCategory'           => config('category_entry_list_entry_active_category'),
             'order'                         => config('category_entry_list_entry_order'),
             'limit'                         => config('category_entry_list_entry_limit'),
             'indexing'                      => config('category_entry_list_entry_indexing'),
@@ -62,6 +63,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
 
             if ( intval($this->_config['categoryEntryListLevel']) >= $level ) { while ( !!($cRow = $DB->fetch($cQ)) ) {
                 $cid    = intval($cRow['category_id']);
+				
 
                 //--------------------
                 // entry build query
@@ -77,11 +79,14 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                 ) {
                     //-------
                     // entry
-                    $i = 0;
-                    if ( !empty($eRow) ) { do {
-                        $i++;
-                        $this->buildUnit($eRow, $Tpl, $cid, $level, $i);
-                    } while ( !!($eRow = $DB->fetch($eQ)) ); }
+					if( isset( $this->_config['entryActiveCategory'] ) && 'on' == $this->_config['entryActiveCategory'] && ( $cid != CID || intval(CID) == 0 ) ){
+					}else {
+						$i = 0;
+						if ( !empty($eRow) ) { do {
+							$i++;
+							$this->buildUnit($eRow, $Tpl, $cid, $level, $i);
+						} while ( !!($eRow = $DB->fetch($eQ) ) ); }
+					}
 
                     //----------
                     // category

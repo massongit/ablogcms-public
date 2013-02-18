@@ -28,11 +28,26 @@ class ACMS_Corrector
             or 'attr' == $name
             or is_int(strpos($name, ':selected'))
             or is_int(strpos($name, ':checked'))
-            or $opt
         ) ) {
-            $opt .= '|escape';
+            if ( config('corrector_replace') === 'on' ) {
+                if ( empty($opt) ) {
+                    $opt = '|escape';
+                } else {
+                    $correct_regex = configArray('corrector_regex');
+                    $correct_match = configArray('corrector_match');
+                    foreach ( $correct_regex as $i => $regex ) {
+                        if ( preg_match($regex, $opt) ) {
+                            $opt = $correct_match[$i];
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if ( empty($opt) ) {
+                    $opt = '|escape';
+                }
+            }
         }
-
         if ( !empty($opt) ) {
             $opt    = '|'.$opt;
             while ( preg_match('@\s*\|\s*([^(|\s]+)\s*(\()?\s*(.*)@', $opt, $match) ) {
@@ -91,6 +106,9 @@ class ACMS_Corrector
             }
             return str_replace(array_keys($rep), array_values($rep), $txt);
         } else {
+            if ( is_array($txt) ) {
+                $txt = implode($txt);
+            }
             return  htmlspecialchars($txt, ENT_QUOTES, 'UTF-8');
         }
     }
@@ -279,7 +297,11 @@ class ACMS_Corrector
 
     function number_format($txt)
     {
-        return number_format($txt);
+        if ( !empty($txt) && is_numeric($txt) ) {
+            return number_format($txt);
+        } else {
+            return $txt;
+        }
     }
 
     function str4script($txt)
@@ -342,7 +364,10 @@ class ACMS_Corrector
     function datetime($txt, $args=array())
     {
         if ( !isset($args[0]) ) return $txt;
-        $dt  = false !== ($dt = strtotime($this->fixChars($txt))) ? $dt : $txt;
+        $dt  = ( false !== ($dt = strtotime($this->fixChars($txt))) )? $dt : $txt;
+		if( $dt === '0000-00-00 00:00:00'){
+			return '';
+		}
         $txt = date($args[0], $dt);
         if ( $txt === date($args[0],strtotime(null)) && isset($args[1]) ) $txt = $args[1];
         return $txt;
@@ -423,6 +448,38 @@ class ACMS_Corrector
             'hidden' => '非表示',
         );
         return isset($dict[$txt]) ? $dict[$txt] : $txt;
+    }
+
+    function human_time($txt)
+    {
+        $dt = strtotime($this->fixChars($txt));
+        if ( $dt === false ) {
+            return $txt;
+        }
+
+        $diff       = time() - $dt;
+        $day        = 60 * 60 * 24;
+
+        if ( $diff > $day * 31 * 365 ) {
+            $d = floor($diff / $day / 31 / 365);
+            return '約'.$d.'前';
+        } else if ( $diff > $day * 31 ) {
+            $d = floor($diff / $day / 31);
+            return '約'.$d.'ヶ月前';
+        } else if ( $diff > $day ) {
+            $d = floor($diff / $day);
+            return '約'.$d.'日前';
+        } else if ( $diff > 60 * 60 ) {
+            $d = floor($diff / 60 / 60);
+            return '約'.$d.'時間前';
+        } else if ( $diff > 60 ) {
+            $d = floor($diff / 60);
+            return '約'.$d.'分前';
+        } else {
+            return 'たった今';
+        }
+
+        return $txt;
     }
 }
 

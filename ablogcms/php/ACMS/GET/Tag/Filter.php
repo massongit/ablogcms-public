@@ -73,7 +73,12 @@ class ACMS_GET_Tag_Filter extends ACMS_GET
 
         $all = $DB->query($q, 'all');
 
-        if ( !$cnt = count($all) ) { return $Tpl->get(); }
+        if ( 0
+            or config('tag_filter_selected_limit') <= $cnt
+            or !$cnt = count($all) 
+        ) {
+            return $Tpl->get();
+        }
 
         $i      = 0;
         while ( $row = array_shift($all) ) {
