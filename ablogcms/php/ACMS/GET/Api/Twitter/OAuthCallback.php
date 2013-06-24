@@ -20,13 +20,16 @@ class ACMS_GET_Api_Twitter_OAuthCallback extends ACMS_GET_Api_Twitter
         }
 
         $token  = $this->Get->get('oauth_token');
+        $code   = $this->Get->get('oauth_verifier');
 
         // request tokenの保持をチェック
         if ( count(ACMS_Services_Twitter::loadReqToken(BID)) == 2 && !empty($token) ) {
 
+            $verifier = array('oauth_verifier' => $code);
+
             // access tokenの取得を試行
             $API    = ACMS_Services_Twitter::establish(BID, 'request');
-            $acs    = $API->getAcsToken();
+            $acs    = $API->getAcsToken($verifier);
 
             // access tokenを保存
             $res    = ACMS_Services_Twitter::insertAcsToken(BID, $acs['oauth_token'], $acs['oauth_token_secret']);

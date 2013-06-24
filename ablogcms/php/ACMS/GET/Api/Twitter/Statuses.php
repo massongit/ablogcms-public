@@ -20,14 +20,14 @@ class ACMS_GET_Api_Twitter_Statuses extends ACMS_GET_Api_Twitter
 
     function build($response, & $Tpl)
     {
-        $xml = $this->xml_decode($response);
+        $json = json_decode($response);
 
-        if ( $xml === false ) {
+        if ( $json === false ) {
             $Tpl->add('unavailable');
             return false;
         }
 
-        if ( count($xml) === 0 ) {
+        if ( count($json) === 0 ) {
             $Tpl->add('notFound');
             return false;
         }
@@ -35,7 +35,7 @@ class ACMS_GET_Api_Twitter_Statuses extends ACMS_GET_Api_Twitter
         $loop  = 0;
         $args  = array();
 
-        foreach ( $xml as $row ) {
+        foreach ( $json as $row ) {
             if ( 'true' == $row->user->protected && 'on' == $this->ignore ) {
                 continue;
             }
@@ -44,22 +44,21 @@ class ACMS_GET_Api_Twitter_Statuses extends ACMS_GET_Api_Twitter
                 'text'      => $row->text,
                 'name'      => $row->user->name,
                 'screen_name'=> $row->user->screen_name,
-                'user_id'   => $row->user->id,
-                'status_id' => $row->id,
+                'user_id'   => $row->user->id_str,
+                'status_id' => $row->id_str,
                 'image'     => $row->user->profile_image_url,
                 'l-image'   => $this->largeImageUrl($row->user->profile_image_url),
-                'permalink' => ACMS_GET_Api_Twitter::WEB_URL.$row->user->screen_name.'/status/'.$row->id,
+                'permalink' => ACMS_GET_Api_Twitter::WEB_URL.$row->user->screen_name.'/status/'.$row->id_str,
             );
-
             $vars  += $this->buildDate($row->created_at, $Tpl, 'tweet:loop');
 
             $Tpl->add('tweet:loop', $vars);
             $loop++;
 
             if ( $loop == 1 ) {
-                $args['first_id'] = $row->id;
-            } elseif ( $loop == count($xml) ) {
-                $args['last_id']  = $row->id;
+                $args['first_id'] = $row->id_str;
+            } elseif ( $loop == count($json) ) {
+                $args['last_id']  = $row->id_str;
             }
         }
 

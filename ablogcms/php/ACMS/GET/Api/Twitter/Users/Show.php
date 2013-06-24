@@ -17,7 +17,7 @@ class ACMS_GET_Api_Twitter_Users_Show extends ACMS_GET_Api_Twitter
     {
         // OAuth認証済みのBID
         $this->id     = $this->bid;
-        $this->api    = 'users/show.xml';
+        $this->api    = 'users/show.json';
         $this->params = array_clean(array(
             'user_id'     => ($user_id  = $this->Field->get('user_id'))  ? intval($user_id)  : null,
             'screen_name' => $this->Field->get('screen_name'),
@@ -33,28 +33,28 @@ class ACMS_GET_Api_Twitter_Users_Show extends ACMS_GET_Api_Twitter
 
     function build($response, & $Tpl)
     {
-        $xml   = $this->xml_decode($response);
+        $json   = $this->json_decode($response);
 
         $vars   = array(
-            'friends_count'     => $xml->friends_count,
-            'statuses_count'    => $xml->statuses_count,
-            'followers_count'   => $xml->followers_count,
-            'name'              => $xml->name,
-            'screen_name'       => $xml->screen_name,
-            'url'               => $xml->url,
-            'id'                => $xml->id,
-            'image'             => $xml->profile_image_url,
-            'l-image'           => $this->largeImageUrl($xml->profile_image_url),
-            'bg-image'          => $xml->profile_background_image_url,
-            'p-bg-color'        => $xml->profile_background_color,
-            'p-txt-color'       => $xml->profile_text_color,
-            'description'       => $xml->description,
-            'location'          => $xml->location,
-            'created_at'        => $xml->created_at,
-            'duration'          => $this->calcDuration($xml->created_at),
+            'friends_count'     => $json->friends_count,
+            'statuses_count'    => $json->statuses_count,
+            'followers_count'   => $json->followers_count,
+            'name'              => $json->name,
+            'screen_name'       => $json->screen_name,
+            'url'               => $json->url,
+            'id'                => $json->id_str,
+            'image'             => $json->profile_image_url,
+            'l-image'           => $this->largeImageUrl($json->profile_image_url),
+            'bg-image'          => $json->profile_background_image_url,
+            'p-bg-color'        => $json->profile_background_color,
+            'p-txt-color'       => $json->profile_text_color,
+            'description'       => $json->description,
+            'location'          => $json->location,
+            'created_at'        => $json->created_at,
+            'duration'          => $this->calcDuration($json->created_at),
         );
 
-        $vars  += $this->buildDate($xml->created_at, $Tpl, 'user');
+        $vars  += $this->buildDate($json->created_at, $Tpl, 'user');
 
         $Tpl->add('user', $vars);
     }

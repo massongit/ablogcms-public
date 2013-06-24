@@ -51,12 +51,13 @@ class ACMS_GET
     var $mid  = null;
     var $mbid = null;
 
-    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid = null, $mbid = null)
+    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid = null, $mbid = null, $identify = null)
     {
         $this->tpl  = $tpl;
         $this->Post = new Field_Validation($Post, true);
         $this->Get  = new Field(Field::singleton('get'));
         $this->Q    = new Field(Field::singleton('query'), true);
+        $this->identify = $identify;
 
         //-------
         // scope
@@ -149,11 +150,13 @@ class ACMS_GET
                 '{admin_module_mid}',
                 '{admin_module_url}',
                 '{admin_module_name}',
+                '{admin_module_identify}',
             ), array(
                 $bid,
                 $this->mid,
                 $url,
                 $className,
+                $this->identify,
             ), $this->tpl);
 
             $this->tpl = preg_replace('@<!--[\t 　]*(BEGIN|END)[\t 　]module_setting[\t 　]-->@', '', $this->tpl);
@@ -207,6 +210,7 @@ class ACMS_GET
             $c = $formats[$p];
             $vars[$prefix.$c] = $val;
         }
+        $vars[$prefix]  = date('Y-m-d H:i:s', $datetime);
 
         $vars[$prefix.'week']   = config('week_label', '', intval($w));
         return $vars;
@@ -328,7 +332,6 @@ class ACMS_GET
                 continue;
             }
         }
-
         //-------
         // touch
         foreach ( $data as $fd => $vals ) {
@@ -377,7 +380,7 @@ class ACMS_GET
                     }
 
                     $sfx    = '['.$i.']';
-                    if ( !empty($v) ) { $vars[$key.$sfx]    = $v; }
+                    if ( $v !== '' ) { $vars[$key.$sfx]    = $v; }
                     if ( !empty($Tpl) ) {
                         if ( !empty($i) ) $Tpl->add(array_merge(array('glue', $key.':loop'), $block));
                         $Tpl->add(array_merge(array($key.':loop'), $block)

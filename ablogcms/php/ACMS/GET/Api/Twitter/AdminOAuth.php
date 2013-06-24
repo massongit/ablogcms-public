@@ -21,21 +21,21 @@ class ACMS_GET_Api_Twitter_AdminOAuth extends ACMS_GET_Api_Twitter
 
             $API = ACMS_Services_Twitter::establish(BID);
 
-            if ( !!($API->httpRequest('account/verify_credentials.xml', array(), 'GET')) ) {
-                $xml    = $API->Response->body;
-                $xml    = $this->xml_decode($xml);
+            if ( !!($API->httpRequest('account/verify_credentials.json', array(), 'GET')) ) {
+                $json    = $API->Response->body;
+                $json    = json_decode($json);
 
                 $vars   = array(
-                    'id'                => $xml->id,
-                    'screen_name'       => $xml->screen_name,
-                    'user_name'         => $xml->name,
-                    'statuses_count'    => $xml->statuses_count,
-                    'followers_count'   => $xml->followers_count,
-                    'friends_count'     => $xml->friends_count,
-                    'limit'             => $API->Response->getResponseHeader('x-ratelimit-limit'),
-                    'remaining'         => $API->Response->getResponseHeader('x-ratelimit-remaining'),
+                    'id'                => $json->id,
+                    'screen_name'       => $json->screen_name,
+                    'user_name'         => $json->name,
+                    'statuses_count'    => $json->statuses_count,
+                    'followers_count'   => $json->followers_count,
+                    'friends_count'     => $json->friends_count,
+                    'limit'             => $API->Response->getResponseHeader('x-rate-limit-limit'),
+                    'remaining'         => $API->Response->getResponseHeader('x-rate-limit-remaining'),
+                    'reset'             => date('H:i:s', $API->Response->getResponseHeader('x-rate-limit-reset')),
                 );
-    
                 $Tpl->add('Auth', $vars);
             } else {
                 $Tpl->add('failed');
