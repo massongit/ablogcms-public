@@ -20,7 +20,7 @@ class ACMS_GET_Api_Twitter_List_Members extends ACMS_GET_Api_Twitter
 
         // OAuth認証済みのBID
         $this->id     = $this->bid;
-        $this->api    = "lists/members.xml";
+        $this->api    = "lists/members.json";
         $this->params = array_clean(array(
             'slug'              => $list,
             'owner_screen_name' => $user,
@@ -37,19 +37,19 @@ class ACMS_GET_Api_Twitter_List_Members extends ACMS_GET_Api_Twitter
 
     function build($response, & $Tpl)
     {
-        $xml = $this->xml_decode($response);
+        $json = json_decode($response);
 
-        if ( $xml === false ) {
+        if ( $json === false ) {
             $Tpl->add('unavailable');
             return false;
         }
 
-        if ( count($xml) === 0 ) {
+        if ( count($json) === 0 ) {
             $Tpl->add('notFound');
             return false;
         }
 
-        foreach ( $xml->users->user as $user ) {
+        foreach ( $json->users as $user ) {
 
             $vars   = array(
                 'friends_count'     => $user->friends_count,
@@ -60,21 +60,21 @@ class ACMS_GET_Api_Twitter_List_Members extends ACMS_GET_Api_Twitter
                 'url'               => $user->url,
                 'id'                => $user->id,
                 'image'             => $user->profile_image_url,
-                'l-image'           => $this->largeImageUrl($xml->profile_image_url),
+                'l-image'           => $this->largeImageUrl($user->profile_image_url),
                 'bg-image'          => $user->profile_background_image_url,
                 'p-bg-color'        => $user->profile_background_color,
                 'p-txt-color'       => $user->profile_text_color,
                 'description'       => $user->description,
                 'location'          => $user->location,
                 'created_at'        => $user->created_at,
-                'duration'          => $this->calcDuration($xml->created_at),
+                'duration'          => $this->calcDuration($user->created_at),
             );
             $Tpl->add('member:loop', $vars);
         }
 
         $vars   = array();
-        if ( $xml->next_cursor != 0 )       $vars['next']   = $xml->next_cursor;
-        if ( $xml->previous_cursor != 0 )   $vars['prev']   = $xml->previous_cursor;
+        if ( $json->next_cursor != 0 )       $vars['next']   = $json->next_cursor;
+        if ( $json->previous_cursor != 0 )   $vars['prev']   = $json->previous_cursor;
 
         $Tpl->add('pager', $vars);
         $Tpl->add(null);

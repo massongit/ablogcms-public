@@ -20,7 +20,7 @@ class ACMS_GET_Api_Twitter_Statuses_UserTimeline extends ACMS_GET_Api_Twitter_St
         $this->limit  = !!LIMIT ? LIMIT : config('twitter_statuses_usertl_limit');
         $this->ignore = config('twitter_statuses_usertl_private');
         $this->id     = $this->bid;
-        $this->api    = 'statuses/user_timeline.xml';
+        $this->api    = 'statuses/user_timeline.json';
         $this->params = array_clean(array(
             'screen_name' => $this->Field->get('screen_name'),
             'user_id'   => ($user_id  = $this->Field->get('user_id'))  ? intval($user_id)  : null,

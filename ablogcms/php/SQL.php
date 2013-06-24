@@ -981,6 +981,86 @@ class SQL_Insert extends SQL
 }
 
 /**
+ * SQL_Replace
+ *
+ * SQLヘルパのReplaceメソッド群です。<br>
+ * メソッドの外で，条件対象のテーブルが選択されている必要があります
+ *
+ * @package php
+ */
+class SQL_Replace extends SQL
+{
+    var $_replace    = null;
+    var $_table     = null;
+    /**
+     * 指定されたfieldにREPLACE句を生成する。<br>
+     * $SQL->addRepace('entry_code', 'abc');<br>
+     * REPLACE INTO acms_entry (entry_code) VALUES ('abc')
+     *
+     * @param string $fd
+     * @param string|int $val
+     * @return bool
+     */
+    function addReplace($fd, $val)
+    {
+        if ( !is_string($fd) ) return false;
+        $this->_replace[$fd] = $val;
+        return true;
+    }
+    function setReplace($fd=null, $val=null)
+    {
+        if ( SQL::isClass($fd, 'SQL_Select') ) {
+            $this->_replacce = $fd;
+        } else if ( !is_string($fd) ) {
+            return false;
+        }
+
+        $this->_replace = array();
+        if ( !empty($fd) ) $this->addReplace($fd, $val);
+        return true;
+    }
+
+    function setTable($tb)
+    {
+        $this->_table   = $tb;
+    }
+
+    function get($dsn=null)
+    {
+        if ( empty($this->_table) ) return false;
+        if ( empty($this->_replace) ) return false;
+        $tbPfx  = !empty($dsn['prefix']) ? $dsn['prefix'] : '';
+
+        $q  = 'REPLACE INTO '.$tbPfx.$this->_table;
+        if ( SQL::isClass($this->_replace, 'SQL_Select') ) {
+            $q  .= ' '.$this->_replace->get($dsn);
+        } else if ( !is_array($this->_replace) ) {
+            return false;
+        } else {
+            $fds   = array();
+            $vals   = array();
+            foreach ( $this->_replace as $fd => $val ) {
+                $fds[] = $fd;
+                if ( is_null($val) ) {
+                    $val    = 'NULL';
+                } else if ( is_string($val) ) {
+                    $_val   = mb_convert_encoding($val, $dsn['charset'], 'UTF-8');
+                    $val    = ($val === mb_convert_encoding($_val, 'UTF-8', $dsn['charset'])) ?
+                        "'".mysql_real_escape_string($_val)."'" : '0x'.bin2hex($val)
+                    ;
+                }
+                $vals[] = $val;
+            }
+            $q  .= ' ('.join(', ', $fds).') '
+                ."\n".' VALUES ('.join(', ', $vals).')'
+            ;
+        }
+
+        return $q;
+    }
+}
+
+/**
  * SQL_Update
  *
  * SQLヘルパのUpdateメソッド群です。<br>
@@ -1424,6 +1504,20 @@ class SQL
     public static function newInsert($tb=null)
     {
         $Obj    = new SQL_Insert();
+        if ( !empty($tb) ) $Obj->setTable($tb);
+        return $Obj;
+    }
+
+    /**
+     * TABLEを指定してREPLACE句を生成する為のSQL_Replaceを返す 
+     *
+     * @static
+     * @param string|null $tb
+     * @return SQL_Replace
+     */
+    public static function newReplace($tb=null)
+    {
+        $Obj    = new SQL_Replace();
         if ( !empty($tb) ) $Obj->setTable($tb);
         return $Obj;
     }

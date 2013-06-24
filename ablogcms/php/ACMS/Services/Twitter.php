@@ -150,7 +150,7 @@ class ACMS_Services_Twitter extends ACMS_Services
  */
 class Services_Twitter extends OAuth_Consumer
 {
-    protected $api_host = 'https://api.twitter.com/1/';
+    protected $api_host = 'https://api.twitter.com/1.1/';
 
     /**
      * @param string $key
@@ -209,9 +209,9 @@ class Services_Twitter extends OAuth_Consumer
      *
      * @return array|bool
      */
-    public function getAcsToken()
+    public function getAcsToken($verifier=array())
     {
-        return parent::getAcsToken();
+        return parent::getAcsToken($verifier);
     }
 
     /**
