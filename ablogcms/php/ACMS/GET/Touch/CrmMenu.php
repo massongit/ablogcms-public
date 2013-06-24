@@ -23,7 +23,6 @@ var $crm_admin_path = array(
 'crm_crmmail_tmdetail',
 'crm_crmmail_trdetail',
 'crm_crmmail_garble',
-'crm_crmmail_bunch',
 'crm_ctag_index',
 'crm_ctag_edit',
 'crm_form_index',

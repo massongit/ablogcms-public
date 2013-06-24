@@ -648,19 +648,19 @@ class ACMS_Filter
                         break;
                     case 'lt':
                         $operator   = '<';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'lte':
                         $operator   = '<=';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'gt':
                         $operator   = '>';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'gte':
                         $operator   = '>=';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                        $value      = is_numeric($value) ? intval($value) : $value;
                         break;
                     case 'lk':
                         $operator   = 'LIKE';

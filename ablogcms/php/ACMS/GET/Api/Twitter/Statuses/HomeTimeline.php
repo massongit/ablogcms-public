@@ -20,7 +20,7 @@ class ACMS_GET_Api_Twitter_Statuses_HomeTimeline extends ACMS_GET_Api_Twitter_St
         $this->limit  = !!LIMIT ? LIMIT : config('twitter_statuses_hometl_limit');
         $this->ignore = config('twitter_statuses_hometl_private');
         $this->id     = $this->bid;
-        $this->api    = 'statuses/home_timeline.json';
+        $this->api    = 'statuses/home_timeline.xml';
         $this->params = array_clean(array(
             'since_id'  => ($since_id = $this->Field->get('since_id')) ? intval($since_id) : null,
             'max_id'    => ($max_id   = $this->Field->get('max_id'))   ? intval($max_id)   : null,

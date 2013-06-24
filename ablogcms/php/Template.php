@@ -19,15 +19,11 @@ class Template
     var $_blockTokenIdEnd   = array();
     var $_blockIdTxt    = array(0=>null);
 
-    var $_blockEmptyToken   = array();
-    var $_blockIdEmptyId    = array();
-
     var $_varIdLabel    = array();
     var $_varLabelId    = array();
     var $_varIdOption   = array();
     var $_varIdToken    = array();
     var $_varTokenId    = array();
-
 
     var $_Corrector     = null;
 
@@ -108,13 +104,12 @@ class Template
             if ( '<!-- BEGIN ' == $token ) {
                 $label  = array_shift($tokens);
                 array_shift($tokens);
-                if ( substr($label, -6) === ':empty' ) {
-                    $this->_blockEmptyToken[$i]   = $label;
-                }
+
                 $this->_blockIdTxt[$blockId]        = null;
                 $this->_blockIdLabel[$blockId]      = $label;
                 $this->_blockLabelId[$label][]      = $blockId;
                 $this->_blockIdTokenBegin[$blockId] = $i;
+
                 $blockId++;
                 continue;
             } else if ( '<!-- END ' == $token )  {
@@ -123,6 +118,7 @@ class Template
 
                 $ids    = $this->_blockLabelId[$label];
                 $this->_blockIdTokenEnd[end($ids)]  = ($i-1);
+
                 continue;
             } else if ( '<!--%' == $token ) {
                 $label  = array_shift($tokens);
@@ -148,15 +144,6 @@ class Template
         $this->_blockTokenIdEnd     = array_flip($this->_blockIdTokenEnd);
         $this->_varTokenId          = array_flip($this->_varIdToken);
 
-        foreach ( $this->_blockIdTokenEnd as $j => $_end ) {
-            $_begin = $this->_blockIdTokenBegin[$j];
-            foreach ( $this->_blockEmptyToken as $k => $v ) {
-                if ( $_begin < $k && $k < $_end ) {
-                    $this->_blockIdEmptyId[$k] = array($_begin, $_end);
-                    unset($this->_blockEmptyToken[$k]);
-                }
-            }
-        }
         return true;
     }
 
@@ -195,7 +182,6 @@ class Template
             if ( $this->_blockIdTokenEnd[$pt] < $this->_blockIdTokenEnd[$id] ) return false;
             $pt = $id;
         }
-
         $begin  = $this->_blockIdTokenBegin[$pt];
         $end    = $this->_blockIdTokenEnd[$pt];
 
@@ -207,13 +193,12 @@ class Template
             foreach ( $ids as $id ) {
                 $token  = $this->_varIdToken[$id];
                 if ( $begin < $token and $token < $end ) {
-                    $val = $value;
                     if ( isset($this->_Corrector) ) {
-                        $val  = $this->_Corrector->correct($value
+                        $value  = $this->_Corrector->correct($value
                             , isset($this->_varIdOption[$id]) ? $this->_varIdOption[$id] : ''
                         , $key);
                     }
-                    $this->_tokens[$token]  = strval($val);
+                    $this->_tokens[$token]  = strval($value);
                 }
             }
         }
@@ -241,7 +226,6 @@ class Template
                         }
                         $txt    .= $token;
                     }
-
                     $this->_blockIdTxt[$pt] .= $txt;
                     $buf    = array();
 
@@ -252,18 +236,8 @@ class Template
                     array_shift($ids);
                     continue;
                 } else if ( isset($this->_blockTokenIdEnd[$i]) ) {
-                    $blockL = $this->_blockIdLabel[$id];
-                    if ( 1
-                        && substr($blockL, -6) === ':empty'
-                        && !isset($vars[substr($blockL, 0, -6)])
-                        && isset($this->_blockIdEmptyId[$i])
-                        && $this->_blockIdEmptyId[$i][0] === $begin
-                        && $this->_blockIdEmptyId[$i][1] === $end
-                    ) {
-                        $this->_blockIdTxt[$pt] .= $this->_tokens[$i];
-                    } else {
-                        for ( $j=$this->_blockIdTokenBegin[$id]; $j<$i; $j++ ) unset($buf[$j]);
-                    }
+                    for ( $j=$this->_blockIdTokenBegin[$id]; $j<$i; $j++ ) unset($buf[$j]);
+
                     array_shift($ids);
                     continue;
                 }
@@ -283,8 +257,10 @@ class Template
                     $buf    = array();
                 }
             }
+
             if ( isset($this->_blockTokenIdEnd[$i]) ) array_shift($ids);
         }
+
         // init tokens
         for ( $i=$begin; $i<=$end; $i++ ) {
             if ( isset($this->_varTokenId[$i]) ) {

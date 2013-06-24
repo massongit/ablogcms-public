@@ -14,55 +14,41 @@ class ACMS_GET_Banner extends ACMS_GET
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
 
         if ( !$aryStatus = configArray('banner_status') ) return '';
-        
-        $order = config('banner_order');
-        switch( $order ){
-            case 'random':
-                $keys = array_keys($aryStatus);
-                shuffle($keys);
-                foreach($keys as $key){
-                    $result[$key] = $aryStatus[$key];
-                }
-                $aryStatus = $result;
-                break;
-            case 'sort-desc':
-                krsort($aryStatus);
-                break;
-            case 'sort-asc':
-            default:
-                break;
-        }
-
-        $limit = config('banner_limit');
-		$int_display = 0;
-        if ( is_numeric($limit) && intval($limit) > 0 ) {
-            //$aryStatus = array_slice($aryStatus, 0, $limit, true);
-        }else if( is_array($aryStatus) ){
-			$limit = count( $aryStatus );
-		}else {
-			$limit = 0;
+		
+		$order = config('banner_order');
+		switch( $order ){
+			case 'random':
+				$keys = array_keys($aryStatus);
+				shuffle($keys);
+				foreach($keys as $key){
+					$result[$key] = $aryStatus[$key];
+				}
+				$aryStatus = $result;
+				break;
+			case 'sort-desc':
+				krsort($aryStatus);
+				break;
+			case 'sort-asc':
+			default:
+				break;
 		}
-        
+		
         foreach ( $aryStatus as $i => $status ) {
-
             if ( 'open' <> $status ) continue;
-            
-            $datestart = mb_convert_kana(config('banner_datestart', '', $i),"a",'UTF-8');
-            $timestart = mb_convert_kana(config('banner_timestart', '', $i),"a",'UTF-8');
-            $dateend = mb_convert_kana(config('banner_dateend', '', $i),"a",'UTF-8');
-            $timeend = mb_convert_kana(config('banner_timeend', '', $i),"a",'UTF-8');
-            
-            $datestart = ( strlen($datestart) > 0 )?$datestart:'0000-01-01';
-            $timestart = ( strlen($timestart) > 0 )?$timestart:'00:00:00';
-            $dateend = ( strlen($dateend) > 0 )?$dateend:'9999-12-31';
-            $timeend = ( strlen($timeend) > 0 )?$timeend:'23:59:59';
-            
-            if( ! ( ( ($datestart . ' ' . $timestart) <= date('Y-m-d H:i:s', REQUEST_TIME ) ) && ( date('Y-m-d H:i:s', REQUEST_TIME ) <= ($dateend . ' ' . $timeend) ) ) ) {
-                continue;
-            }
-            
-			$int_display++;
-			if( $int_display > $limit )break;
+			
+			$datestart = mb_convert_kana(config('banner_datestart', '', $i),"a",'UTF-8');
+			$timestart = mb_convert_kana(config('banner_timestart', '', $i),"a",'UTF-8');
+			$dateend = mb_convert_kana(config('banner_dateend', '', $i),"a",'UTF-8');
+			$timeend = mb_convert_kana(config('banner_timeend', '', $i),"a",'UTF-8');
+			
+			$datestart = ( strlen($datestart) > 0 )?$datestart:'0000-01-01';
+			$timestart = ( strlen($timestart) > 0 )?$timestart:'00:00:00';
+			$dateend = ( strlen($dateend) > 0 )?$dateend:'9999-12-31';
+			$timeend = ( strlen($timeend) > 0 )?$timeend:'23:59:59';
+			
+			if( ! ( ( ($datestart . ' ' . $timestart) <= date('Y-m-d H:i:s', REQUEST_TIME ) ) && ( date('Y-m-d H:i:s', REQUEST_TIME ) <= ($dateend . ' ' . $timeend) ) ) ) {
+				continue;
+			}
 			
             if ( $img = config('banner_img', '', $i) ) {
                 $xy = getimagesize(ARCHIVES_DIR.$img);

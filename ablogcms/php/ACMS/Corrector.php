@@ -12,7 +12,6 @@ require_once LIB_DIR.'Markdown.php';
 class ACMS_Corrector
 {
     var $userCorrect;
-    var $const = array();
 
     function ACMS_Corrector()
     {
@@ -239,27 +238,12 @@ class ACMS_Corrector
         return $html;
     }
 
-    function definition_list($txt, $args=array())
-    {
-        if ( $lis = preg_split('@( |　|\t)*\r?\n@', $txt, -1, PREG_SPLIT_NO_EMPTY) ) {
-            $txt = "\n";
-            foreach ( $lis as $dval ) {
-                if ( false !== strpos($dval, '#')  ) {
-                    $txt .= "<dt>".preg_replace('@^#( |　|\t)*@', '', $dval)."</dt>\n";
-                } else {
-                    $txt .= "<dd>".$dval."</dd>\n";
-                }
-            }
-        }
-        return $txt;
-    }
-
-
     function acms_corrector_list($txt)
     {
         if ( $lis = preg_split('@( |　|\t)*\r?\n@', $txt, -1, PREG_SPLIT_NO_EMPTY) ) {
             $txt    = "\n<li>".join("</li>\n<li>", $lis)."</li>\n";
         }
+
         return $txt;
     }
 
@@ -338,8 +322,7 @@ class ACMS_Corrector
 
     function wareki($txt, $args=array())
     {
-        $dt  = strtotime($this->fixChars($txt));
-        if ( !$dt ) return $txt;
+        $dt  = false !== ($dt = strtotime($this->fixChars($txt))) ? $dt : $txt;
         $ymd = date('Ymd', $dt);
         $y   = substr($ymd, 0, 4);
 
@@ -467,13 +450,36 @@ class ACMS_Corrector
         return isset($dict[$txt]) ? $dict[$txt] : $txt;
     }
 
-    function del_pictogram($txt)
+    function human_time($txt)
     {
-        if ( !!($path = config('const_file_path')) && empty($this->const) ) {
-            include SCRIPT_DIR.$path;
-            $this->const = $const;
+        $dt = strtotime($this->fixChars($txt));
+        if ( $dt === false ) {
+            return $txt;
         }
-        return str_replace(array_keys($this->const), '', $txt);
+
+        $diff       = time() - $dt;
+        $day        = 60 * 60 * 24;
+
+        if ( $diff > $day * 31 * 365 ) {
+            $d = floor($diff / $day / 31 / 365);
+            return '約'.$d.'前';
+        } else if ( $diff > $day * 31 ) {
+            $d = floor($diff / $day / 31);
+            return '約'.$d.'ヶ月前';
+        } else if ( $diff > $day ) {
+            $d = floor($diff / $day);
+            return '約'.$d.'日前';
+        } else if ( $diff > 60 * 60 ) {
+            $d = floor($diff / 60 / 60);
+            return '約'.$d.'時間前';
+        } else if ( $diff > 60 ) {
+            $d = floor($diff / 60);
+            return '約'.$d.'分前';
+        } else {
+            return 'たった今';
+        }
+
+        return $txt;
     }
 }
 
