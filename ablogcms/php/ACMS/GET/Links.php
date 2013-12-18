@@ -20,6 +20,6 @@ class ACMS_GET_Links extends ACMS_GET
                 'name' => $labels[$i],
             ));
         }
-        return $Tpl->get();
+        return setGlobalVars($Tpl->get());
     }
 }

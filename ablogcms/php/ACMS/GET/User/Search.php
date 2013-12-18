@@ -111,6 +111,7 @@ class ACMS_GET_User_Search extends ACMS_GET
                 if ( strpos($key, 'user_') !== 0 ) continue;
                 $vars[substr($key, strlen('user_'))]    = $value;
             }
+            $vars['icon']   = loadUserIcon(intval($row['user_id']));
 
             $Tpl->add('user:loop', $vars);
         }

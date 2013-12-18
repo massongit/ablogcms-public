@@ -51,7 +51,7 @@ class ACMS_GET
     var $mid  = null;
     var $mbid = null;
 
-    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid = null, $mbid = null, $identify = null)
+    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid = null, $mbid = null, $identify = null, $aryMultiAcms = null)
     {
         $this->tpl  = $tpl;
         $this->Post = new Field_Validation($Post, true);
@@ -91,10 +91,16 @@ class ACMS_GET
         if ( !$this->Q->isNull('uid') ) {
             $this->uid  = intval($this->Q->get('uid'));
         }
-        
+        if ( is_array($aryMultiAcms) ) {
+            foreach ( $aryMultiAcms as $k => $v ) {
+                $isGlobal_ = ('global' == (!empty($scope[$k]) ? $scope[$k] : (!empty($this->_scope[$k]) ? $this->_scope[$k] : 'local')));
+                if ( !$isGlobal_ or !$this->Q->get($k) ) $this->{$k} = $v;
+            }
+        }
+
         $keyword    = $this->Q->get('keyword');
         $qkeyword   = $this->Get->get(KEYWORD_SEGMENT);
-        if ( !empty($qkeyword) &&  config('query_keyword') == 'on' ) $keyword = $qkeyword;
+        if ( !empty($qkeyword) && config('query_keyword') == 'on' ) $keyword = $qkeyword;
 
         $this->keyword  = $keyword;
         $this->start    = $this->Q->get('start');
@@ -459,7 +465,6 @@ class ACMS_GET
             'itemsFrom'      => $from + 1,
             'itemsTo'        => $to,
         );
-
         $lastPage   = ceil($amount/$limit);
         $fromPage   = 1 > ($page - $delta) ? 1 : ($page - $delta);
         $toPage     = $lastPage < ($page + $delta) ? $lastPage : ($page + $delta);
@@ -490,6 +495,15 @@ class ACMS_GET
                     'page'      => $lastPage,
                 )),
                 'lastPage'  => $lastPage,
+            );
+        }
+
+        if ( 1 < $fromPage ) {
+            $vars   += array(
+                'firstPageUrl'   => acmsLink($Q + array(
+                    'page'      => 1,
+                )),
+                'firstPage'  => 1,
             );
         }
 
@@ -545,8 +559,6 @@ class ACMS_GET
         // image
         if ( !empty($pimageId) ) {
             $SQL    = SQL::newSelect('column');
-            $SQL->addSelect('column_field_2');
-            $SQL->addSelect('column_align');
             $SQL->addWhereOpr('column_id', $pimageId);
             $pimage = $DB->query($SQL->get(dsn()), 'row');
             $filename   = $pimage['column_field_2'];
@@ -578,25 +590,25 @@ class ACMS_GET
                 if ( $x > $config['imageX'] and $y > $config['imageY'] ) {
                     if ( ($x / $config['imageX']) < ($y / $config['imageY']) ) {
                         $imgX   = $config['imageX'];
-                        $imgY   = round($y / ($x / $config['imageX']));
+                        $imgY   = @round($y / ($x / $config['imageX']));
                     } else {
                         $imgY   = $config['imageY'];
-                        $imgX   = round($x / ($y / $config['imageY']));
+                        $imgX   = @round($x / ($y / $config['imageY']));
                     }
                 } else {
                     if ( $x < $config['imageX'] ) {
                         $imgX   = $config['imageX'];
-                        $imgY   = round($y * ($config['imageX'] / $x));
+                        $imgY   = @round($y * ($config['imageX'] / $x));
                     } else if ( $y < $config['imageY'] ) {
                         $imgY   = $config['imageY'];
-                        $imgX   = round($x * ($config['imageY'] / $y));
+                        $imgX   = @round($x * ($config['imageY'] / $y));
                     } else {
                         if ( ($config['imageX'] - $x) > ($config['imageY'] - $y) ) {
                             $imgX   = $config['imageX'];
-                            $imgY   = round($y * ($config['imageX'] / $x));
+                            $imgY   = @round($y * ($config['imageX'] / $x));
                         } else {
                             $imgY   = $config['imageY'];
-                            $imgX   = round($x * ($config['imageY'] / $y));
+                            $imgX   = @round($x * ($config['imageY'] / $y));
                         }
                     }
                 }
@@ -606,10 +618,10 @@ class ACMS_GET
                     if ( $y > $config['imageY'] ) {
                         if ( ($x - $config['imageX']) < ($y - $config['imageY']) ) {
                             $imgY   = $config['imageY'];
-                            $imgX   = round($x / ($y / $config['imageY']));
+                            $imgX   = @round($x / ($y / $config['imageY']));
                         } else {
                             $imgX   = $config['imageX'];
-                            $imgY   = round($y / ($x / $config['imageX']));
+                            $imgY   = @round($y / ($x / $config['imageX']));
                         }
                     } else {
                         $imgX   = $config['imageX'];
@@ -657,6 +669,7 @@ class ACMS_GET
                 'imgY'  => $imgY,
                 'left'  => $left,
                 'top'   => $top,
+                'alt'   => $pimage['column_field_4'],
             );
 
             //------
@@ -689,8 +702,43 @@ class ACMS_GET
             'x' => $config['imageX'],
             'y' => $config['imageY'],
         );
+
+
         
         return $vars;
+    }
+
+    function buildTag(& $Tpl, $eid)
+    {
+        $DB     = DB::singleton(dsn());
+        $SQL    = SQL::newSelect('tag');
+        $SQL->addSelect('tag_name');
+        $SQL->addSelect('tag_blog_id');
+        $SQL->addWhereOpr('tag_entry_id', $eid);
+        $SQL->addOrder('tag_sort');
+
+        $q  = $SQL->get(dsn());
+
+        do {
+            if ( !$DB->query($q, 'fetch') ) break;
+            if ( !$row = $DB->fetch($q) ) break;
+            $stack  = array();
+            array_push($stack, $row);
+            array_push($stack, $DB->fetch($q));
+            while ( $row = array_shift($stack) ) {
+                if ( !empty($stack[0]) ) $Tpl->add(array('glue', 'tag:loop'));
+                $Tpl->add('tag:loop', array(
+                    'name'  => $row['tag_name'],
+                    'url'   => acmsLink(array(
+                        'bid'   => $row['tag_blog_id'],
+                        'tag'   => $row['tag_name'],
+                    )),
+                ));
+                array_push($stack,$DB->fetch($q));
+            }
+        } while ( false );
+
+        return true;
     }
 
     function buildSummary(&$Tpl, $row, $count, $gluePoint, $config, $extraVars = array())
@@ -715,11 +763,17 @@ class ACMS_GET
                 'bid'   => $bid,
                 'cid'   => $cid,
                 'eid'   => $eid,
+            ), false);
+            $url        = acmsLink(array(
+                'bid'   => $bid,
+                'cid'   => $cid,
+                'eid'   => $eid,
             ));
             $title  = addPrefixEntryTitle($row['entry_title']
                 , $status
                 , $row['entry_start_datetime']
                 , $row['entry_end_datetime']
+                , $row['entry_approval']
             );
             
             if ( $count % 2 == 0 ) {
@@ -746,7 +800,7 @@ class ACMS_GET
             
             if ( $link != '#' ) {
                 $vars += array(
-                    'url' => !empty($link) ? $link : $permalink,
+                    'url' => !empty($link) ? $link : $url,
                 );
                 $Tpl->add('url#rear');
             }
@@ -803,7 +857,7 @@ class ACMS_GET
             //----------
             // fulltext
             if(!isset($config['fullTextOn']) or $config['fullTextOn'] === 'on'){
-                $vars['summary']    = loadFulltext($eid);
+                $this->buildSummaryFulltext($vars, $eid);
             }
 
             //------
@@ -865,6 +919,12 @@ class ACMS_GET
                 $Field->setField('fieldCategoryId', $cid);
                 $Tpl->add('categoryField', $this->buildField($Field, $Tpl));
             }
+
+            //-----
+            // tag
+            if ( isset($config['tagOn']) && $config['tagOn'] === 'on' ) {
+                $this->buildTag($Tpl, $eid);
+            }
             
             //------
             // glue
@@ -880,6 +940,44 @@ class ACMS_GET
                 if ( !($count % $config['unit']) ) {
                     $Tpl->add('unit:loop');
                 }
+            }
+        }
+    }
+
+    function buildSummaryFulltext(& $vars, $eid)
+    {
+        $DB     = DB::singleton(dsn());
+        $SQL    = SQL::newSelect('column');
+        $SQL->addWhereOpr('column_entry_id', $eid);
+        $q      = $SQL->get(dsn());
+
+        $textData  = array();
+        if ( $DB->query($q, 'fetch') and ($row = $DB->fetch($q)) ) { do {
+            if ( $row['column_align'] === 'hidden' ) continue;
+            $type   = $row['column_type'];
+            if ( 'text' == $type ) {
+                $_text  = $row['column_field_1'];
+                if ( 'markdown' == $row['column_field_2'] ) {
+                    require_once LIB_DIR.'Markdown.php';
+                    $_text  = Markdown($_text);
+                }
+                $text   = preg_replace('@\s+@', ' ', strip_tags($_text));
+                $data   = explode(':acms_unit_text_delimiter:', $text);
+                foreach ( $data as $i => $txt ) {
+                    if ( isset($textData[$i]) ) {
+                        $textData[$i] .= $txt.' ';
+                    } else {
+                        $textData[] = $txt.' ';
+                    }
+                }
+            }
+        } while ( $row = $DB->fetch($q) ); }
+        if ( is_array($textData) ) {
+            foreach ( $textData as $u => $val ) {
+                $val =  str_replace(':acms-unit-text-delimiter:', ':acms_unit_text_delimiter:', $val);
+                if ($u == 0) $u = '';
+                else $u++;
+                $vars['summary'.$u] = trim($val);
             }
         }
     }

@@ -11,12 +11,17 @@ class ACMS_GET_Entry extends ACMS_GET
 {
     function buildColumn(& $Column, & $Tpl, $eid, $preAlign = null, $renderGroup = true)
     {
+        $entry          = ACMS_RAM::entry($eid);
+
         $columnAmount   = count($Column) - 1;
         $currentGroup   = null;
         $squareImgSize  = config('image_size_square');
         $showInvisible  = (sessionWithContribution()
                           and 'on' == config('entry_edit_inplace_enable')
-                          and 'on' == config('entry_edit_inplace'));
+                          and 'on' == config('entry_edit_inplace')
+                          and ( !enableApproval() || sessionWithApprovalAdministrator() )
+                          and $entry['entry_approval'] !== 'pre_approval'
+        );
         $unitGroupEnable= (config('unit_group') === 'on');
 
         foreach ( $Column as $i => $data ) {
@@ -34,7 +39,6 @@ class ACMS_GET_Entry extends ACMS_GET
             if ( !$showInvisible && 'hidden' === $align ) {
                 continue;
             }
-
             //-------
             // group
             if ( 1
@@ -46,7 +50,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 // close rear
                 if ( !!$currentGroup ) {
-                    $Tpl->add(array('unitGroup#rear', 'column:loop'));
+                    $Tpl->add(array('unitGroup#rear', 'unit:loop'));
                 }
 
                 // open front
@@ -59,8 +63,12 @@ class ACMS_GET_Entry extends ACMS_GET
                     $grVars['i'] = $count;
                 }
 
-                $Tpl->add(array('unitGroup#front', 'column:loop'), $grVars);
-                $currentGroup = $class;
+                if ( $class === config('unit_group_clear', 'acms-column-clear') ) {
+                    $currentGroup = null;
+                } else {
+                    $Tpl->add(array('unitGroup#front', 'unit:loop'), $grVars);
+                    $currentGroup = $class;
+                }
             }
 
             //-------
@@ -75,7 +83,7 @@ class ACMS_GET_Entry extends ACMS_GET
                         if ( 'right' == $preAlign ) break;
                         if ( 'auto' == $preAlign and 'text' == $type ) break;
                     }
-                    $Tpl->add(array('clear', 'column:loop'));
+                    $Tpl->add(array('clear', 'unit:loop'));
                 } while ( false );
 
                 if ( 'auto' == $align and 'text' <> $type ) {
@@ -89,8 +97,18 @@ class ACMS_GET_Entry extends ACMS_GET
             if ( 'text' == $type ) {
                 if ( empty($data['text']) ) continue;
                 $vars   = array(
-                    'text'  => $data['text'],
+                    'text'          => $data['text'],
+                    'extend_tag'    => $data['extend_tag'],
                 );
+                $textData = explode(':acms_unit_text_delimiter:', $data['text']);
+                if ( is_array($textData) ) {
+                    foreach ( $textData as $u => $text ) {
+                        $text =  str_replace(':acms-unit-text-delimiter:', ':acms_unit_text_delimiter:', $text);
+                        if ($u == 0) $u = '';
+                        else $u++;
+                        $vars['text'.$u] = $text;
+                    }
+                }
                 if ( !empty($data['attr']) ) {
                     $vars['attr']   = $data['attr'];
                     $vars['class']  = $data['attr']; // legacy
@@ -98,8 +116,9 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add(array($data['tag'], 'column#'.$actualType), $vars);
-                $Tpl->add('column#'.$actualType, array(
+                $vars['extend_tag'] = $data['extend_tag'];
+                $Tpl->add(array($data['tag'], 'unit#'.$actualType), $vars);
+                $Tpl->add('unit#'.$actualType, array(
                     'align' => $data['align'],
                 ));
 
@@ -115,25 +134,29 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['x']      = $xy[0];
                 $vars['y']      = $xy[1];
                 $vars['alt']    = $data['alt'];
+                if ( !empty($data['display_size']) ) {
+                    $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
+                }
+
                 if ( !empty($data['caption']) ) $vars['caption'] = $data['caption'];
 
                 $vars['align']  = $data['align'];
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
                 if ( !empty($data['link']) ) {
-                    $Tpl->add(array('link#front', 'column#'.$actualType), array(
+                    $Tpl->add(array('link#front', 'unit#'.$actualType), array(
                         'url'   => $data['link'],
                     ));
-                    $Tpl->add(array('link#rear', 'column#'.$actualType));
+                    $Tpl->add(array('link#rear', 'unit#'.$actualType));
                 } else {
                     $name   = basename($path);
                     $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
                     if ( $xy = @getimagesize($large) ) {
-                        $Tpl->add(array('link#front', 'column#'.$actualType), array(
+                        $Tpl->add(array('link#front', 'unit#'.$actualType), array(
                             'url'   => BASE_URL.$large,
                             'viewer'=> str_replace('{unit_eid}', $eid, config('entry_body_image_viewer')),
                         ));
-                        $Tpl->add(array('link#rear', 'column#'.$actualType));
+                        $Tpl->add(array('link#rear', 'unit#'.$actualType));
                     }
                 }
 
@@ -153,7 +176,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#'.$actualType, $vars);
+                $Tpl->add('unit#'.$actualType, $vars);
 
             //------
             // file
@@ -175,7 +198,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#'.$actualType, $vars);
+                $Tpl->add('unit#'.$actualType, $vars);
 
             //-----
             // map
@@ -197,10 +220,13 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y'     => $y,
                     'align' => $data['align'],
                 );
+                if ( !empty($data['display_size']) ) {
+                    $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
+                }
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#'.$actualType, $vars);
+                $Tpl->add('unit#'.$actualType, $vars);
 
             //------
             // yolp
@@ -233,10 +259,13 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y'     => $y,
                     'align' => $data['align'],
                 );
+                if ( !empty($data['display_size']) ) {
+                    $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
+                }
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#'.$actualType, $vars);
+                $Tpl->add('unit#'.$actualType, $vars);
 
             //---------
             // youtube
@@ -249,10 +278,13 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y' => $y,
                     'align' => $data['align'],
                 );
+                if ( !empty($data['display_size']) ) {
+                    $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
+                }
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
-                $Tpl->add('column#'.$actualType, $vars);
+                $Tpl->add('unit#'.$actualType, $vars);
 
             //---------
             // eximage
@@ -265,8 +297,8 @@ class ACMS_GET_Entry extends ACMS_GET
                         'url'   => $url,
                     );
                     if ( empty($data['link']) ) $vars['viewer'] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
-                    $Tpl->add(array('link#front', 'column#'.$actualType), $vars);
-                    $Tpl->add(array('link#rear', 'column#'.$actualType));
+                    $Tpl->add(array('link#front', 'unit#'.$actualType), $vars);
+                    $Tpl->add(array('link#rear', 'unit#'.$actualType));
                 }
 
                 $vars   = array(
@@ -276,6 +308,9 @@ class ACMS_GET_Entry extends ACMS_GET
                     'alt'       => $data['alt'],
                     'large'     => $data['large'],
                 );
+                if ( !empty($data['display_size']) ) {
+                    $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
+                }
                 if ( !empty($data['caption']) ) $vars['caption'] = $data['caption'];
 
                 $vars['align']      = $data['align'];
@@ -283,7 +318,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
-                $Tpl->add(array('column#'.$actualType), $vars);
+                $Tpl->add(array('unit#'.$actualType), $vars);
             
             //-------
             // break
@@ -303,7 +338,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 $vars['align']      = $data['align'];
 
-                $Tpl->add(array('column#'.$actualType), $vars);
+                $Tpl->add(array('unit#'.$actualType), $vars);
 
             } else {
                 continue;
@@ -315,6 +350,8 @@ class ACMS_GET_Entry extends ACMS_GET
                 and VIEW == 'entry'
                 and 'on' == config('entry_edit_inplace_enable')
                 and 'on' == config('entry_edit_inplace')
+                and ( !enableApproval() || sessionWithApprovalAdministrator() )
+                and $entry['entry_approval'] !== 'pre_approval'
                 and !ADMIN
                 and ( 0
                     or sessionWithCompilation()
@@ -325,11 +362,11 @@ class ACMS_GET_Entry extends ACMS_GET
                 )
             ) {
                 $vars  = array();
-                $vars['column:loop.type']     = $actualType;
-                $vars['column:loop.utid']     = $utid;
-                $vars['column:loop.unit_eid'] = $eid;
-                $vars['column:loop.sort']     = $sort;
-                $vars['column:loop.align']    = $align;
+                $vars['unit:loop.type']     = $actualType;
+                $vars['unit:loop.utid']     = $utid;
+                $vars['unit:loop.unit_eid'] = $eid;
+                $vars['unit:loop.sort']     = $sort;
+                $vars['unit:loop.align']    = $align;
                 $Tpl->add('inplace#front', $vars);
                 $Tpl->add('inplace#rear');
             }
@@ -337,12 +374,18 @@ class ACMS_GET_Entry extends ACMS_GET
             //-------------
             // close group
             if ( $i === $columnAmount && $currentGroup !== null ) {
-                $Tpl->add(array('unitGroup#last', 'column:loop'));
+                $Tpl->add(array('unitGroup#last', 'unit:loop'));
             }
 
-            $Tpl->add('column:loop');
+            $Tpl->add('unit:loop');
         }
 
+        // ユニットグループでかつ最後の要素が非表示だった場合
+        $lastUnit = array_pop($Column);
+        if ( !$showInvisible && $lastUnit['align'] == 'hidden' && $currentGroup !== null ) {
+            $Tpl->add(array('unitGroup#last', 'unit:loop'));
+            $Tpl->add('unit:loop');
+        }
         return true;
     }
 }

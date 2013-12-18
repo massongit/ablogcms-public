@@ -79,6 +79,7 @@ class ACMS_GET_Entry_ArchiveList extends ACMS_GET_Entry
         if ( !empty($this->Field) ) {
             ACMS_Filter::entryField($SQL, $this->Field);
         }
+        $SQL->addWhereOpr('entry_indexing', 'on');
         
         $SQL->setLimit($this->limit);
         

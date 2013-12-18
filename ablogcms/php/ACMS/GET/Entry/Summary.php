@@ -47,6 +47,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             'mainImageOn'           => config('entry_summary_image_on'),
             'detailDateOn'          => config('entry_summary_date'),
             'fullTextOn'            => config('entry_summary_fulltext'),
+            'tagOn'                 => config('entry_summary_tag'),
             'hiddenCurrentEntry'    => config('entry_summary_hidden_current_entry'),
         );
     }
@@ -66,17 +67,35 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
 
-        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+        if ( !empty($this->bid) ) {
+            if ( is_int($this->bid) ) {
+                ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+            } else if ( strpos($this->bid, ',') !== false ) {
+                $SQL->addWhereIn('blog_id', explode(',', $this->bid));
+            }
+        }
+
         if ( 'on' === $config['secret'] ) {
             ACMS_Filter::blogDisclosureSecretStatus($SQL);
         } else {
             ACMS_Filter::blogStatus($SQL);
         }
-        ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
+
+        if ( !empty($this->cid) ) {
+            if ( is_int($this->cid) ) {
+                ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
+            } else if ( strpos($this->cid, ',') !== false ) {
+                $SQL->addWhereIn('category_id', explode(',', $this->cid));
+            }
+        }
         ACMS_Filter::categoryStatus($SQL);
 
-        if ( $uid = intval($this->uid) ) {
-            $SQL->addWhereOpr('entry_user_id', $uid);
+        if ( !empty($this->uid) ) {
+            if ( is_int($this->uid) ) {
+                $SQL->addWhereOpr('entry_user_id', $uid);
+            } else if ( strpos($this->uid, ',') !== false ) {
+                $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
+            }
         }
 
         if ( empty($this->cid) and null !== $this->cid ) {
@@ -84,7 +103,11 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         }
 
         if ( !empty($this->eid) ) {
-            $SQL->addWhereOpr('entry_id', $this->eid);
+            if ( is_int($this->eid) ) {
+                $SQL->addWhereOpr('entry_id', $this->eid);
+            } else if ( strpos($this->eid, ',') !== false ) {
+                $SQL->addWhereIn('entry_id', explode(',', $this->eid));
+            }
         }
         ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
@@ -143,7 +166,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         $q  = $SQL->get(dsn());
 
         //------------------
-        //build summary tpl
+        // build summary tpl
         $remainingEntries = $itemsAmount - $from;
         $gluePoint = ($remainingEntries > $limit) ? $limit : $remainingEntries;
 

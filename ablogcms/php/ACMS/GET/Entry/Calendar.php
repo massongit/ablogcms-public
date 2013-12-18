@@ -162,6 +162,9 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                 default :
                     break;
             }
+            if ( $row['entry_approval'] == 'pre_approval' ) {
+                $title = '【承認前】'.$title;
+            }
             $entry_list[] = array(
                 'eid'       => $row['entry_id'],
                 'cid'       => $row['entry_category_id'],

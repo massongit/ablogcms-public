@@ -116,6 +116,10 @@ class ACMS_GET_Ios_Summary extends ACMS_GET_Entry
                     $row['entry_title']     = '【非公開】'.$row['entry_title'];
                     break;
             }
+
+            if ( $row['entry_approval'] == 'pre_approval' ) {
+                $row['entry_title']     = '【承認前】'.$row['entry_title'];
+            }
             
             foreach ( $row as $key  => $value ) {
                 if ( is_null($value) ) {

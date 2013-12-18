@@ -95,4 +95,65 @@ class ACMS_User_Hook
     {
         // $globalVars->set('key', 'var');
     }
+
+    /**
+     * キャッシュのリフレッシュ時
+     *
+     */
+    public function cacheRefresh()
+    {
+
+    }
+
+    /**
+     * キャッシュのクリア時
+     *
+     */
+    public function cacheClear()
+    {
+
+    }
+
+    /**
+     * キャッシュの削除時
+     *
+     */
+    public function cacheDelete()
+    {
+
+    }
+
+    /**
+     * メディアデータ作成
+     * @param string $path 作成先パス
+     *
+     */
+    public function mediaCreate($path)
+    {
+        // include_once 'HTTP/Request.php';
+
+        // $url = "http://localhost/media/create.php";
+        // $req =& new HTTP_Request($url);
+        // $req->setMethod(HTTP_REQUEST_METHOD_POST);
+        // $req->addHeader("Content-Type", "multi-part/form-data");
+        // $req->addFile("mediaFile", $path);
+        // $req->addPostData("mediaPath", $path);
+        // // $req->setBasicAuth("user", "pass");
+        // $req->sendRequest();
+    }
+
+    /**
+     * メディアデータ削除
+     * @param string $path 削除パス
+     *
+     */
+    public function mediaDelete($path)
+    {
+        // $url = "http://localhost/media/delete.php";
+        // $req =& new HTTP_Request($url);
+        // $req->setMethod(HTTP_REQUEST_METHOD_POST);
+        // $req->addPostData("mediaPath", $path);
+        // // $req->setBasicAuth("user", "pass");
+        // $req->sendRequest();
+    }
 }

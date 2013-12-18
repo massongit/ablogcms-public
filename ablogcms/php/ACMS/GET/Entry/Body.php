@@ -159,10 +159,17 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
     function buildTag(& $Tpl, $eid)
     {
         $DB     = DB::singleton(dsn());
-        $SQL    = SQL::newSelect('tag');
+        if ( RVID ) {
+            $SQL    = SQL::newSelect('tag_rev');
+        } else {
+            $SQL    = SQL::newSelect('tag');
+        }
         $SQL->addSelect('tag_name');
         $SQL->addSelect('tag_blog_id');
         $SQL->addWhereOpr('tag_entry_id', $eid);
+        if ( RVID ) {
+            $SQL->addWhereOpr('tag_rev_id', RVID);
+        }
         $SQL->addOrder('tag_sort');
 
         $q  = $SQL->get(dsn());
@@ -197,7 +204,10 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             if ( 'entry-add' == substr(ADMIN, 0, 9) ) {
                 $Tpl->add(array_merge(array('adminEntryEdit'), $block));
             }
-        } else if ( sessionWithCompilation() or (sessionWithContribution() and $uid == SUID) ) {
+        } else if ( 0
+            || ( !roleAvailableUser() && ( sessionWithCompilation() || (sessionWithContribution() && $uid == SUID) ) )
+            || ( roleAvailableUser() && ( roleAuthorization('entry_edit_all', BID) || (roleAuthorization('entry_edit', BID) && $uid == SUID) ) )
+        ) { 
             $val    = array(
                 'bid'   => $bid,
                 'cid'   => $cid,
@@ -207,34 +217,41 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 'status.url'     => acmsLink(array('bid'=>$bid, 'cid'=>$cid, 'eid'=>$eid, 'sid'=>null, '_protocol'=>'http')),
             );
 
-            if ( IS_LICENSED ) {
-                $Tpl->add(array_merge(array('edit'), $block), $val);
-                if ( BID == $bid ) {
-                    $types  = configArray('column_add_type');
-                    if ( is_array($types) ) {
-                        $cnt    = count($types);
-                        $labels = configArray('column_add_type_label');
-                        for ( $i=0; $i<$cnt; $i++ ) {
-                            if ( !$type = $types[$i] ) continue;
-                            if ( !$label = $labels[$i] ) continue;
-                            $Tpl->add(array_merge(array('add:loop'), $block), $val    + array(
-                                'label' => $label,
-                                'type'  => $type,
-                            ));
+            $entry  = ACMS_RAM::entry($eid);
+            if ( !(sessionWithApprovalAdministrator() && $entry['entry_approval'] === 'pre_approval') ) {
+                if ( IS_LICENSED ) {
+                    $Tpl->add(array_merge(array('edit'), $block), $val);
+                    $Tpl->add(array_merge(array('revision'), $block), $val);
+                    if ( BID == $bid ) {
+                        $types  = configArray('column_add_type');
+                        if ( is_array($types) ) {
+                            $cnt    = count($types);
+                            $labels = configArray('column_add_type_label');
+                            for ( $i=0; $i<$cnt; $i++ ) {
+                                if ( !$type = $types[$i] ) continue;
+                                if ( !$label = $labels[$i] ) continue;
+                                $Tpl->add(array_merge(array('add:loop'), $block), $val    + array(
+                                    'label' => $label,
+                                    'type'  => $type,
+                                ));
+                            }
                         }
+                        $statusBlock    = ( 'open' == ACMS_RAM::entryStatus($eid) ) ? 'close' : 'open';
+                        $Tpl->add(array_merge(array($statusBlock), $block), $val);
                     }
-                    $statusBlock    = ( 'open' == ACMS_RAM::entryStatus($eid) ) ? 'close' : 'open';
-                    $Tpl->add(array_merge(array($statusBlock), $block), $val);
                 }
-            }
-            $Tpl->add(array_merge(array('delete'), $block), $val);
+                $Tpl->add(array_merge(array('delete'), $block), $val);
 
-            if ( 1
-                and 'on' == config('entry_edit_inplace_enable')
-                and 'on' == config('entry_edit_inplace')
-                and VIEW == 'entry'
-            ) {
-                $Tpl->add(array_merge(array('adminDetailEdit'), $block), $val);
+                if ( 1
+                    and 'on' == config('entry_edit_inplace_enable')
+                    and 'on' == config('entry_edit_inplace')
+                    and ( !enableApproval() || sessionWithApprovalAdministrator() )
+                    and VIEW == 'entry'
+                ) {
+                    $Tpl->add(array_merge(array('adminDetailEdit'), $block), $val);
+                }
+            } else {
+                $Tpl->add(array_merge(array('revision'), $block), $val);
             }
         }
         return true;
@@ -286,7 +303,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         //----------------
         // build summary
         if ( $this->summary_on === 'on' ) {
-            $vars['summary'] = loadFulltext($eid);
+            $this->buildSummaryFulltext($vars, $eid);
         }
 
         //-------
@@ -296,7 +313,11 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         //-------------------
         // build entry field
         if ( $this->entry_field_on === 'on' ) {
-            $vars += $this->buildField(loadEntryField($eid), $Tpl, 'entry:loop', 'entry');
+            $RVID_      = RVID;
+            if ( !RVID && $row['entry_approval'] === 'pre_approval' ) {
+                $RVID_  = 1;
+            }
+            $vars += $this->buildField(loadEntryField($eid, $RVID_, true), $Tpl, 'entry:loop', 'entry');
         }
         
         //-------------------
@@ -337,7 +358,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Field->setField('fieldBlogUrl', acmsLink(array('bid' => $bid)));
             $Tpl->add('blogField', $this->buildField($Field, $Tpl));
         }
-
         $link   = ( config('entry_body_link_url') === 'on' ) ? $row['entry_link'] : '';
         $vars   += array(
             'status'    => $row['entry_status'],
@@ -346,6 +366,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 , $row['entry_status']
                 , $row['entry_start_datetime']
                 , $row['entry_end_datetime']
+                , $row['entry_approval']
             ),
             'inheritUrl'        => $inheritUrl,
             'posterName'        => ACMS_RAM::userName($uid),
@@ -389,11 +410,11 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
         $entryOrder = $this->order;
 
-        if ( 'entry-edit' == ADMIN ) {
+        if ( 'entry-edit' == ADMIN || 'entry_editor' == ADMIN ) {
             $vars   = array();
             $step   = $this->Post->get('step', 'apply');
             $action = !EID ? 'insert' : 'update';
-
+            $backend = $this->Post->get('backend');
             switch ( $step ) {
                 case 'confirm':
                 case 'result':
@@ -422,9 +443,21 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Tpl->add('adminEntryEdit');
             $Tpl->add('entry:loop', $vars);
 
-        } else if ( $this->eid ) {
+            if ( !empty($backend) ) {
+                $Tpl->add(null, array('notice_mess' => 'show'));
+            }
 
-            $SQL    = SQL::newSelect('entry');
+        } else if ( 'form2-edit' == ADMIN ) {
+            $Tpl->add('adminFormEdit');
+            $Tpl->add('entry:loop');
+        } else if ( $this->eid == strval(intval($this->eid)) ) {
+
+            if ( RVID ) {
+                $SQL    = SQL::newSelect('entry_rev');
+                $SQL->addWhereOpr('entry_rev_id', RVID);
+            } else {
+                $SQL    = SQL::newSelect('entry');
+            }
             $SQL->addWhereOpr('entry_id', $this->eid);
 
             $q      = $SQL->get(dsn());
@@ -444,7 +477,11 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $break      = null;
             $micropage  = null;
             $micropageLabel = null;
-            if ( $Column = loadColumn($eid) ) {
+            $RVID_      = RVID;
+            if ( !RVID && $row['entry_approval'] === 'pre_approval' ) {
+                $RVID_  = 1;
+            }
+            if ( $Column = loadColumn($eid, null, $RVID_) ) {
                 if ( $this->micropager_on === 'on' ) {
                     $break      = 1;
                     $micropage  = $this->page;
@@ -465,6 +502,15 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
 
             $this->buildBodyField($Tpl, $vars, $row);
 
+            if ( 1
+                && isset($row['entry_form_id'])
+                && !empty($row['entry_form_id'])
+                && isset($row['entry_form_status'])
+                && $row['entry_form_status'] == 'open'
+                && config('form_edit_action_direct') == 'on'
+            ) {
+                $Tpl->add('formBody');
+            }
             $Tpl->add('entry:loop', $vars);
 
             //-----------------
@@ -474,6 +520,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 $SQLCommon->addSelect('entry_id');
                 $SQLCommon->addSelect('entry_title');
                 $SQLCommon->addSelect('entry_status');
+                $SQLCommon->addSelect('entry_approval');
                 $SQLCommon->addSelect('entry_start_datetime');
                 $SQLCommon->addSelect('entry_end_datetime');
                 $SQLCommon->setLimit(1);
@@ -481,7 +528,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 if ($this->serial_navi_ignore_category_on !== 'on') {
                     $SQLCommon->addWhereOpr('entry_category_id', $this->cid);
                 }
-    
                 ACMS_Filter::entrySession($SQL);
                 ACMS_Filter::entrySpan($SQLCommon, $this->start, $this->end);
                 if ( !empty($this->tags) ) {
@@ -548,6 +594,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                                 , $row['entry_status']
                                 , $row['entry_start_datetime']
                                 , $row['entry_end_datetime']
+                                , $row['entry_approval']
                             ),
                            'url'    => acmsLink(array(
                                 '_inherit'  => true,
@@ -578,6 +625,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                                 , $row['entry_status']
                                 , $row['entry_start_datetime']
                                 , $row['entry_end_datetime']
+                                , $row['entry_approval']
                             ),
                            'url'    => acmsLink(array(
                                 '_inherit'  => true,
@@ -623,12 +671,25 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $from   = ($this->page - 1) * $limit;
             $SQL    = SQL::newSelect('entry');
             $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
-            ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+
+            if ( !empty($this->bid) ) {
+                if ( is_int($this->bid) ) {
+                    ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+                } else if ( strpos($this->bid, ',') !== false ) {
+                    $SQL->addWhereIn('blog_id', explode(',', $this->bid));
+                }
+            }
             ACMS_Filter::blogStatus($SQL);
             $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
-            ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
+            if ( !empty($this->cid) ) {
+                if ( is_int($this->cid) ) {
+                    ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
+                } else if ( strpos($this->cid, ',') !== false ) {
+                    $SQL->addWhereIn('category_id', explode(',', $this->cid));
+                }
+            }
             ACMS_Filter::categoryStatus($SQL);
-            ACMS_Filter::entrySession($SQL, $this->eid);
+            ACMS_Filter::entrySession($SQL);
             ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
             if ( !empty($this->tags) ) {
                 ACMS_Filter::entryTag($SQL, $this->tags);
@@ -642,8 +703,15 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             if ( 'on' === $this->indexing ) {
                 $SQL->addWhereOpr('entry_indexing', 'on');
             }
-            if ( $uid = intval($this->uid) ) {
-                $SQL->addWhereOpr('entry_user_id', $uid);
+            if ( !empty($this->uid) ) {
+                if ( is_int($this->uid) ) {
+                    $SQL->addWhereOpr('entry_user_id', $uid);
+                } else if ( strpos($this->uid, ',') !== false ) {
+                    $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
+                }
+            }
+            if ( !empty($this->eid) && !is_int($this->eid) ) {
+                $SQL->addWhereIn('entry_id', explode(',', $this->eid));
             }
 
             $Amount = new SQL_Select($SQL);
@@ -682,9 +750,14 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
 
                 $vars   = array();
 
+                $RVID_      = RVID;
+                if ( !RVID && $row['entry_approval'] === 'pre_approval' ) {
+                    $RVID_  = 1;
+                }
+
                 //---------
                 // column
-                if ( $Column = loadColumn($eid, $summaryRange) ) {
+                if ( $Column = loadColumn($eid, $summaryRange, $RVID_) ) {
                     $this->buildColumn($Column, $Tpl, $eid);
                     if ( !empty($summaryRange) ) {
                         $SQL    = SQL::newSelect('column');
@@ -700,7 +773,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 }
 
                 $this->buildBodyField($Tpl, $vars, $row, $serial);
-                
                 $Tpl->add('entry:loop', $vars);
             }
 
@@ -714,7 +786,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
 
             $Tpl->add(null, $vars);
         }
-
         return $Tpl->get();
     }
 

@@ -401,7 +401,11 @@ class ACMS_Filter
      */
     public static function entrySession(& $SQL, $scp=null)
     {
-        if ( !sessionWithCompilation() ) {
+        if ( !(defined('RVID') && RVID) && !isset($_GET['trash']) ) {
+            $SQL->addWhereOpr('entry_status', 'trash', '<>', 'AND', $scp);
+        }
+        
+        if ( !sessionWithCompilation() && !approvalAvailableUser(SUID) ) {
             
             $SQLWhereSession    = SQL::newWhere();
 
@@ -414,10 +418,14 @@ class ACMS_Filter
             //--------
             // status
             $SQLWhereSession->addWhereOpr('entry_status', 'open', '=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('entry_approval', 'pre_approval', '<>', 'AND', $scp);
+            
             if ( sessionWithContribution() ) {
-                $SQLWhereStatus = SQL::newWhere();       
-                
-                if ( 'on' == config('session_contributor_only_own_entry') ) {
+                $SQLWhereStatus = SQL::newWhere();
+                if ( 1
+                    && !approvalAvailableUser(SUID)
+                    && ( 'on' == config('session_contributor_only_own_entry') )
+                ) {
                     $connector  = 'AND';
                 } else {
                     $SQLWhereStatus->addWhere($SQLWhereSession);
@@ -593,6 +601,25 @@ class ACMS_Filter
     {
         list($field, $order) = explode('-', $order);
         $SQL->addOrder('tag_'.$field, $order);
+    }
+
+     /**
+     * メディアの特定フィールドを指定して，昇順または降順で並び替えます
+     *
+     * [example]
+     * name-desc   : 名前降順
+     *
+     * ACMS_Filter::mediaOrder($SQL, 'name-desc');
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param string $order asc|desc
+     * @param null $scope
+     * @return void
+     */
+    public static function mediaOrder(& $SQL, $order, $scope=null)
+    {
+        list($field, $order) = explode('-', $order);
+        $SQL->addOrder('media_'.$field, $order);
     }
 
     //-------
@@ -957,6 +984,7 @@ class ACMS_Filter
             
             $DB         = DB::singleton(dsn());
             $Customer   = SQL::newSelect('crm_thread');
+            $Customer->setLimit(0, 1);
             
             $res        = $DB->query($Customer->get(dsn()), 'exec');
             $fieldCount = mysql_num_fields($res);
