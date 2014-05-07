@@ -60,7 +60,11 @@ class ACMS_GET_User_Profile extends ACMS_GET
             foreach ( $row as $key => $val ) {
                 $vars[substr($key, strlen('user_'))]    = $val;
             }
-            $vars['icon']   = loadUserIcon(intval($row['user_id']));
+            $uid = intval($row['user_id']);
+            $vars['icon']       = loadUserIcon($uid);
+            if ( $large = loadUserLargeIcon($uid) ) {
+                $vars['largeIcon']  = $large;
+            }
             $Tpl->add('user:loop', $vars);
         }
 

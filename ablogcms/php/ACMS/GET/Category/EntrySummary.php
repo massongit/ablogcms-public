@@ -66,7 +66,7 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
         ACMS_Filter::categoryStatus($SQL);
         
         if ( $uid = intval($this->uid) ) {
-            $SQL->addWhereOpr('entry_user_id', $uid);
+            $SQL->addWhereOpr('entry_user_id', $this->uid);
         }
 
         if ( empty($this->cid) and null !== $this->cid ) {

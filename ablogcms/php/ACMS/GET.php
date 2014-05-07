@@ -888,6 +888,10 @@ class ACMS_GET
                 $Field->setField('fieldUserMail', ACMS_RAM::userMail($uid));
                 $Field->setField('fieldUserMailMobile', ACMS_RAM::userMailMobile($uid));
                 $Field->setField('fieldUserUrl', ACMS_RAM::userUrl($uid));
+                $Field->setField('fieldUserIcon', loadUserIcon($uid));
+                if ( $large = loadUserLargeIcon($uid) ) {
+                    $Field->setField('fieldUserLargeIcon', $large);
+                }
                 $Tpl->add('userField', $this->buildField($Field, $Tpl));
             }
             

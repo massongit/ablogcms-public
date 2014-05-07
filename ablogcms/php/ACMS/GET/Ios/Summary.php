@@ -74,7 +74,7 @@ class ACMS_GET_Ios_Summary extends ACMS_GET_Entry
         if ( !$itemsAmount = intval($DB->query($Amount->get(dsn()), 'one')) ) {
             //error
         }
-
+        ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entryOrder($SQL, $order, $this->uid, $this->cid);
         
         // $from   = ($this->page - 1) * $this->limit + $this->offset;

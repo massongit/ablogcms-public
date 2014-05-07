@@ -92,7 +92,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 
         if ( !empty($this->uid) ) {
             if ( is_int($this->uid) ) {
-                $SQL->addWhereOpr('entry_user_id', $uid);
+                $SQL->addWhereOpr('entry_user_id', $this->uid);
             } else if ( strpos($this->uid, ',') !== false ) {
                 $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
             }

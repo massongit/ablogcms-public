@@ -331,6 +331,10 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Field->setField('fieldUserMail', ACMS_RAM::userMail($uid));
             $Field->setField('fieldUserMailMobile', ACMS_RAM::userMailMobile($uid));
             $Field->setField('fieldUserUrl', ACMS_RAM::userUrl($uid));
+            $Field->setField('fieldUserIcon', loadUserIcon($uid));
+            if ( $large = loadUserLargeIcon($uid) ) {
+                $Field->setField('fieldUserLargeIcon', $large);
+            }
             $Tpl->add('userField', $this->buildField($Field, $Tpl));
         }
         
@@ -705,7 +709,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             }
             if ( !empty($this->uid) ) {
                 if ( is_int($this->uid) ) {
-                    $SQL->addWhereOpr('entry_user_id', $uid);
+                    $SQL->addWhereOpr('entry_user_id', $this->uid);
                 } else if ( strpos($this->uid, ',') !== false ) {
                     $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
                 }
