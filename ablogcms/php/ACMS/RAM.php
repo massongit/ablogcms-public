@@ -26,7 +26,7 @@ class ACMS_RAM
      * @param null $val
      * @return bool|null
      */
-    private static function _mapping($key, $id, $val=null)
+    public static function _mapping($key, $id, $val=null)
     {
         static $table   = array();
 
@@ -822,6 +822,18 @@ class ACMS_RAM
     public static function entryStatus($eid)
     {
         return ACMS_RAM::_mapping('entry_status', $eid);
+    }
+
+    /**
+     * 指定されたidから該当するエントリーの承認状態を返します
+     * $status = ACMS_RAM::entryStatus($eid);
+     *
+     * @param int $eid
+     * @return string
+     */
+    public static function entryApproval($eid)
+    {
+        return ACMS_RAM::_mapping('entry_approval', $eid);
     }
 
     //  }}}

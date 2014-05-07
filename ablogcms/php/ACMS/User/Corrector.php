@@ -37,24 +37,5 @@ class ACMS_User_Corrector
 
         return $hoge.$fuga.'+'.$txt; // 'hogefuga+a-blog cms'
     }
-    function comma2break($txt)
-    {
-        $str = str_replace(",", "<br>", $txt);
-        return $str;
-    }
-
-    function comma2list($txt)
-    {
-        $list   = explode(',', $txt);
-
-        if ( is_array($list) && count($list) > 1 ) {
-            $txt = '<ul>';
-            foreach ( $list as $i => $val ) {
-                $txt = $txt.'<li>'.$val.'</li>';
-            }
-            $txt .= '</ul>';
-        }
-        return $txt;
-    }
 }
 

@@ -113,12 +113,14 @@ class ACMS_GET_Navigation extends ACMS_GET
                 if ( in_array('ul#front', $row['end']) ) {
                     $Tpl->add(array('childNavi', 'link#front', 'navigation:loop'));
                 }
-                $Tpl->add(array('link#front', 'navigation:loop'), array(
-                    'url'       => $uri,
-                    'target'    => $_target,
-					'attr'  => (substr($row['a_attr'], 0, 1) !== ' ' ? ' ' : '').$row['a_attr'],
-                ));
-                $Tpl->add(array('link#rear', 'navigation:loop'));
+                if ( !empty($uri) ) {
+                    $Tpl->add(array('link#front', 'navigation:loop'), array(
+                        'url'       => $uri,
+                        'target'    => $_target,
+                        'attr'  => (substr($row['a_attr'], 0, 1) !== ' ' ? ' ' : '').$row['a_attr'],
+                    ));
+                    $Tpl->add(array('link#rear', 'navigation:loop'));
+                }
             }
 
             if ( preg_match('@^(https|http|acms)://@', $label, $match) ) {
@@ -177,7 +179,7 @@ class ACMS_GET_Navigation extends ACMS_GET
         $Tpl->add(array('ul#rear', 'navigation:loop'));
         $Tpl->add('navigation:loop');
 
-        return $Tpl->get();
+        return setGlobalVars($Tpl->get());
     }
 
     function buildLevel($id, $recursive = false)

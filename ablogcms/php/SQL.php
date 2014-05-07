@@ -1218,8 +1218,8 @@ class SQL_Sequence extends SQL
             case 'currval':
                 $SQL    = SQL::newSelect($tb);
                 if ( $this->_plugin ) {
-                    $SQL->setSelect('sequence_value');
-                    $SQL->addWhereOpr('sequence_key', $fd);
+                    $SQL->setSelect('sequence_plugin_value');
+                    $SQL->addWhereOpr('sequence_plugin_key', $fd);
                 } else {
                     $SQL->setSelect($fd);
                 }
@@ -1228,8 +1228,8 @@ class SQL_Sequence extends SQL
             case 'setval':
                 $SQL    = SQL::newUpdate($tb);
                 if ( $this->_plugin ) {
-                    $SQL->addUpdate('sequence_value', $this->_value);
-                    $SQL->addWhereOpr('sequence_key', $fd);
+                    $SQL->addUpdate('sequence_plugin_value', $this->_value);
+                    $SQL->addWhereOpr('sequence_plugin_key', $fd);
                 } else {
                     $SQL->setUpdate($fd, $this->_value);
                 }
@@ -1239,8 +1239,8 @@ class SQL_Sequence extends SQL
             case 'nextval':
                 $SQL    = SQL::newUpdate($tb);
                 if ( $this->_plugin ) {
-                    $SQL->addUpdate('sequence_value', SQL::newFunction(SQL::newOpr('sequence_value', 1, '+'), 'LAST_INSERT_ID'));
-                    $SQL->addWhereOpr('sequence_key', $fd);
+                    $SQL->addUpdate('sequence_plugin_value', SQL::newFunction(SQL::newOpr('sequence_plugin_value', 1, '+'), 'LAST_INSERT_ID'));
+                    $SQL->addWhereOpr('sequence_plugin_key', $fd);
                 } else {
                     $SQL->setUpdate($fd, //SQL::newOpr($fd, 1, '+')
                     SQL::newFunction(SQL::newOpr($fd, 1, '+'), 'LAST_INSERT_ID'));

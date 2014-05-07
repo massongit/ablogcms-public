@@ -11,6 +11,6 @@ class ACMS_GET_Touch_Login extends ACMS_GET
 {
     function get()
     {
-        return !!SID ? $this->tpl : false;
+        return (!!SID && !RVID) ? $this->tpl : false;
     }
 }

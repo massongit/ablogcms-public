@@ -130,6 +130,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $SQL = SQL::newSelect('entry');
         $SQL->addSelect(SQL::newFunction('entry_datetime', array('SUBSTR', 0, 10)), 'entry_date', null, 'DISTINCT');
         $SQL->addSelect('entry_id');
+        $SQL->addSelect('entry_approval');
         $SQL->addSelect('entry_title');
         $SQL->addSelect('entry_category_id');
         $SQL->addSelect('entry_link');
@@ -161,6 +162,9 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                     break;
                 default :
                     break;
+            }
+            if ( $row['entry_approval'] == 'pre_approval' ) {
+                $title = '【承認前】'.$title;
             }
             $entry_list[] = array(
                 'eid'       => $row['entry_id'],

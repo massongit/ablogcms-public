@@ -54,7 +54,6 @@ class Template
             '<!--%$1 -->',
         ), $txt);
         $txt    = str_replace(array('\{','\}'), array('{','}'), $txt);
-
         $tokens = preg_split('@(<!-- BEGIN |<!-- END | -->|<!--%|%-->)@'
             , $txt, -1, PREG_SPLIT_DELIM_CAPTURE
         );
@@ -301,6 +300,6 @@ class Template
     function get()
     {
         if ( is_null($this->_blockIdTxt[0]) ) $this->add();
-        return $this->_blockIdTxt[0];
+        return str_replace(array('<!-- BEGIN\\','<!-- END\\'), array('<!-- BEGIN','<!-- END'), $this->_blockIdTxt[0]);
     }
 }

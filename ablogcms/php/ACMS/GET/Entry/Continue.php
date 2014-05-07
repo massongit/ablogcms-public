@@ -76,6 +76,7 @@ class ACMS_GET_Entry_Continue extends ACMS_GET_Entry
                 , $row['entry_status']
                 , $row['entry_start_datetime']
                 , $row['entry_end_datetime']
+                , $row['entry_approval']
             ),
             'bid'       => $bid,
             'cid'       => $cid,

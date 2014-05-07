@@ -323,7 +323,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
          */
         $step   = $this->Get->get('step');
 
-        if ( !!ADMIN && $step == 'reapply' ) {
+        if ( !!ADMIN ) {
             if ( $loop == 1 && $this->plan == 'on' || $this->plan == 'on' ) $loop += $cnt;
             else $cnt   = 0;
         }
@@ -361,8 +361,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
                     /**
                      * IF !!ADMIN add label:loop / ELSE merge Plan row
                      */
-                    if ( !!ADMIN && $step == 'reapply') {
-
+                    if ( !!ADMIN ) {
                         if ( $key == @$labelKey && !($i == ($loop - $cnt)) ) {
                             $label_inner_vars['selected'] = config('attr_selected');
                         } else {

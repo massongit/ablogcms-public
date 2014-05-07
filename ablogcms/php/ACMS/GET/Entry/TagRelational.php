@@ -36,8 +36,6 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
             'offset'           => config('entry_tag-relational_offset'),
             'unit'             => config('entry_tag-relational_unit'),
             'newtime'          => config('entry_tag-relational_newtime'),
-            'pagerDelta'       => config('entry_tag-relational_pager_delta'),
-            'pagerCurAttr'     => config('entry_tag-relational_pager_cur_attr'),
         );
     }
 
@@ -92,6 +90,7 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
 
         $SQL->addSelect('tag_name', 'tag_similar_grade', null, 'count');
         $SQL->addSelect('entry_title');
+        $SQL->addSelect('entry_approval');
         $SQL->addSelect('entry_blog_id');
         $SQL->addSelect('entry_category_id');
         $SQL->addSelect('entry_primary_image');

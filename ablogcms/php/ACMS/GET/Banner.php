@@ -65,7 +65,7 @@ class ACMS_GET_Banner extends ACMS_GET
 			if( $int_display > $limit )break;
 			
             if ( $img = config('banner_img', '', $i) ) {
-                $xy = getimagesize(ARCHIVES_DIR.$img);
+                $xy = @getimagesize(ARCHIVES_DIR.$img);
                 $Tpl->add('banner#img', array(
                     'img'   => $img,
                     'x'     => $xy[0],
@@ -86,6 +86,6 @@ class ACMS_GET_Banner extends ACMS_GET
             $Tpl->add('banner:loop');
         }
 
-        return $Tpl->get();
+        return setGlobalVars($Tpl->get());
     }
 }

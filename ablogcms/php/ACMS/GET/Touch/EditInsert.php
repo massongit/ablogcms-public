@@ -14,6 +14,7 @@ class ACMS_GET_Touch_EditInsert extends ACMS_GET
         return ( 1
             and !EID
             and !!ADMIN
+            and !RVID
             and ( 0
                 or 'entry-edit' == ADMIN
                 or 'entry-add' == substr(ADMIN, 0, 9)

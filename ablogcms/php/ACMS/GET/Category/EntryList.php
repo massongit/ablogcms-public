@@ -188,6 +188,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                 , $eRow['entry_status']
                 , $eRow['entry_start_datetime']
                 , $eRow['entry_end_datetime']
+                , $eRow['entry_approval']
             ),
             'entryLevel'    => $level,
             'entryCode'     => $eRow['entry_code'],

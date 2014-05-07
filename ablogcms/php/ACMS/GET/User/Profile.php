@@ -56,9 +56,14 @@ class ACMS_GET_User_Profile extends ACMS_GET
         }
 
         foreach ( $all as $row ) {
-            $vars   = $this->buildField(loadUserField(intval($row['user_id'])), $Tpl);
+            $vars           = $this->buildField(loadUserField(intval($row['user_id'])), $Tpl);
             foreach ( $row as $key => $val ) {
                 $vars[substr($key, strlen('user_'))]    = $val;
+            }
+            $uid = intval($row['user_id']);
+            $vars['icon']       = loadUserIcon($uid);
+            if ( $large = loadUserLargeIcon($uid) ) {
+                $vars['largeIcon']  = $large;
             }
             $Tpl->add('user:loop', $vars);
         }
