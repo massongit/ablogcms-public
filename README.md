@@ -4,7 +4,7 @@
 
 ##公開中のファイル
 
-現在のソースコードはv1.7.0時点で、以下のファイルが公開されています。
+現在のソースコードはv2.1.0時点で、以下のファイルが公開されています。
 
 ###基本ライブラリ
 
@@ -40,4 +40,4 @@
 
 ##関連情報
 
-+  [a-blog cms API Documentation](http://www.a-blogcms.jp/api-docs/ "Generated Documentation")
++  [a-blog cms PHP Documentation](http://appleple.github.io/ablogcms-public/ "Generated Documentation")
