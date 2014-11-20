@@ -22,6 +22,18 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
         $currentGroup   = 0;
 
         if ( editionIsEnterprise() ) {
+
+            $SQL    = SQL::newSelect('workflow');
+            $SQL->addSelect('workflow_type');
+            $SQL->addWhereOpr('workflow_status', 'open');
+            $SQL->addWhereOpr('workflow_blog_id', BID);
+            $type   = $DB->query($SQL->get(dsn()), 'one');
+
+            // 並列承認
+            if ( $type == 'parallel' ) {
+                return '';
+            }
+
             //-------------------------------------------
             // ワークフローの逆承認順序でユーザグループを列挙
             $SQL    = SQL::newSelect('workflow');
@@ -93,7 +105,11 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
         } else if ( editionIsProfessional() ) {
             $SQL    = SQL::newSelect('user');
             $SQL->addLeftJoin('blog', 'blog_id', 'user_blog_id');
-            ACMS_Filter::blogTree($SQL, BID, 'self-ancestor');
+            if ( config('blog_manage_approval') == 'on' ) {
+                ACMS_Filter::blogTree($SQL, BID, 'self-ancestor');
+            } else {
+                $SQL->addWhereOpr('user_blog_id', BID);
+            }
             ACMS_Filter::blogStatus($SQL);
             $SQL->addWhereIn('user_auth', array('editor', 'administrator'));
 

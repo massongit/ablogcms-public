@@ -44,7 +44,7 @@ class ACMS_GET_Ios_Unit extends ACMS_GET_Admin_Entry
             if ( $Column = loadColumn($eid) ) {
                 $cnt    = count($Column);
                 for ( $i=0; $i<$cnt; $i++ ) {
-                    $Column[$i]['id']   = uniqid('');
+                    $Column[$i]['id']   = uniqueString();
                     $Column[$i]['sort'] = $i + 1;
                     
                     switch ( $Column[$i]['type'] ) {

@@ -122,6 +122,22 @@ class DB
      */
     function query($sql, $mode='row')
     {
+        if ( is_null($this->_connection) ) {
+            $statusCode = '503 Service Unavailable (could not connect to the database)';
+            httpStatusCode($statusCode);
+            header('HTTP/1.1 '.httpStatusCode());
+            header('Content-type: text/html; charset=iso-8859-1');
+            die(
+                '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">'
+                .'<html><head>'
+                .'<title>503 Service Temporarily Unavailable</title>'
+                .'</head><body>'
+                .'<h1>Service Temporarily Unavailable</h1>'
+                .'<p>The server could not connect to the database.</p>'
+                .'</body></html>'
+            );
+        }
+
         $stime  = time() + microtime();
         $res    = mysql_query($sql, $this->_connection);
         $qtime  = (time() + microtime()) - $stime;

@@ -7,6 +7,8 @@
  *
  * (c) appleple inc. <info@appleple.com>
  */
+require_once ACMS_LIB_DIR.'Services/FacebookSDK/facebook.php';
+
 class ACMS_GET_Api_Facebook extends ACMS_GET_Api
 {
     const SIGNATURE_IS_NOT_VALID = 1;

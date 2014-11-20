@@ -83,6 +83,14 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                     ));
                 }
                 break;
+            case 'video':
+                foreach ( $Config->getArray('column_video_size') as $j => $size ) {
+                    $Tpl->add(array('size:loop', $type), array(
+                        'value' => $size,
+                        'label' => $Config->get('column_video_size_label', '', $j),
+                    ));
+                }
+                break;
             case 'eximage':
                 foreach ( $Config->getArray('column_eximage_size') as $j => $size ) {
                     $Tpl->add(array('size:loop', $type), array(
@@ -91,7 +99,20 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                     ));
                 }
                 break;
+            case 'quote':
+                
+                break;
+            case 'media':
+                foreach ( $Config->getArray('column_media_size') as $j => $size ) {
+                    $Tpl->add(array('size:loop', $type), array(
+                        'value' => $size,
+                        'label' => $Config->get('column_media_size_label', '', $j),
+                    ));
+                }
+                break;
             case 'break':
+                break;
+            case 'custom':
                 break;
             default:
                 return '';

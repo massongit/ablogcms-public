@@ -67,25 +67,13 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
 
-        if ( !empty($this->bid) ) {
-            if ( is_int($this->bid) ) {
-                ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
-            } else if ( strpos($this->bid, ',') !== false ) {
-                $SQL->addWhereIn('blog_id', explode(',', $this->bid));
-            }
-        }
-
-        if ( 'on' === $config['secret'] ) {
-            ACMS_Filter::blogDisclosureSecretStatus($SQL);
-        } else {
-            ACMS_Filter::blogStatus($SQL);
-        }
-
+        $multiId = false;
         if ( !empty($this->cid) ) {
             if ( is_int($this->cid) ) {
                 ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
             } else if ( strpos($this->cid, ',') !== false ) {
                 $SQL->addWhereIn('category_id', explode(',', $this->cid));
+                $multiId = true;
             }
         }
         ACMS_Filter::categoryStatus($SQL);
@@ -95,6 +83,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
                 $SQL->addWhereOpr('entry_user_id', $this->uid);
             } else if ( strpos($this->uid, ',') !== false ) {
                 $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
+                $multiId = true;
             }
         }
 
@@ -107,10 +96,28 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
                 $SQL->addWhereOpr('entry_id', $this->eid);
             } else if ( strpos($this->eid, ',') !== false ) {
                 $SQL->addWhereIn('entry_id', explode(',', $this->eid));
+                $multiId = true;
             }
         }
         ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+
+        if ( !empty($this->bid) ) {
+            if ( is_int($this->bid) ) {
+                if ( $multiId ) {
+                    ACMS_Filter::blogTree($SQL, $this->bid, 'descendant-or-self');
+                } else {
+                    ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+                }
+            } else if ( strpos($this->bid, ',') !== false ) {
+                $SQL->addWhereIn('blog_id', explode(',', $this->bid));
+            }
+        }
+        if ( 'on' === $config['secret'] ) {
+            ACMS_Filter::blogDisclosureSecretStatus($SQL);
+        } else {
+            ACMS_Filter::blogStatus($SQL);
+        }
 
         if ( !empty($this->tags) ) {
             ACMS_Filter::entryTag($SQL, $this->tags);
@@ -129,7 +136,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         }
 
         $Amount = new SQL_Select($SQL);
-        $Amount->setSelect('*', 'entry_amount', null, 'count');
+        $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'count');
         $itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'));
 
         $from   = ($this->page - 1) * $config['limit'] + $config['offset'];
@@ -163,6 +170,9 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 
         ACMS_Filter::entryOrder($SQL, $config['order'], $this->uid, $this->cid);
         $SQL->setLimit($limit, ($from));
+
+        $SQL->setGroup('entry_id');
+
         $q  = $SQL->get(dsn());
 
         //------------------

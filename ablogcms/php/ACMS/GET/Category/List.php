@@ -11,6 +11,7 @@ class ACMS_GET_Category_List extends ACMS_GET
 {
     var $_axis  = array(
         'cid'   => 'descendant-or-self',
+        'bid'   => 'descendant-or-self',
     );
 
     function get()
@@ -24,19 +25,37 @@ class ACMS_GET_Category_List extends ACMS_GET
         $SQL->addSelect('category_left');
         $SQL->addSelect('category_indexing');
         $SQL->addLeftJoin('entry', 'entry_category_id', 'category_id');
-        $SQL->addWhereOpr('category_blog_id', $this->bid);
+        $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
+
         ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
         ACMS_Filter::categoryStatus($SQL);
+        if ( !empty($this->keyword) ) {
+            ACMS_Filter::categoryKeyword($SQL, $this->keyword);
+        }
+        if ( !empty($this->Field) ) {
+            if ( config('category_list_field_search') == 'entry' ) {
+                ACMS_Filter::entryField($SQL, $this->Field);
+            } else {
+                ACMS_Filter::categoryField($SQL, $this->Field);
+            }
+        }
+
+        $Where  = SQL::newWhere();
+        $Where->addWhereOpr('category_blog_id', $this->bid, '=', 'OR');
+        $Where->addWhereOpr('category_scope', 'global', '=', 'OR');
+        $SQL->addWhere($Where);
 
         $Where  = SQL::newWhere();
         ACMS_Filter::entrySession($Where);
         ACMS_Filter::entrySpan($Where, $this->start, $this->end);
-        if ( !empty($this->Field) ) { ACMS_Filter::entryField($SQL, $this->Field); }
+        $Where->addWhereOpr('entry_blog_id', $this->bid);
+        
         $Case   = SQL::newCase();
         $Case->add($Where, 1);
         $Case->setElse('NULL');
         $SQL->addSelect($Case, 'category_entry_amount', null, 'count');
         $SQL->setGroup('category_id');
+
         if ( !($all = $DB->query($SQL->get(dsn()), 'all')) ) return '';
 
         //-------------
@@ -149,7 +168,6 @@ class ACMS_GET_Category_List extends ACMS_GET
             $pid    = array_pop($stack);
             while ( !!($cid = array_search($pid, $Map)) ) {
                 unset($Map[$cid]);
-                $Tpl->add('li#front');
 
                 $depth  = count($stack) + 1;
                 $vars   = array(
@@ -173,6 +191,8 @@ class ACMS_GET_Category_List extends ACMS_GET
                 //-------
                 // field
                 $vars   += $this->buildField(loadCategoryField($cid), $Tpl);
+
+                $Tpl->add('li#front', $vars);
 
                 $i++;
                 //------

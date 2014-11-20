@@ -86,23 +86,23 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
             $this->viewmode = 'month';
         }
 
-    	switch( $this->viewmode ) {
-        	case 'year':
-    	        $this->listmode = ( $this->layoutY == 'list' ) ? true : false;
+        switch( $this->viewmode ) {
+            case 'year':
+                $this->listmode = ( $this->layoutY == 'list' ) ? true : false;
                 $this->yearView($Tpl);
-        	    break;
-        	case 'month':
-    	        $this->listmode = ( $this->layoutM == 'list' ) ? true : false;
+                break;
+            case 'month':
+                $this->listmode = ( $this->layoutM == 'list' ) ? true : false;
                 $this->monthView($Tpl);
-        	    break;
-        	case 'days':
-    	        $this->listmode = ( $this->layoutD == 'list' ) ? true : false;
-    	        $this->day = date('d');
+                break;
+            case 'days':
+                $this->listmode = ( $this->layoutD == 'list' ) ? true : false;
+                $this->day = date('d');
                 $this->daysView($Tpl);
-        	    break;
-        	default:
-        	    return '';
-    	}
+                break;
+            default:
+                return '';
+        }
 
         return $Tpl->get();
     }
@@ -122,10 +122,10 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
             // IF not listmode add Prefix Days
             if ( $n == 1 && empty($this->listmode) ) {
                 $w = date('w', mktime(0,0,0,$month,$n,$year));
-            	for ( $_n = 0; $_n < intval($w); $_n++ ) {
-            	    $cnt_week ++;
-            		$this->days[$this->getWeekNum($cnt_week)][] = array(); //future: 前月の数値情報?
-            	}
+                for ( $_n = 0; $_n < intval($w); $_n++ ) {
+                    $cnt_week ++;
+                    $this->days[$this->getWeekNum($cnt_week)][] = array(); //future: 前月の数値情報?
+                }
             }
 
             /**
@@ -134,8 +134,8 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
             $date = $year.'-'.$month.'-'.$n;
             
             if( isset( $this->week_label[ $this->formatW ] ) ) {
-            	$_w = date('w', strtotime($date));
-            	$week_label = $this->week_label[ $this->formatW ][$_w];
+                $_w = date('w', strtotime($date));
+                $week_label = $this->week_label[ $this->formatW ][$_w];
             }
             else {
                 $week_label = date($this->formatW, strtotime($date));
@@ -154,12 +154,12 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
             // IF not listmode add Surfix Days
             if ( $n == $this->cnt_day && empty($this->listmode) ) {
                 $w = date('w', mktime(0,0,0,$month,$n,$year));
-            	for ( $_n = 0; $_n < intval(6-$w); $_n++ ) {
-            	    $cnt_week ++;
-            		$this->days[$this->getWeekNum($cnt_week)][] = array(); //future: 次月の数値情報?
-            	}
+                for ( $_n = 0; $_n < intval(6-$w); $_n++ ) {
+                    $cnt_week ++;
+                    $this->days[$this->getWeekNum($cnt_week)][] = array(); //future: 次月の数値情報?
+                }
             }
-		}
+        }
     }
 
     function destructDays()
@@ -198,11 +198,11 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         $this->buildDays($year, $month);
         $DATA = $this->getMonthData($year, $month);
         
-		foreach($this->days as $weekKey => $weekRow){
-			foreach ( $weekRow as $day ) {
+        foreach($this->days as $weekKey => $weekRow){
+            foreach ( $weekRow as $day ) {
             
-			    if( !empty($this->listmode) ) { //リストモードであればここでplan
-			        $this->buildPlan($Tpl, $day, $DATA['data'][$day['id']]);
+                if( !empty($this->listmode) ) { //リストモードであればここでplan
+                    $this->buildPlan($Tpl, $day, $DATA['data'][$day['id']]);
                 } elseif( !empty($day) ) {
                     $this->addLabel($Tpl, $day, $DATA['data'][$day['id']]);
                 }
@@ -211,7 +211,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
 
                 if ( !empty($DATA['field'][@$day['id']]) ) { //fieldが存在すればadd
                     $vars = $this->buildField($DATA['field'][$day['id']], $Tpl, $dayBlock, null);
-        			$day  = array_merge($day, $vars);
+                    $day  = array_merge($day, $vars);
                 }
 
                 $Tpl->add($dayBlock, $day);
@@ -223,7 +223,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
             if ( empty($this->listmode) ) { //リストモードでなければここでweek
                 $Tpl->add(array('week:loop','month:loop','unit:loop'), array('weekRowNo' =>$weekKey));
             }
-		}
+        }
 
         // 月表示ならば、月送りを出力する( monthly block )
         $ZENGO = $this->getContext($year, $month);
@@ -240,32 +240,50 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         }
 
         $vars    = array(
-                        'year'   => date($this->formatY, mktime(0,0,0,$month,1,$year)),
-                        'month'  => date($this->formatM, mktime(0,0,0,$month,1,$year)),
-                        'time'   => date('Y-m-d', mktime(0,0,0,$month,1,$year)),
-                        '_year'  => $year,
-                        '_month' => $month,
-                        'cnt_day'=> $this->cnt_day,
-                        'url'    => acmsLink(array('date' => array($year, $month))),
-                        'mode'   => $this->listmode ? 'list' : 'grid',
-                        'next'   => $ZENGO['nextM'],
-                        'prev'   => $ZENGO['prevM'],
-                        );
+            'year'   => date($this->formatY, mktime(0,0,0,$month,1,$year)),
+            'month'  => date($this->formatM, mktime(0,0,0,$month,1,$year)),
+            'time'   => date('Y-m-d', mktime(0,0,0,$month,1,$year)),
+            '_year'  => $year,
+            '_month' => $month,
+            'cnt_day'=> $this->cnt_day,
+            'url'    => acmsLink(array('date' => array($year, $month))),
+            'mode'   => $this->listmode ? 'list' : 'grid',
+            'next'   => $ZENGO['nextM'],
+            'prev'   => $ZENGO['prevM'],
+        );
 
-	    if ( isset($this->week_label[$this->formatW]) ) {
-	        for ( $i = 0; $i < 7; $i ++ ) {
-        		$vars += array('w#'.$i => $this->week_label[$this->formatW][$i]);
+        if ( isset($this->week_label[$this->formatW]) ) {
+            for ( $i = 0; $i < 7; $i ++ ) {
+                $vars += array('w#'.$i => $this->week_label[$this->formatW][$i]);
             }
-	    }
-	    else {
-	        for ( $i = 0; $i < 7; $i ++ ) {
-        		$vars += array('w#'.$i => date($this->formatW, strtotime('+'.$i.'day', strtotime('-'.date("w").'day'))));
+        }
+        else {
+            for ( $i = 0; $i < 7; $i ++ ) {
+                $vars += array('w#'.$i => date($this->formatW, strtotime('+'.$i.'day', strtotime('-'.date("w").'day'))));
             }
-	    }
+        }
+
+        // yead select
+        $year       = $vars['year'];
+        $maxYear    = intval($year) + 10;
+        for ( $y=2009; $y<$maxYear; $y++ ) {
+            $sYear = array('sYear' => $y);
+            if ( $y == $year ) $sYear['selected'] = config('attr_selected');
+            $Tpl->add(array('yearSelect:loop', 'month:loop','unit:loop'), $sYear);
+        }
+
+        // month select
+        $month       = $vars['month'];
+        for ( $m=1; $m<=12; $m++ ) {
+            $sMonth = array('sMonth' => $m);
+            if ( $m == $month ) $sMonth['selected'] = config('attr_selected');
+            $Tpl->add(array('monthSelect:loop', 'month:loop','unit:loop'), $sMonth);
+        }
+
 
         // add Templete
-		$Tpl->add(array('month:loop','unit:loop'), $vars);
-		$this->destructDays();
+        $Tpl->add(array('month:loop','unit:loop'), $vars);
+        $this->destructDays();
 
         $this->_unit ++;
         if ( $this->_unit == $this->unit ) {
@@ -390,6 +408,36 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         for ( $i = 1; $i < 13 ; $i++ ) {
             $this->buildMonth($Tpl, $i, $this->year);
         }
+
+        $DB     = DB::singleton(dsn());
+        $SQL    = SQL::newSelect('schedule');
+        $SQL->addSelect('schedule_year');
+        $SQL->addWhereOpr('schedule_id', $this->key);
+        $SQL->addWhereOpr('schedule_year', '0000', '<>');
+        $SQL->addWhereOpr('schedule_blog_id', $this->bid);
+        
+        $Recently   = clone $SQL;
+        $Recently->addOrder('schedule_year', 'DESC');
+        $recentryValue = $DB->query($SQL->get(dsn()), 'one');
+
+        $Past       = clone $SQL;
+        $Past->addOrder('schedule_year', 'ASC');
+        $pastValue  = $DB->query($SQL->get(dsn()), 'one');
+
+        $vars = array();
+
+        //-----------
+        // prev link
+        if ( ($this->year - 1) >= intval($pastValue) ) {
+            $vars['prevYear']   = acmsLink(array('date' => array($this->year - 1)));
+        }
+
+        //-----------
+        // next link
+        if ( ($this->year + 1) <= intval($recentryValue) ) {
+            $vars['nextYear']   = acmsLink(array('date' => array($this->year + 1)));
+        }
+        $Tpl->add('year', $vars);
     }
 
     function monthView(&$Tpl)
@@ -441,7 +489,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
                 foreach ( $this->days as $weekRow ) {
                     $DAYS[$year.$month] = array_merge($DAYS[$year.$month], $weekRow);
                 }
-        		$this->destructDays();
+                $this->destructDays();
             }
 
             $day    = $DAYS[$year.$month][$dayNum];
@@ -455,7 +503,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
 
             if ( !empty($field) ) { //fieldが存在すればadd
                 $vars = $this->buildField($field, $Tpl, $dayBlock, null);
-    			$day  = array_merge($day, $vars);
+                $day  = array_merge($day, $vars);
             }
 
             $Tpl->add($dayBlock, array_merge($day, array(
@@ -471,21 +519,21 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
                         
                         );
 
-		$Tpl->add(array('month:loop','unit:loop'), $vars);
+        $Tpl->add(array('month:loop','unit:loop'), $vars);
     }
 
     function getContext($year, $month, $day = null)
     {
         if ( empty($day) ) $day = 1;
-    	$fmt   = 'Y-m-d';
-    	$ZENGO = array(
-    	    'nextM' => date($fmt, mktime(0,0,0,$month + 1, $day, $year)),
-    	    'prevM' => date($fmt, mktime(0,0,0,$month - 1, $day, $year)),
-    	    'nextY' => date($fmt, mktime(0,0,0,$month, $day, $year + 1)),
-    	    'prevY' => date($fmt, mktime(0,0,0,$month, $day, $year - 1)),
-    	    'nextD' => date($fmt, mktime(0,0,0,$month, $day + 1, $year)),
-    	    'prevD' => date($fmt, mktime(0,0,0,$month, $day - 1, $year)),
-    	);
-    	return $ZENGO;
+        $fmt   = 'Y-m-d';
+        $ZENGO = array(
+            'nextM' => date($fmt, mktime(0,0,0,$month + 1, $day, $year)),
+            'prevM' => date($fmt, mktime(0,0,0,$month - 1, $day, $year)),
+            'nextY' => date($fmt, mktime(0,0,0,$month, $day, $year + 1)),
+            'prevY' => date($fmt, mktime(0,0,0,$month, $day, $year - 1)),
+            'nextD' => date($fmt, mktime(0,0,0,$month, $day + 1, $year)),
+            'prevD' => date($fmt, mktime(0,0,0,$month, $day - 1, $year)),
+        );
+        return $ZENGO;
     }
 }

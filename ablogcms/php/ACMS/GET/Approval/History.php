@@ -18,6 +18,16 @@ class ACMS_GET_Approval_History extends ACMS_GET
         $DB     = DB::singleton(dsn());
         $vars   = array();
 
+        $SQL    = SQL::newSelect('entry_rev');
+        $SQL->addWhereOpr('entry_id', EID);
+        $SQL->addWhereOpr('entry_rev_id', RVID);
+        $SQL->addWhereOpr('entry_blog_id', BID);
+        if ( $entry = $DB->query($SQL->get(dsn()), 'row') ) {
+            foreach ( $entry as $key => $val ) {
+                $vars[$key] = $val;
+            }
+        }
+
         $SQL    = SQL::newSelect('approval');
         $SQL->addWhereOpr('approval_revision_id', RVID);
         $SQL->addWhereOpr('approval_entry_id', EID);

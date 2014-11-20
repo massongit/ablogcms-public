@@ -262,6 +262,17 @@ class Field
         return $Field;
     }
 
+    function retouchCustomUnit($id='')
+    {
+        $aryField = array();
+        foreach ( $this->_aryField as $key => $val ) {
+            $k = str_replace($id, '', $key);
+            $aryField[$k] = $val;
+        }
+        $this->_aryField = $aryField;
+        $this->_aryMeta  = array();
+    }
+
     function reset()
     {
 
@@ -272,6 +283,7 @@ class Field_Search extends Field
 {
     var $_aryOperator   = array();
     var $_aryConnector  = array();
+    var $_arySeparator  = array();
 
     function overload($Field, $isDeep=false)
     {
@@ -280,6 +292,7 @@ class Field_Search extends Field
             if ( is_object($Field) and (strtoupper(__CLASS__) === strtoupper(get_class($Field))) ) {
                 $this->_aryOperator     = $Field->_aryOperator;
                 $this->_aryConnector    = $Field->_aryConnector;
+                $this->_arySeparator    = $Field->_arySeparator;
             }
         }
 
@@ -290,16 +303,24 @@ class Field_Search extends Field
     {
         $tokens = preg_split('@(?<!\\\\)/@', $query);
 
-        $field      = null;
-        $connector  = null;
-        $operator   = null;
-        $value      = null;
+        $field          = null;
+        $connector      = null;
+        $operator       = null;
+        $value          = null;
+        $tmpSeparator   = null;
 
         while ( null !== ($token = array_shift($tokens)) ) {
-            //-----
-            // ...
+            //-------------------
+            // field token start
             if ( is_null($field) ) {
                 $field      = $token;
+
+                if ( in_array($tmpSeparator, array('or', 'and')) ) {
+                    $this->addSeparator($field, $tmpSeparator);
+                } else {
+                    $this->addSeparator($field, 'and');
+                }
+
                 continue;
             }
 
@@ -385,11 +406,18 @@ class Field_Search extends Field
 
             //-----------
             // separator
-            } else if ( 'and' === $token ) {
+            } else if ( in_array($token, array('and', '_and_', '_or_')) ) {
+                if ( $token == '_or_' ) {
+                    $tmpSeparator = 'or';
+                } else {
+                    $tmpSeparator = 'and';
+                }
+
                 $field      = null;
                 $connector  = null;
                 $operator   = null;
                 $value      = null;
+
                 continue;
             }
 
@@ -413,6 +441,11 @@ class Field_Search extends Field
         $this->_aryOperator[$fd][]  = $operator;
     }
 
+    function addSeparator($fd, $separator)
+    {
+        $this->_arySeparator[$fd]   = $separator;
+    }
+
     function setConnector($fd, $connector=null)
     {
         if ( is_null($connector) ) {
@@ -431,6 +464,15 @@ class Field_Search extends Field
         }
     }
 
+    function setSeparator($separator=null)
+    {
+        if ( is_null($separator) ) {
+            $this->_arySeparator        = array();
+        } else {
+            $this->_arySeparator        = array($separator);
+        }
+    }
+
     function getOperator($fd, $i=0)
     {
         return is_null($i) ? 
@@ -445,14 +487,20 @@ class Field_Search extends Field
             (isset($this->_aryConnector[$fd][$i]) ? $this->_aryConnector[$fd][$i] : null);
     }
 
+    function getSeparator($fd)
+    {
+        return isset($this->_arySeparator[$fd]) ? $this->_arySeparator[$fd] : 'and';
+    }
+
     function serialize()
     {
         $aryQuery   = array();
 
-        foreach ( $this->listFields() as $fd ) {
+        foreach ( $this->listFields() as $j => $fd ) {
             $aryValue       = $this->getArray($fd);
             $aryOperator    = $this->getOperator($fd, null);
             $aryConnector   = $this->getConnector($fd, null);
+            $separator      = $this->getSeparator($fd);
 
             if ( !($cnt = max(count($aryValue), count($aryOperator), count($aryConnector))) ) {
                 continue;
@@ -514,16 +562,27 @@ class Field_Search extends Field
                 }
             }
 
+            $aryTmp = array();
             if ( !empty($buf) ) {
-                if ( !empty($aryQuery) ) {
-                    $aryQuery[] = 'and';
+                if ( $separator === 'or' ) {
+                    $aryTmp[] = '_or_';
+                } else {
+                    $aryTmp[] = '_and_';
                 }
-                $aryQuery[] = $fd;
+                $aryTmp[] = $fd;
                 foreach ( $buf as $token ) {
-                    $aryQuery[] = $token;
+                    $aryTmp[] = $token;
                 }
                 $buf    = array();
+                if ( $separator === 'or' ) {
+                    $aryQuery = array_merge($aryQuery, $aryTmp);
+                } else {
+                    $aryQuery = array_merge($aryTmp, $aryQuery);
+                }
             }
+        }
+        if ( !empty($aryQuery) and in_array($aryQuery[0], array('_or_', '_and_', 'and')) ) {
+            array_shift($aryQuery);
         }
 
         return join('/', $aryQuery);

@@ -60,18 +60,79 @@ class ACMS_GET_Ios_Config extends ACMS_GET
 
         //DB Connect
         $DB = DB::singleton(dsn());
-        
-        $SQL = SQL::newSelect('category');
+        $category   = array();
+        $SQL        = SQL::newSelect('category');
         $SQL->addSelect('category_id');
         $SQL->addSelect('category_name');
         $SQL->addSelect('category_code');
-        $SQL->addWhereOpr('category_blog_id', $global['bid'], '=');
-        $query = $SQL->get(dsn());
-        $category = $DB->query($query, 'all');
-        foreach ( $category as $c => $val ) {
-            $category[$c]['category_id']    = strval($val['category_id']);
-            $category[$c]['category_name']  = strval($val['category_name']);
-            $category[$c]['category_code']  = strval($val['category_code']);
+        $SQL->addSelect('category_status');
+        $SQL->addSelect('category_parent');
+        $SQL->addSelect('category_left');
+        $SQL->addSelect('category_sort');
+        $SQL->addSelect('entry_status');
+        $SQL->addLeftJoin('entry', 'entry_category_id', 'category_id');
+
+        $CaseW  = SQL::newWhere();
+        $CaseW->addWhereOpr('entry_blog_id', null, '<>');
+        $CaseW->addWhereOpr('entry_status', 'trash', '<>');
+
+        $Case   = SQL::newCase();
+        $Case->add($CaseW, 1);
+        $Case->setElse('NULL');
+
+        $SQL->addSelect($Case, 'category_entry_amount', null, 'COUNT');
+        $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
+        ACMS_Filter::categoryTreeGlobal($SQL, $global['bid'], true, null);
+        $SQL->addGroup('category_id');
+        $SQL->addOrder('blog_left');
+        ACMS_Filter::categoryOrder($SQL, 'sort-asc');
+
+        $q  = $SQL->get(dsn());
+        if ( !!$DB->query($q, 'fetch') and !!($row = $DB->fetch($q)) ) {
+            $all    = array();
+            $amount = array();
+            $parent = array();
+            $last   = array();
+            do {
+                $cid    = intval($row['category_id']);
+                $pid    = intval($row['category_parent']);
+                $all[$pid][]    = $row;
+                $parent[$cid]   = $pid;
+                $last[$pid]     = $cid;
+                if ( !isset($amount[$pid]) ) $amount[$pid]  = 0;
+                $amount[$pid]   += 1;
+            } while ( !!($row = $DB->fetch($q)) );
+
+            $stack  = $all[0];
+            unset($all[0]);
+            $last   = array_flip($last);
+
+            $marks      = configArray('indent_marks');
+            $c          = 0;
+            while ( $row = array_shift($stack) ) {
+                $cid    = intval($row['category_id']);
+                $pid    = intval($row['category_parent']);
+
+                $blocks = array();
+                if ( !empty($parent[$cid]) ) {
+                    $blocks[]   = isset($last[$cid]) ? $marks[0] : $marks[1];
+                    $_pid   = $cid;
+                    while ($_pid = $parent[$_pid]) {
+                        if ( empty($parent[$_pid]) ) break;
+                        $blocks[]   = isset($last[$_pid]) ? $marks[2] : $marks[3];
+                    }
+                }
+
+                $category[$c]['category_id']    = strval($row['category_id']);
+                $category[$c]['category_name']  = strval($row['category_name']);
+                $category[$c]['category_code']  = strval($row['category_code']);
+
+                if ( isset($all[$cid]) ) {
+                    while ( $_row = array_pop($all[$cid]) ) array_unshift($stack, $_row);
+                    unset($all[$cid]);
+                }
+                $c++;
+            }
         }
         
         $SQL = SQL::newSelect('tag');

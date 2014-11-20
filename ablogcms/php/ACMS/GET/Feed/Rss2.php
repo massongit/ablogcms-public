@@ -35,6 +35,20 @@ class ACMS_GET_Feed_Rss2 extends ACMS_GET_Entry
         $limit  = config('feed_rss2_limit');
         $order  = ORDER ? ORDER : config('feed_rss2_order');
 
+        $SQL    = SQL::newSelect('blog');
+        $SQL->addSelect('blog_id');
+        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+        $blogArray  = $DB->query($SQL->get(dsn()), 'all');
+        $exceptBlog = array();
+
+        foreach ( $blogArray as $bid ) {
+            $bid    = $bid['blog_id'];
+            $bconf  = loadBlogConfig($bid);
+            if ( $bconf->get('feed_output_disable') === 'on' ) {
+                $exceptBlog[] = $bid;
+            }
+        }
+
         $SQL    = SQL::newSelect('entry');
         $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
@@ -43,6 +57,9 @@ class ACMS_GET_Feed_Rss2 extends ACMS_GET_Entry
         ACMS_Filter::blogStatus($SQL);
         ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
         ACMS_Filter::categoryStatus($SQL);
+
+        // config（feed_output_disable）で指定されたブログを除外
+        $SQL->addWhereNotIn('blog_id', $exceptBlog);
 
         if ( !empty($this->eid) ) {
             $SQL->addWhereOpr('entry_id', $this->eid);
@@ -77,7 +94,8 @@ class ACMS_GET_Feed_Rss2 extends ACMS_GET_Entry
 
         $lastBuildDate  = '1000-01-01 00:00:00';
         while ( $row = $DB->fetch($q) ) {
-            $bid    = $row['entry_blog_id'];
+            $bid        = $row['entry_blog_id'];
+
             $uid    = $row['entry_user_id'];
             $cid    = $row['entry_category_id'];
             $eid    = $row['entry_id'];

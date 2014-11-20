@@ -180,7 +180,7 @@ class Services_Twitter extends OAuth_Consumer
     public function setUrl()
     {
         $this->request_token_url    = 'https://api.twitter.com/oauth/request_token';
-        $this->authorize_url        = 'https://api.twitter.com/oauth/authorize';
+        $this->authorize_url        = 'https://api.twitter.com/oauth/authenticate';
         $this->access_token_url     = 'https://api.twitter.com/oauth/access_token';
     }
 
