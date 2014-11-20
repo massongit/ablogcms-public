@@ -40,6 +40,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $this->serial_navi_ignore_category_on = config('entry_body_serial_navi_ignore_category');
         $this->tag_on               = config('entry_body_tag_on');
         $this->summary_on           = config('entry_body_summary_on');
+        $this->show_all_index       = config('entry_body_show_all_index');
         $this->detail_date_on       = config('entry_body_detail_date_on');
         $this->comment_on           = config('entry_body_comment_on');
         $this->trackback_on         = config('entry_body_trackback_on');
@@ -383,6 +384,11 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             'entry:loop.ccd'    => ACMS_RAM::categoryCode($cid),
             'entry:loop.ecd'    => ACMS_RAM::entryCode($eid),
         );
+        if ( !empty($link) ) {
+            $vars   += array(
+                'link'  => $link,
+            );
+        }
         
         //------------
         // build date
@@ -675,24 +681,20 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $from   = ($this->page - 1) * $limit;
             $SQL    = SQL::newSelect('entry');
             $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
-
-            if ( !empty($this->bid) ) {
-                if ( is_int($this->bid) ) {
-                    ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
-                } else if ( strpos($this->bid, ',') !== false ) {
-                    $SQL->addWhereIn('blog_id', explode(',', $this->bid));
-                }
-            }
-            ACMS_Filter::blogStatus($SQL);
             $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
+            
+            $multiId = false;
+            
             if ( !empty($this->cid) ) {
                 if ( is_int($this->cid) ) {
                     ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
                 } else if ( strpos($this->cid, ',') !== false ) {
                     $SQL->addWhereIn('category_id', explode(',', $this->cid));
+                    $multiId = true;
                 }
             }
             ACMS_Filter::categoryStatus($SQL);
+
             ACMS_Filter::entrySession($SQL);
             ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
             if ( !empty($this->tags) ) {
@@ -712,15 +714,30 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                     $SQL->addWhereOpr('entry_user_id', $this->uid);
                 } else if ( strpos($this->uid, ',') !== false ) {
                     $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
+                    $multiId = true;
                 }
             }
             if ( !empty($this->eid) && !is_int($this->eid) ) {
                 $SQL->addWhereIn('entry_id', explode(',', $this->eid));
+                $multiId = true;
             }
+
+            if ( !empty($this->bid) ) {
+                if ( is_int($this->bid) ) {
+                    if ( $multiId ) {
+                        ACMS_Filter::blogTree($SQL, $this->bid, 'descendant-or-self');
+                    } else {
+                        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+                    }
+                } else if ( strpos($this->bid, ',') !== false ) {
+                    $SQL->addWhereIn('blog_id', explode(',', $this->bid));
+                }
+            }
+            ACMS_Filter::blogStatus($SQL);
 
             $Amount = new SQL_Select($SQL);
 
-            $Amount->setSelect('*', 'entry_amount', null, 'COUNT');
+            $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
             if ( !$itemsAmount = intval($DB->query($Amount->get(dsn()), 'one')) ) {
                 return $this->resultsNotFound($Tpl);
             }
@@ -734,6 +751,9 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $SQL->setLimit($_limit, $from + $offset);
 
             ACMS_Filter::entryOrder($SQL, $entryOrder, $this->uid, $this->cid);
+
+            $SQL->setGroup('entry_id');
+
             $q  = $SQL->get(dsn());
             $DB->query($q, 'fetch');
 
@@ -761,6 +781,9 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
 
                 //---------
                 // column
+                if ( $this->show_all_index == 'on' ) {
+                    $summaryRange = null;
+                }
                 if ( $Column = loadColumn($eid, $summaryRange, $RVID_) ) {
                     $this->buildColumn($Column, $Tpl, $eid);
                     if ( !empty($summaryRange) ) {

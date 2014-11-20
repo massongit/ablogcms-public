@@ -25,6 +25,7 @@ class ACMS_GET_Tag_Cloud extends ACMS_GET
         ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
         if ( !empty($this->Field) ) { ACMS_Filter::entryField($SQL, $this->Field); }
+        if ( !empty($this->eid) ) { $SQL->addWhereOpr('entry_id', $this->eid); }
         $SQL->addGroup('tag_name');
         if ( 1 < ($tagThreshold = idval(config('tag_cloud_threshold'))) ) {
             $SQL->addHaving('tag_amount >= '.$tagThreshold);

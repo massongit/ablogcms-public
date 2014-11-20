@@ -13,7 +13,10 @@ class ACMS_GET_Form extends ACMS_GET
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
 
-        $step   = $this->Get->get('step');
+        $step   = $this->Post->get('error');
+        if ( empty($step) ) {
+            $step   = $this->Get->get('step');
+        }
         if ( $this->Post->isValidAll() ) {
             $step   = $this->Post->get('step', $step);
         } else {
@@ -54,6 +57,27 @@ class ACMS_GET_Form extends ACMS_GET
             $this->Post->add('form_id', $fcode);
         }
         $Tpl->add($Block, $this->buildField($this->Post, $Tpl, $Block, ''));
+
+
+        //---------
+        // CSRF対策
+        // リファラチェックとトークン埋め込みでCSRF対策を行っている
+        if ( $step == 'confirm' ) {
+            if ( !isset($_SESSION) ) session_start();
+
+            $tpl    = $Tpl->get();
+            if ( isset($_SESSION['formToken']) ) {
+                $token                  = $_SESSION['formToken'];
+            } else {
+                $token                  = sha1(uniqueString().'acms'.session_id());
+                $_SESSION['formToken']  = $token;
+            }
+            // token の埋め込み
+            $tpl    = preg_replace('@(?=<\s*/\s*form[^\w]*>)@i', '<input type="hidden" name="formToken" value="'.$token.'" />'."\n", $tpl);
+
+            return $tpl;
+        }
+
         return $Tpl->get();
     }
 }

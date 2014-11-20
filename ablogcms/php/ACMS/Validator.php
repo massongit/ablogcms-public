@@ -11,8 +11,8 @@ class ACMS_Validator
 {
     function required($val)
     {
-        //return ('' !== $val);
-        return !empty($val) or ('0' === $val);
+        $tmp = preg_replace('/^[\s　]*(.*?)[\s　]*$/u', '\1', $val);
+        return !empty($tmp) or ('0' === $tmp);
     }
 
     function minlength($val, $arg)

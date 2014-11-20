@@ -73,9 +73,21 @@ class ACMS_GET
                     $this->Q->addChild('field', $Arg->getChild('field'));
                 }
             } else if ( !$isGlobal or !$this->Q->get($key) ) {
-                $val    = $Arg->get($key);
-                if ( ('page' == $key) and (1 > $val) ) $val = 1;
-                $this->Q->set($key, $val);
+                $val    = $Arg->getArray($key);
+                if ( ('page' == $key) and (1 > $val[0]) ) $val[0] = 1;
+                $this->Q->set($key, array_shift($val));
+                foreach ( $val as $argV ) {
+                    $this->Q->add($key, $argV);
+                }
+            } else if ( $isGlobal && ( 0
+                || ( $key == 'start' && $this->Q->get($key) == '1000-01-01 00:00:00' )
+                || ( $key == 'end' && $this->Q->get($key) == '9999-12-31 23:59:59' )
+            ) ) {
+                $val = $Arg->getArray($key);
+                $this->Q->set($key, array_shift($val));
+                foreach ( $val as $argV ) {
+                    $this->Q->add($key, $argV);
+                }
             }
         }
 
@@ -148,6 +160,7 @@ class ACMS_GET
                 'admin' => $config,
                 'query' => array(
                     'mid'   => $this->mid,
+                    'rid'   => RID,
                 ),
             ));
 
@@ -940,7 +953,7 @@ class ACMS_GET
             
             if ( $addend ) {
                 $Tpl->add('unit:loop');
-            } else {
+            } else if ( $count != 0 && $config['unit'] > 0 ) {
                 if ( !($count % $config['unit']) ) {
                     $Tpl->add('unit:loop');
                 }
@@ -961,9 +974,14 @@ class ACMS_GET
             $type   = $row['column_type'];
             if ( 'text' == $type ) {
                 $_text  = $row['column_field_1'];
-                if ( 'markdown' == $row['column_field_2'] ) {
-                    require_once LIB_DIR.'Markdown.php';
-                    $_text  = Markdown($_text);
+                switch( $row['column_field_2'] ){
+                    case 'markdown':
+                        require_once LIB_DIR.'Markdown.php';
+                        $_text = Markdown($_text);
+                        break;
+                    case 'table':
+                        $_text = ACMS_Corrector::table($_text);
+                        break;
                 }
                 $text   = preg_replace('@\s+@', ' ', strip_tags($_text));
                 $data   = explode(':acms_unit_text_delimiter:', $text);

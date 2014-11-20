@@ -323,6 +323,10 @@ class Mail
         foreach ( $this->_headers as $field => $header ) {
             $line   = '';
 
+            if ( !isset($header['values']) || !isset($header['params']) ) {
+                continue;
+            }
+
             $values = $header['values'];
             $params = $header['params'];
 
@@ -447,7 +451,6 @@ class Mail
         $send       = false;
 
         if ( !empty($this->_mailFrom) ) {
-
             //------
             // smtp
             if ( 1
@@ -465,6 +468,8 @@ class Mail
                 }
                 if ( isset($this->_headers['Bcc']) ) {
                     $_aryTo = array_merge($_aryTo, $this->_headers['Bcc']['values']);
+                    // [CMS-1914] SMTPを使ったメール送信時にBCCにバグ
+                    $this->_headers['Bcc'] = '';
                 }
 
                 foreach ( $_aryTo as $to ) {

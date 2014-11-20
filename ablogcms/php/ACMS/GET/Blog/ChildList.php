@@ -22,6 +22,12 @@ class ACMS_GET_Blog_ChildList extends ACMS_GET
         $SQL->addWhereOpr('blog_indexing', 'on');
         ACMS_Filter::blogOrder($SQL, config('blog_child_list_order'));
         ACMS_Filter::blogStatus($SQL);
+        if ( !empty($this->keyword) ) {
+            ACMS_Filter::blogKeyword($SQL, $this->keyword);
+        }
+        if ( !empty($this->Field) ) {
+            ACMS_Filter::blogField($SQL, $this->Field);
+        }
         $SQL->setLimit(intval(config('blog_child_list_limit')));
         $q  = $SQL->get(dsn());
         

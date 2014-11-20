@@ -18,6 +18,10 @@ class ACMS_GET_Approval_Notification extends ACMS_GET
         }
         $count  = 0;
         foreach ( $all as $row ) {
+            $exceptUsers = explode(',', $row['notification_except_user_ids']);
+            if ( in_array(strval(SUID), $exceptUsers) ) {
+                continue;
+            }
             if ( $row['notification_type'] == 'reject' ) {
                 $requestUser = $row['notification_request_user_id'];
 
@@ -45,34 +49,69 @@ class ACMS_GET_Approval_Notification extends ACMS_GET
     {
         $DB     = DB::singleton(dsn());
         if ( editionIsEnterprise() ) {
-            $SQL    = SQL::newSelect('usergroup_user');
-            $SQL->addSelect('usergroup_id');
-            $SQL->addWhereOpr('user_id', SUID);
-            $groups = $DB->query($SQL->get(dsn()), 'all');
-            $groupsList = array();
-            foreach ( $groups as $val ) {
-                $groupsList[] = $val['usergroup_id'];;
+            $SQL    = SQL::newSelect('workflow');
+            $SQL->addSelect('workflow_type');
+            $SQL->addWhereOpr('workflow_status', 'open');
+            $SQL->addWhereOpr('workflow_blog_id', BID);
+            $type   = $DB->query($SQL->get(dsn()), 'one');
+
+            // 並列承認
+            if ( $type == 'parallel' ) {
+                $SQL    = SQL::newSelect('approval_notification');
+                $SQL->addLeftJoin('approval', 'notification_approval_id', 'approval_id');
+                $SQL->addInnerJoin('entry_rev', 'notification_rev_id', 'entry_rev_id');
+                $SQL->addWhereOpr('notification_entry_id', SQL::newField('entry_id'));
+
+                $WHERE  = SQL::newWhere();
+
+                // reject
+                $W      = SQL::newWhere();
+                $W->addWhereOpr('notification_type', 'reject', '=', 'OR');
+                $WHERE->addWhere($W, 'OR');
+
+                // request
+                $W2     = SQL::newWhere();
+                $W2->addWhereOpr('notification_request_user_id', SUID, '<>');
+                $WHERE->addWhere($W2, 'OR');
+
+                $SQL->addWhere($WHERE);
+            // 直列承認
+            } else {
+                $SQL    = SQL::newSelect('usergroup_user');
+                $SQL->addWhereOpr('user_id', SUID);
+                $groups = $DB->query($SQL->get(dsn()), 'all');
+                $groupsList = array();
+                foreach ( $groups as $val ) {
+                    $groupsList[] = $val['usergroup_id'];;
+                }
+
+                $SQL    = SQL::newSelect('approval_notification');
+                $SQL->addLeftJoin('approval', 'notification_approval_id', 'approval_id');
+                $SQL->addInnerJoin('entry_rev', 'notification_rev_id', 'entry_rev_id');
+                $SQL->addWhereOpr('notification_entry_id', SQL::newField('entry_id'));
+
+                $WHERE  = SQL::newWhere();
+
+                // reject
+                $W      = SQL::newWhere();
+                $W->addWhereOpr('notification_type', 'reject', '=', 'OR');
+                $W->addWhereOpr('notification_receive_user_id', SUID, '=', 'OR');
+                $WHERE->addWhere($W, 'OR');
+
+                // request
+                $W2     = SQL::newWhere();
+                $W2->addWhereOpr('notification_receive_user_id', null);
+                $W2->addWhereIn('notification_receive_usergroup_id', $groupsList);
+                $WHERE->addWhere($W2, 'OR');
+
+                $SQL->addWhere($WHERE);
             }
-
-            $SQL    = SQL::newSelect('approval_notification');
-            $SQL->addLeftJoin('approval', 'notification_approval_id', 'approval_id');
-
-            $WHERE  = SQL::newWhere();
-
-            $W      = SQL::newWhere();
-            $W->addWhereOpr('notification_type', 'reject', '=', 'OR');
-            $W->addWhereOpr('notification_receive_user_id', SUID, '=', 'OR');
-            $WHERE->addWhere($W, 'OR');
-
-            $W2     = SQL::newWhere();
-            $W2->addWhereOpr('notification_receive_user_id', null);
-            $W2->addWhereIn('notification_receive_usergroup_id', $groupsList);
-            $WHERE->addWhere($W2, 'OR');
-
-            $SQL->addWhere($WHERE);
         } else if ( editionIsProfessional() ) {
             $SQL    = SQL::newSelect('approval_notification');
             $SQL->addLeftJoin('approval', 'notification_approval_id', 'approval_id');
+            $SQL->addInnerJoin('entry_rev', 'notification_rev_id', 'entry_rev_id');
+            $SQL->addWhereOpr('notification_entry_id', SQL::newField('entry_id'));
+
             if ( isSessionContributor(false) ) {
                 $SQL->addWhereOpr('notification_type', 'request', '<>');
             }
@@ -112,6 +151,11 @@ class ACMS_GET_Approval_Notification extends ACMS_GET
 
         $empty = true;
         foreach ( $all as $row ) {
+            $exceptUsers    = explode(',', $row['notification_except_user_ids']);
+            if ( in_array(strval(SUID), $exceptUsers)
+            ) {
+                continue;
+            }
             if ( $row['notification_type'] == 'reject' ) {
                 $requestUser = $row['notification_request_user_id'];
 
@@ -183,11 +227,16 @@ class ACMS_GET_Approval_Notification extends ACMS_GET
                 $approval['expired'] = ' class="acms-table-danger"';
             }
 
+            $approval['rev_id']         = $row['notification_rev_id'];
+            $approval['entry_id']       = $row['notification_entry_id'];
+            $approval['blog_id']        = $row['notification_blog_id'];
+            $approval['approval_id']    = $row['notification_approval_id'];
+
             $approval['url'] = acmsLink(array(
-                'bid'   => $row['approval_blog_id'],
-                'eid'   => $row['notification_entry_id'],
-                'tpl'   => 'ajax/revision-preview.html',
-                'query' => array(
+                'bid'           => $row['approval_blog_id'],
+                'eid'           => $row['notification_entry_id'],
+                'tpl'           => 'ajax/revision-preview.html',
+                'query'         => array(
                     'rvid'  => $row['notification_rev_id'],
                 ),
             ), false, false, true);

@@ -16,7 +16,7 @@ class ACMS_User_Hook
      * @param string   &$tpl
      * @param ACMS_GET $thisModule
      */
-    public function beforeGetFire($tpl, $thisModule)
+    public function beforeGetFire(&$tpl, $thisModule)
     {
 
     }
@@ -28,7 +28,7 @@ class ACMS_User_Hook
      * @param string   &$res
      * @param ACMS_GET $thisModule
      */
-    public function afterGetFire($res, $thisModule)
+    public function afterGetFire(&$res, $thisModule)
     {
 
     }
@@ -60,7 +60,7 @@ class ACMS_User_Hook
      *
      * @param $tpl &$tpl テンプレート文字列
      */
-    public function beforeBuild($tpl)
+    public function beforeBuild(&$tpl)
     {
 
     }
@@ -71,7 +71,29 @@ class ACMS_User_Hook
      *
      * @param string &$res レスポンス文字列
      */
-    public function afterBuild($res)
+    public function afterBuild(&$res)
+    {
+
+    }
+
+    /**
+     * フォーム Submit時
+     *
+     * @param array $mail 自動返信メール
+     * @param array $mailAdmin 管理者宛メール
+     */
+    public function formSubmit($mail, $mailAdmin)
+    {
+
+    }
+
+    /**
+     * 承認通知
+     *
+     * @param array $data 通知データ
+     * @param bool falseを設定するとデフォルトのメールが飛ばないように設定
+     */
+    public function approvalNotification($data, &$send=true)
     {
 
     }
@@ -94,6 +116,32 @@ class ACMS_User_Hook
     public function extendsGlobalVars($globalVars)
     {
         // $globalVars->set('key', 'var');
+    }
+
+    /**
+     * 引用ユニット拡張
+     * @param string $url 引用URL
+     * @param string &$html 整形後HTML
+     */
+    public function extendsQuoteUnit($url, &$html)
+    {
+        // $parsed_url = parse_url($url);
+        // if ( $parsed_url['host'] === 'sampleple.com' ) {
+        //     $html  = '';
+        // }
+    }
+
+    /**
+     * ビデオユニット拡張
+     * @param string $url URL
+     * @param string &$id Video ID
+     */
+    public function extendsVideoUnit($url, &$id)
+    {
+        // $parsed_url = parse_url($url);
+        // if ( !empty($parsed_url['path']) ) {
+        //     $id = preg_replace('@/@', '', $parsed_url['path']);
+        // }
     }
 
     /**

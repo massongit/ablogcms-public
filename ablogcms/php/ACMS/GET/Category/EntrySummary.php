@@ -95,7 +95,7 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
             $SQL->addWhereOpr('entry_primary_image', null, '<>');
         }
         $Amount = new SQL_Select($SQL);
-        $Amount->setSelect('*', 'entry_amount', null, 'count');
+        $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'count');
         if(!$this->_itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'))){
             if ( 'on' == $this->_config['notfound'] ) {
                 $Tpl->add('notFound');
@@ -112,6 +112,7 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
         
         $offset = intval($this->_config['offset']);
         $SQL->setLimit($limit, $offset);
+        $SQL->setGroup('entry_id');
         $q  = $SQL->get(dsn());
         
         return $q;

@@ -84,6 +84,20 @@ class ACMS_Filter
     }
 
     /**
+     * ブログをfieldテーブルから，指定されたフィールドで検索します
+     *
+     * ACMS_Filter::blogField($SQL, $Field);
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param Field $Field
+     * @return void
+     */
+    public static function blogField(& $SQL, $Field)
+    {
+        ACMS_Filter::_field($SQL, $Field, 'field_bid', 'blog_id');
+    }
+
+    /**
      * ブログの公開状態とアクセス中の権限に応じて，表示条件を振り分けます
      * secretモードを表示対象にします
      *
@@ -122,6 +136,20 @@ class ACMS_Filter
     {
         list($field, $order) = explode('-', $order);
         $SQL->addOrder('blog_'.$field, $order, $scp);
+    }
+
+    /**
+     * ブログをfulltextテーブルから，指定されたキーワードで全文検索します
+     *
+     * ACMS_Filter::blogKeyword($SQL, 'first second third keywords')
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param string $keyword
+     * @return void
+     */
+    public static function blogKeyword(& $SQL, $keyword)
+    {
+        ACMS_Filter::_keyword($SQL, $keyword, 'fulltext_bid', 'blog_id');
     }
 
     //------
@@ -277,6 +305,20 @@ class ACMS_Filter
     }
 
     /**
+     * カテゴリーをfieldテーブルから，指定されたフィールドで検索します
+     *
+     * ACMS_Filter::categoryField($SQL, $Field);
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param Field $Field
+     * @return void
+     */
+    public static function categoryField(& $SQL, $Field)
+    {
+        ACMS_Filter::_field($SQL, $Field, 'field_cid', 'category_id');
+    }
+
+    /**
      * カテゴリーの階層構造を，axisを指定して絞り込みます
      *
      * [example]
@@ -346,6 +388,20 @@ class ACMS_Filter
         if ( 'amount' == $field ) $field = 'entry_'.$field;
         if ( 'sort' == $field ) $field = 'left';
         $SQL->addOrder('category_'.$field, $order, $scope);
+    }
+
+    /**
+     * カテゴリーをfulltextテーブルから，指定されたキーワードで全文検索します
+     *
+     * ACMS_Filter::categoryKeyword($SQL, 'first second third keywords')
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param string $keyword
+     * @return void
+     */
+    public static function categoryKeyword(& $SQL, $keyword)
+    {
+        ACMS_Filter::_keyword($SQL, $keyword, 'fulltext_cid', 'category_id');
     }
 
     //-------
@@ -653,9 +709,12 @@ class ACMS_Filter
      */
     private static function _field(& $SQL, $Field, $fieldKey = null, $tableKey = null)
     {
+        $unionAry = array();
+
         foreach ( $Field->listFields() as $j => $fd ) {
             $Where          = SQL::newWhere();
             $aryOperator    = $Field->getOperator($fd, null);
+
             foreach ( $aryOperator as $i => $operator ) {
                 $value  = $Field->get($fd, '', $i);
                 if ( 1
@@ -721,6 +780,7 @@ class ACMS_Filter
                     ('OR' == strtoupper($Field->getConnector($fd, $i))) ? 
                     'OR' : 'AND');
             }
+
             if ( 1
                 and !!$Where->get()
                 and !!$fieldKey
@@ -728,17 +788,62 @@ class ACMS_Filter
             ) {
                 $SUB    = SQL::newSelect('field');
                 $SUB->addSelect($fieldKey);
-                if ( empty($j) ) {
-                    $SUB->addSelect('field_value', 'field_sort');
-                    $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
-                }
                 $SUB->addWhereOpr('field_key', $fd);
                 $SUB->addWhere($Where);
-                $SQL->addInnerJoin($SUB, $fieldKey, $tableKey, 'field'.$j);
+
+                if ( empty($j) ) {
+                    $unionAry[] = clone $SUB;
+                } else {
+                    $separator = $Field->getSeparator($fd);
+                    if ( $separator === 'or' ) {
+                        $unionAry[] = clone $SUB;
+                    } else {
+                        $uniouCount = count($unionAry);
+                        if ( $uniouCount > 1 ) {
+                            $UNION = SQL::newSelect($unionAry[0], 'field_union'.$j);
+                            $UNION->setSelect($fieldKey);
+                        }
+                        for ( $i=1; $i<$uniouCount; $i++ ) {
+                            $UNION->addUnion($unionAry[$i]);
+                        }
+                        if ( $uniouCount > 1 ) {
+                            $SQL->addInnerJoin($UNION, $fieldKey, $tableKey, 'field'.$j);
+                        } else if ( $uniouCount > 0 ) {
+                            $SQL->addInnerJoin($unionAry[0], $fieldKey, $tableKey, 'field'.$j);
+                        }
+                        
+                        $unionAry   = array();
+                        $unionAry[] = clone $SUB;
+                    }
+                }
+                // sort
+                if ( empty($j) ) {
+                    $SUB    = SQL::newSelect('field');
+                    $SUB->addSelect($fieldKey);
+                    $SUB->addSelect('field_value', 'field_sort');
+                    $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
+                    $SUB->addWhereOpr('field_key', $fd);
+                    $SUB->addWhere($Where);
+                    $SQL->addLeftJoin($SUB, $fieldKey, $tableKey, 'field'.$j);
+                }
             } else {
                 $Where->addWhereOpr('field_key', $fd);
                 $SQL->addWhere($Where);
             }
+        }
+
+        $uniouCount = count($unionAry);
+        if ( $uniouCount > 1 ) {
+            $UNION = SQL::newSelect($unionAry[0], 'field_union_end');
+            $UNION->setSelect($fieldKey);
+        }
+        for ( $i=1; $i<$uniouCount; $i++ ) {
+            $UNION->addUnion($unionAry[$i]);
+        }
+        if ( $uniouCount > 1 ) {
+            $SQL->addInnerJoin($UNION, $fieldKey, $tableKey, 'field_end');
+        } else if ( $uniouCount > 0 ) {
+            $SQL->addInnerJoin($unionAry[0], $fieldKey, $tableKey, 'field_end');
         }
     }
 

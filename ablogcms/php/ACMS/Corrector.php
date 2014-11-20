@@ -475,5 +475,20 @@ class ACMS_Corrector
         }
         return str_replace(array_keys($this->const), '', $txt);
     }
+
+    function buildGlobalVars($txt)
+    {
+        return setGlobalVars($txt);
+    }
+
+    function buildModule($txt)
+    {
+        return build($txt, Field_Validation::singleton('post'));
+    }
+
+    function buildTpl($txt)
+    {
+        return $this->buildModule($this->buildGlobalVars($txt));
+    }
 }
 

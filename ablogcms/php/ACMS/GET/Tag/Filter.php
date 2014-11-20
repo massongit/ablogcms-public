@@ -41,7 +41,7 @@ class ACMS_GET_Tag_Filter extends ACMS_GET
                 'name'  => $tag,
                 'url'   => acmsLink(array(
                     'bid'   => $this->bid,
-                    'tag'   => $tags,
+                    'tag'   => array($tag),
                 )),
                 'omitUrl'=> acmsLink(array(
                     'bid'   => $this->bid,

@@ -133,6 +133,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $SQL->addSelect('entry_approval');
         $SQL->addSelect('entry_title');
         $SQL->addSelect('entry_category_id');
+        $SQL->addSelect('entry_blog_id');
         $SQL->addSelect('entry_link');
         $SQL->addSelect('entry_status');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
@@ -169,6 +170,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             $entry_list[] = array(
                 'eid'       => $row['entry_id'],
                 'cid'       => $row['entry_category_id'],
+                'bid'       => $row['entry_blog_id'],
                 'date'      => $row['entry_date'],
                 'title'     => $title,
                 'link'      => $row['entry_link'],
@@ -207,6 +209,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                 $current_entry_list[] = array(
                                     'eid'       => $list['eid'],
                                     'cid'       => $list['cid'],
+                                    'bid'       => $list['bid'],
                                     'title'     => $list['title'],
                                     'link'      => $list['link'],
                                     'status'    => $list['status'],
@@ -221,12 +224,13 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                             foreach ( $current_entry_list as $entry ) {
                                 $link   = $entry['link'];
                                 $link   = !empty($link) ? $link : acmsLink(array(
-                                    'bid' => $this->bid,
+                                    'bid' => $entry['bid'],
                                     'eid' => $entry['eid'],
                                 ));
                                 $entry_vars = array(
                                     'title'     => $entry['title'],
                                     'cid'       => $entry['cid'],
+                                    'bid'       => $entry['bid'],
                                     'status'    => $entry['status'],
                                 );
                                 if ( $link != '#' ) {
@@ -275,6 +279,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                     $current_entry_list[] = array(
                         'eid'       => $list['eid'],
                         'cid'       => $list['cid'],
+                        'bid'       => $list['bid'],
                         'title'     => $list['title'],
                         'link'      => $list['link'],
                         'status'    => $list['status'],
@@ -289,12 +294,13 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                 foreach ( $current_entry_list as $entry ) {
                     $link   = $entry['link'];
                     $link   = !empty($link) ? $link : acmsLink(array(
-                        'bid' => $this->bid,
+                        'bid' => $entry['bid'],
                         'eid' => $entry['eid'],
                     ));
                     $entry_vars = array(
                         'title'     => $entry['title'],
                         'cid'       => $entry['cid'],
+                        'bid'       => $entry['bid'],
                         'status'    => $entry['status'],
                     );
                     if ( $link != '#' ) {
@@ -336,6 +342,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                 $current_entry_list[] = array(
                                     'eid'       => $list['eid'],
                                     'cid'       => $list['cid'],
+                                    'bid'       => $list['bid'],
                                     'title'     => $list['title'],
                                     'link'      => $list['link'],
                                     'status'    => $list['status'],
@@ -350,12 +357,13 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                             foreach ( $current_entry_list as $entry ) {
                                 $link   = $entry['link'];
                                 $link   = !empty($link) ? $link : acmsLink(array(
-                                    'bid' => $this->bid,
+                                    'bid' => $entry['bid'],
                                     'eid' => $entry['eid'],
                                 ));
                                 $entry_vars = array(
                                     'title'     => $entry['title'],
                                     'cid'       => $entry['cid'],
+                                    'bid'       => $entry['bid'],
                                     'status'    => $entry['status'],
                                 );
                                 if ( $link != '#' ) {

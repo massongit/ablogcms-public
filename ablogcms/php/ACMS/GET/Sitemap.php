@@ -19,6 +19,20 @@ class ACMS_GET_Sitemap extends ACMS_GET
         $Tpl    = new Template($this->tpl);
         $DB     = DB::singleton(dsn());
 
+        $SQL    = SQL::newSelect('blog');
+        $SQL->addSelect('blog_id');
+        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+        $blogArray  = $DB->query($SQL->get(dsn()), 'all');
+        $exceptBlog = array();
+
+        foreach ( $blogArray as $bid ) {
+            $bid    = $bid['blog_id'];
+            $bconf  = loadBlogConfig($bid);
+            if ( $bconf->get('feed_output_disable') === 'on' ) {
+                $exceptBlog[] = $bid;
+            }
+        }
+
         /**
          * Blog
          */
@@ -32,6 +46,9 @@ class ACMS_GET_Sitemap extends ACMS_GET
             $SQL->addWhereOpr('blog_indexing', 'on');
         }
 
+        // config（feed_output_disable）で指定されたブログを除外
+        $SQL->addWhereNotIn('blog_id', $exceptBlog);
+
         // order
         $order = config('sitemap_blog_order', 'id-asc');
         ACMS_Filter::blogOrder($SQL, $order);
@@ -39,11 +56,26 @@ class ACMS_GET_Sitemap extends ACMS_GET
         $bQ = $SQL->get(dsn());
 
         if ( $DB->query($bQ, 'fetch') ) { while ( $bid = intval(ite($DB->fetch($bQ), 'blog_id')) ) {
-            $Tpl->add('url:loop', array(
+            $data        = array(
                 'loc'   => acmsLink(array(
-                    'bid' => $bid,
-                 ), false),
-            ));
+                    'bid'   => $bid,
+                ), false),
+            );
+            $SQL        = SQL::newSelect('entry');
+            $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
+            $SQL->addSelect('entry_updated_datetime');
+            ACMS_Filter::entryStatus($SQL);
+            ACMS_Filter::blogTree($SQL, $bid, $this->blogAxis());
+            if ( 'on' == config('sitemap_entry_indexing') ) {
+                $SQL->addWhereOpr('entry_indexing', 'on');
+            }
+            $SQL->setOrder('entry_updated_datetime', 'desc');
+            if ( $lastmod = $DB->query($SQL->get(dsn()), 'one') ) {
+                $t          = strtotime($lastmod);
+                $lastmod    = date('Y-m-d', $t).'T'.date('H:i:s', $t).preg_replace('@(?=\d{2,2}$)@', ':', date('O', $t));
+                $data['lastmod']    = $lastmod;
+            }
+            $Tpl->add('url:loop', $data);
 
             /**
              * Category
@@ -69,12 +101,28 @@ class ACMS_GET_Sitemap extends ACMS_GET
             do {
 
                 if ( !empty($cid) ) {
-                    $Tpl->add('url:loop', array(
+                    $data        = array(
                         'loc'   => acmsLink(array(
                             'bid'   => $bid,
                             'cid'   => $cid,
                         ), false),
-                    ));
+                    );
+                    $SQL        = SQL::newSelect('entry');
+                    $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
+                    $SQL->addSelect('entry_updated_datetime');
+                    ACMS_Filter::entryStatus($SQL);
+                    ACMS_Filter::categoryTree($SQL, $cid, $this->categoryAxis());
+                    $SQL->addWhereOpr('entry_blog_id', $bid);
+                    if ( 'on' == config('sitemap_entry_indexing') ) {
+                        $SQL->addWhereOpr('entry_indexing', 'on');
+                    }
+                    $SQL->setOrder('entry_updated_datetime', 'desc');
+                    if ( $lastmod = $DB->query($SQL->get(dsn()), 'one') ) {
+                        $t          = strtotime($lastmod);
+                        $lastmod    = date('Y-m-d', $t).'T'.date('H:i:s', $t).preg_replace('@(?=\d{2,2}$)@', ':', date('O', $t));
+                        $data['lastmod']    = $lastmod;
+                    }
+                    $Tpl->add('url:loop', $data);
                 }
 
                 /**

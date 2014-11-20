@@ -15,10 +15,23 @@ class ACMS_GET_Login extends ACMS_GET
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
         $block  = ALT ? ALT : 'auth';
+        $Login  =& $this->Post->getChild('login');
 
         //-----------
+        // blog index
+        if ( $Login->get('loginIndex') == 'yes' ) {
+            $block  = 'select';
+            $bidAry = $Login->getArray('bid');
+            foreach ( $bidAry as $bid ) {
+                $Tpl->add(array('selectBlog:loop', $block), array(
+                    'bid'   => $bid,
+                    'name'  => ACMS_RAM::blogName($bid),
+                    'url'   => acmsLink(array('bid'=>$bid, '_protocol'=>'http'), false),
+                ));
+            }
+        //-----------
         // subscribe
-        if ( 'on' == config('subscribe') ) {
+        } else if ( 'on' == config('subscribe') ) {
             $Tpl->add(array('subscribeLink', $block));
         } else {
             if ( 'subscribe' == ALT ) $block = 'auth';

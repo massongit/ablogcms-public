@@ -788,16 +788,6 @@ class SQL_Select extends SQL_Where
                 $q  .= ' AS '.$t['alias'];
             }
         }
-        
-        //----------
-        // union
-        $q  .= "\n ";
-        foreach ( $this->_union as $val ) {
-            if ( SQL::isClass($val, 'SQL_Select') ) {
-                $q  .= 'UNION '.$val->get($dsn);
-                $q  .= "\n";
-            }
-        }
 
         //----------
         // leftJoin
@@ -842,6 +832,16 @@ class SQL_Select extends SQL_Where
                     .' = '
                     .(!empty($data['scp']) ? $data['scp'].'.' : '').$data['b']
                 ;
+            }
+        }
+
+        //----------
+        // union
+        $q  .= "\n ";
+        foreach ( $this->_union as $val ) {
+            if ( SQL::isClass($val, 'SQL_Select') ) {
+                $q  .= "UNION (\n".$val->get($dsn);
+                $q  .= "\n)";
             }
         }
 
