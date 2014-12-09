@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: http://a-blogcms.jp/sitemap.xml

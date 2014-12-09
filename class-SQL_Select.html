@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen @package_version@">
+
+	<title>Class SQL_Select | a-blog cms docs</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?260161822">
+	<link rel="stylesheet" href="resources/style.css?2767127047">
+
+</head>
+
+<body>
+	<div id="navigation" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a href="index.html" class="brand">a-blog cms docs</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active">
+<span>Class</span>						</li>
+
+						<li class="divider-vertical"></li>
+
+						<li>
+							<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+						</li>
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="left">
+	<div id="menu">
+		<form id="search" class="form-search">
+			<input type="hidden" name="cx" value="">
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="text" name="q" class="search-query" placeholder="Search">
+		</form>
+
+
+		<div id="groups">
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-ACMS_Filter.html">ACMS_Filter</a></li>
+				<li><a href="class-ACMS_RAM.html">ACMS_RAM</a></li>
+				<li><a href="class-ACMS_User_Corrector.html">ACMS_User_Corrector</a></li>
+				<li><a href="class-ACMS_User_GET_EntryExtendSample_Edit.html">ACMS_User_GET_EntryExtendSample_Edit</a></li>
+				<li><a href="class-ACMS_User_GET_Sample.html">ACMS_User_GET_Sample</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_NotSpecialCategory.html">ACMS_User_GET_Touch_NotSpecialCategory</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_SpecialCategory.html">ACMS_User_GET_Touch_SpecialCategory</a></li>
+				<li><a href="class-ACMS_User_Hook.html">ACMS_User_Hook</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Insert.html">ACMS_User_POST_EntryExtendSample_Insert</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Update.html">ACMS_User_POST_EntryExtendSample_Update</a></li>
+				<li><a href="class-ACMS_User_POST_Sample.html">ACMS_User_POST_Sample</a></li>
+				<li><a href="class-DB.html">DB</a></li>
+				<li><a href="class-SQL.html">SQL</a></li>
+				<li><a href="class-SQL_Binary.html">SQL_Binary</a></li>
+				<li><a href="class-SQL_Delete.html">SQL_Delete</a></li>
+				<li><a href="class-SQL_Field.html">SQL_Field</a></li>
+				<li><a href="class-SQL_Field_Case.html">SQL_Field_Case</a></li>
+				<li><a href="class-SQL_Field_Function.html">SQL_Field_Function</a></li>
+				<li><a href="class-SQL_Field_Operator.html">SQL_Field_Operator</a></li>
+				<li><a href="class-SQL_Field_Operator_Between.html">SQL_Field_Operator_Between</a></li>
+				<li><a href="class-SQL_Field_Operator_In.html">SQL_Field_Operator_In</a></li>
+				<li><a href="class-SQL_Insert.html">SQL_Insert</a></li>
+				<li><a href="class-SQL_Replace.html">SQL_Replace</a></li>
+				<li class="active"><a href="class-SQL_Select.html">SQL_Select</a></li>
+				<li><a href="class-SQL_Sequence.html">SQL_Sequence</a></li>
+				<li><a href="class-SQL_Update.html">SQL_Update</a></li>
+				<li><a href="class-SQL_Where.html">SQL_Where</a></li>
+			</ul>
+
+
+
+
+
+			<h3>Functions</h3>
+			<ul>
+				<li><a href="function-myFunction.html">myFunction</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class SQL_Select</h1>
+
+
+	<div class="description">
+	<p>SQL_Select</p>
+
+<p>SQLヘルパのSelectメソッド群です。<br>
+メソッドの外で，条件対象のテーブルが選択されている必要があります</p>
+
+	</div>
+
+	<dl class="tree well">
+		<dd style="padding-left:0px">
+			<a href="class-SQL.html"><span>SQL</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-SQL_Where.html"><span>SQL_Where</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>SQL_Select</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="alert alert-info">
+		
+		
+		
+		<b>Package:</b> php<br>
+
+		<b>Located at</b> <a href="source-class-SQL_Select.html#515-901" title="Go to source code">SQL.php</a><br>
+	</div>
+
+
+
+		<h2>Methods summary</h2>
+		<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="addTable" id="_addTable">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addTable">#</a>
+			<code><a href="source-class-SQL_Select.html#536-543" title="Go to source code">addTable</a>( <span>mixed <var>$tb</var></span>, <span>mixed <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setTable" id="_setTable">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setTable">#</a>
+			<code><a href="source-class-SQL_Select.html#544-549" title="Go to source code">setTable</a>( <span>mixed <var>$tb</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addLeftJoin" id="_addLeftJoin">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addLeftJoin">#</a>
+			<code><a href="source-class-SQL_Select.html#551-573" title="Go to source code">addLeftJoin</a>( <span>string <var>$tb</var></span>, <span>string|integer <var>$a</var></span>, <span>string|integer <var>$b</var></span>, <span>string <var>$aScp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>string <var>$bScp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたtableと条件からtableを結合する。<br>
+$SQL->addLeftJoin('category', 'category_id', 'entry_category_id', 'category', 'entry');<br>
+LEFT JOIN acms_category AS category ON category.category_id = entry.entry_category_id</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたtableと条件からtableを結合する。<br>
+$SQL->addLeftJoin('category', 'category_id', 'entry_category_id', 'category', 'entry');<br>
+LEFT JOIN acms_category AS category ON category.category_id = entry.entry_category_id</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$tb</var></dt>
+						<dd>
+</dd>
+						<dt><var>$a</var></dt>
+						<dd>
+</dd>
+						<dt><var>$b</var></dt>
+						<dd>
+</dd>
+						<dt><var>$aScp</var></dt>
+						<dd>
+</dd>
+						<dt><var>$bScp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setLeftJoin" id="_setLeftJoin">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setLeftJoin">#</a>
+			<code><a href="source-class-SQL_Select.html#575-582" title="Go to source code">setLeftJoin</a>( <span>mixed <var>$tb</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$a</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$b</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$aScp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$bScp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addInnerJoin" id="_addInnerJoin">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addInnerJoin">#</a>
+			<code><a href="source-class-SQL_Select.html#584-608" title="Go to source code">addInnerJoin</a>( <span>string <var>$tb</var></span>, <span>string|integer <var>$a</var></span>, <span>string|integer <var>$b</var></span>, <span>string <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>string <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたtableと条件からINNER JOIN句を生成する。<br>
+$SQL->addInnerJoin('category', 'category_id', 'entry_category_id', 'category', 'acms_entry');<br>
+INNER JOIN acms_category AS category ON category.category_id = entry.entry_category_id</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたtableと条件からINNER JOIN句を生成する。<br>
+$SQL->addInnerJoin('category', 'category_id', 'entry_category_id', 'category', 'acms_entry');<br>
+INNER JOIN acms_category AS category ON category.category_id = entry.entry_category_id</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$tb</var></dt>
+						<dd>
+</dd>
+						<dt><var>$a</var></dt>
+						<dd>
+</dd>
+						<dt><var>$b</var></dt>
+						<dd>
+</dd>
+						<dt><var>$als</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setInnerJoin" id="_setInnerJoin">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setInnerJoin">#</a>
+			<code><a href="source-class-SQL_Select.html#610-617" title="Go to source code">setInnerJoin</a>( <span>mixed <var>$tb</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$a</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$b</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addUnion" id="_addUnion">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addUnion">#</a>
+			<code><a href="source-class-SQL_Select.html#619-622" title="Go to source code">addUnion</a>( <span>mixed <var>$select</var></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addSelect" id="_addSelect">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addSelect">#</a>
+			<code><a href="source-class-SQL_Select.html#624-654" title="Go to source code">addSelect</a>( <span>string <var>$fd</var></span>, <span>string <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>string <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>string <var>$func</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたfieldを追加する。<br>
+$SQL->addSelect('entry_id', 'entry_count', 'acms_entry', 'count');<br>
+SELECT COUNT(acms_entry.entry_id) AS entry_count</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたfieldを追加する。<br>
+$SQL->addSelect('entry_id', 'entry_count', 'acms_entry', 'count');<br>
+SELECT COUNT(acms_entry.entry_id) AS entry_count</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$fd</var></dt>
+						<dd>&lt;p&gt;$tb&lt;/p&gt;
+</dd>
+						<dt><var>$als</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+						<dt><var>$func</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setSelect" id="_setSelect">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setSelect">#</a>
+			<code><a href="source-class-SQL_Select.html#655-660" title="Go to source code">setSelect</a>( <span>mixed <var>$fd</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$als</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$func</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addHaving" id="_addHaving">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addHaving">#</a>
+			<code><a href="source-class-SQL_Select.html#662-678" title="Go to source code">addHaving</a>( <span>string <var>$h</var></span>, <span>string <var>$gl</var> = <span class="line">1: </span><span class="php-quote">'AND'</span></span> )</code>
+
+			<div class="description short">
+				<p>指定された条件式でHAVING句を生成する<br>
+$SQL->addHaving('entry_id > 5', 'AND');<br>
+HAVING ( 1 AND entry_id > 5 )</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定された条件式でHAVING句を生成する<br>
+$SQL->addHaving('entry_id > 5', 'AND');<br>
+HAVING ( 1 AND entry_id > 5 )</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$h</var></dt>
+						<dd>
+</dd>
+						<dt><var>$gl</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setHaving" id="_setHaving">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setHaving">#</a>
+			<code><a href="source-class-SQL_Select.html#679-684" title="Go to source code">setHaving</a>( <span>mixed <var>$h</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$gl</var> = <span class="line">1: </span><span class="php-quote">'AND'</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addGroup" id="_addGroup">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addGroup">#</a>
+			<code><a href="source-class-SQL_Select.html#686-701" title="Go to source code">addGroup</a>( <span>string <var>$fd</var></span>, <span>string <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたfieldでGROUP BY句を生成する<br>
+$SQL->addGroup('blog_id', 'acms_blog');<br>
+GROUP BY acms_blog.blog_id</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたfieldでGROUP BY句を生成する<br>
+$SQL->addGroup('blog_id', 'acms_blog');<br>
+GROUP BY acms_blog.blog_id</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$fd</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setGroup" id="_setGroup">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setGroup">#</a>
+			<code><a href="source-class-SQL_Select.html#702-709" title="Go to source code">setGroup</a>( <span>mixed <var>$fd</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>mixed <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setLimit" id="_setLimit">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setLimit">#</a>
+			<code><a href="source-class-SQL_Select.html#711-727" title="Go to source code">setLimit</a>( <span>integer <var>$lmt</var></span>, <span>integer <var>$off</var> = <span class="line">1: </span><span class="php-num">0</span></span> )</code>
+
+			<div class="description short">
+				<p>指定された数のレコードを返す<br>
+$SQL->setLimit(30, 10);<br>
+LIMIT 10, 30</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定された数のレコードを返す<br>
+$SQL->setLimit(30, 10);<br>
+LIMIT 10, 30</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$lmt</var></dt>
+						<dd>
+</dd>
+						<dt><var>$off</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addOrder" id="_addOrder">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addOrder">#</a>
+			<code><a href="source-class-SQL_Select.html#729-736" title="Go to source code">addOrder</a>( <span>mixed <var>$fd</var></span>, <span>mixed <var>$ord</var> = <span class="line">1: </span><span class="php-quote">'ASC'</span></span>, <span>mixed <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setOrder" id="_setOrder">
+
+			<td class="attributes"><code>
+				 public 
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setOrder">#</a>
+			<code><a href="source-class-SQL_Select.html#738-754" title="Go to source code">setOrder</a>( <span>integer <var>$fd</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>integer <var>$ord</var> = <span class="line">1: </span><span class="php-quote">'ASC'</span></span>, <span>mixed <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたorderのSQLを生成する<br>
+$SQL->setOrder('entry_id', 'ASC', 'acms_entry');<br>
+LIMIT 10, 30</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたorderのSQLを生成する<br>
+$SQL->setOrder('entry_id', 'ASC', 'acms_entry');<br>
+LIMIT 10, 30</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$fd</var></dt>
+						<dd>&lt;p&gt;$lmt&lt;/p&gt;
+</dd>
+						<dt><var>$ord</var></dt>
+						<dd>&lt;p&gt;$off&lt;/p&gt;
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean</code><br><p>bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="get" id="_get">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_get">#</a>
+			<code><a href="source-class-SQL_Select.html#756-900" title="Go to source code">get</a>( <span>mixed <var>$dsn</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+					<h4>Overrides</h4>
+					<div class="list"><code><a href="class-SQL_Where.html#_get">SQL_Where::get</a></code></div>
+
+			</div>
+			</div></td>
+		</tr>
+		</table>
+
+		<h3>Methods inherited from <a href="class-SQL_Where.html#methods">SQL_Where</a></h3>
+		<p class="elementList">
+			<code><a href="class-SQL_Where.html#_addWhere">addWhere()</a></code>, 
+			<code><a href="class-SQL_Where.html#_addWhereBw">addWhereBw()</a></code>, 
+			<code><a href="class-SQL_Where.html#_addWhereIn">addWhereIn()</a></code>, 
+			<code><a href="class-SQL_Where.html#_addWhereNotIn">addWhereNotIn()</a></code>, 
+			<code><a href="class-SQL_Where.html#_addWhereOpr">addWhereOpr()</a></code>, 
+			<code><a href="class-SQL_Where.html#_getWhereBw">getWhereBw()</a></code>, 
+			<code><a href="class-SQL_Where.html#_getWhereIn">getWhereIn()</a></code>, 
+			<code><a href="class-SQL_Where.html#_getWhereNotIn">getWhereNotIn()</a></code>, 
+			<code><a href="class-SQL_Where.html#_getWhereOpr">getWhereOpr()</a></code>, 
+			<code><a href="class-SQL_Where.html#_setWhere">setWhere()</a></code>, 
+			<code><a href="class-SQL_Where.html#_where">where()</a></code>
+		</p>
+		<h3>Methods inherited from <a href="class-SQL.html#methods">SQL</a></h3>
+		<p class="elementList">
+			<code><a href="class-SQL.html#_SQL">SQL()</a></code>, 
+			<code><a href="class-SQL.html#_currval">currval()</a></code>, 
+			<code><a href="class-SQL.html#_delete">delete()</a></code>, 
+			<code><a href="class-SQL.html#_isClass">isClass()</a></code>, 
+			<code><a href="class-SQL.html#_newCase">newCase()</a></code>, 
+			<code><a href="class-SQL.html#_newDelete">newDelete()</a></code>, 
+			<code><a href="class-SQL.html#_newField">newField()</a></code>, 
+			<code><a href="class-SQL.html#_newFunction">newFunction()</a></code>, 
+			<code><a href="class-SQL.html#_newInsert">newInsert()</a></code>, 
+			<code><a href="class-SQL.html#_newOpr">newOpr()</a></code>, 
+			<code><a href="class-SQL.html#_newOprBw">newOprBw()</a></code>, 
+			<code><a href="class-SQL.html#_newOprIn">newOprIn()</a></code>, 
+			<code><a href="class-SQL.html#_newOprNotIn">newOprNotIn()</a></code>, 
+			<code><a href="class-SQL.html#_newReplace">newReplace()</a></code>, 
+			<code><a href="class-SQL.html#_newSelect">newSelect()</a></code>, 
+			<code><a href="class-SQL.html#_newSeq">newSeq()</a></code>, 
+			<code><a href="class-SQL.html#_newUpdate">newUpdate()</a></code>, 
+			<code><a href="class-SQL.html#_newWhere">newWhere()</a></code>, 
+			<code><a href="class-SQL.html#_nextval">nextval()</a></code>, 
+			<code><a href="class-SQL.html#_setval">setval()</a></code>
+		</p>
+
+
+		<h3>Magic methods summary</h3>
+
+
+
+
+
+
+
+
+		<h2>Properties summary</h2>
+		<table class="summary table table-bordered table-striped properties" id="properties">
+		<tr data-order="_tables" id="$_tables">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#525" title="Go to source code"><var>$_tables</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_tables" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_leftJoins" id="$_leftJoins">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#526" title="Go to source code"><var>$_leftJoins</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_leftJoins" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_innerJoins" id="$_innerJoins">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#527" title="Go to source code"><var>$_innerJoins</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_innerJoins" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_selects" id="$_selects">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#528" title="Go to source code"><var>$_selects</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_selects" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_havings" id="$_havings">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#529" title="Go to source code"><var>$_havings</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_havings" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_groups" id="$_groups">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#530" title="Go to source code"><var>$_groups</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_groups" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_limit" id="$_limit">
+			<td class="attributes"><code>
+				public  
+				mixed
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#531" title="Go to source code"><var>$_limit</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_limit" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">null</span></code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_orders" id="$_orders">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#532" title="Go to source code"><var>$_orders</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_orders" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_where" id="$_where">
+			<td class="attributes"><code>
+				public  
+				mixed
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#533" title="Go to source code"><var>$_where</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_where" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">null</span></code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="_union" id="$_union">
+			<td class="attributes"><code>
+				public  
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-SQL_Select.html#534" title="Go to source code"><var>$_union</var></a>
+
+				<div class="description short">
+					
+
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$_union" class="anchor">#</a>
+					<code><span class="line">1: </span><span class="php-keyword1">array</span>()</code>
+				</div>
+			</td>
+		</tr>
+		</table>
+
+		<h3>Properties inherited from <a href="class-SQL_Where.html#properties">SQL_Where</a></h3>
+		<p class="elementList">
+			<code><a href="class-SQL_Where.html#$_wheres"><var>$_wheres</var></a></code>
+		</p>
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		a-blog cms docs API documentation generated by <a href="http://apigen.org">ApiGen @package_version@</a>
+	</div>
+</div>
+<script src="resources/combined.js?371644040"></script>
+<script src="elementlist.js?147159760"></script>
+</body>
+</html>

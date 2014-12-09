@@ -1,0 +1,4218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen @package_version@">
+
+	<title>Class ACMS_RAM | a-blog cms docs</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?260161822">
+	<link rel="stylesheet" href="resources/style.css?2767127047">
+
+</head>
+
+<body>
+	<div id="navigation" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a href="index.html" class="brand">a-blog cms docs</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active">
+<span>Class</span>						</li>
+
+						<li class="divider-vertical"></li>
+
+						<li>
+							<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+						</li>
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="left">
+	<div id="menu">
+		<form id="search" class="form-search">
+			<input type="hidden" name="cx" value="">
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="text" name="q" class="search-query" placeholder="Search">
+		</form>
+
+
+		<div id="groups">
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-ACMS_Filter.html">ACMS_Filter</a></li>
+				<li class="active"><a href="class-ACMS_RAM.html">ACMS_RAM</a></li>
+				<li><a href="class-ACMS_User_Corrector.html">ACMS_User_Corrector</a></li>
+				<li><a href="class-ACMS_User_GET_EntryExtendSample_Edit.html">ACMS_User_GET_EntryExtendSample_Edit</a></li>
+				<li><a href="class-ACMS_User_GET_Sample.html">ACMS_User_GET_Sample</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_NotSpecialCategory.html">ACMS_User_GET_Touch_NotSpecialCategory</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_SpecialCategory.html">ACMS_User_GET_Touch_SpecialCategory</a></li>
+				<li><a href="class-ACMS_User_Hook.html">ACMS_User_Hook</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Insert.html">ACMS_User_POST_EntryExtendSample_Insert</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Update.html">ACMS_User_POST_EntryExtendSample_Update</a></li>
+				<li><a href="class-ACMS_User_POST_Sample.html">ACMS_User_POST_Sample</a></li>
+				<li><a href="class-DB.html">DB</a></li>
+				<li><a href="class-SQL.html">SQL</a></li>
+				<li><a href="class-SQL_Binary.html">SQL_Binary</a></li>
+				<li><a href="class-SQL_Delete.html">SQL_Delete</a></li>
+				<li><a href="class-SQL_Field.html">SQL_Field</a></li>
+				<li><a href="class-SQL_Field_Case.html">SQL_Field_Case</a></li>
+				<li><a href="class-SQL_Field_Function.html">SQL_Field_Function</a></li>
+				<li><a href="class-SQL_Field_Operator.html">SQL_Field_Operator</a></li>
+				<li><a href="class-SQL_Field_Operator_Between.html">SQL_Field_Operator_Between</a></li>
+				<li><a href="class-SQL_Field_Operator_In.html">SQL_Field_Operator_In</a></li>
+				<li><a href="class-SQL_Insert.html">SQL_Insert</a></li>
+				<li><a href="class-SQL_Replace.html">SQL_Replace</a></li>
+				<li><a href="class-SQL_Select.html">SQL_Select</a></li>
+				<li><a href="class-SQL_Sequence.html">SQL_Sequence</a></li>
+				<li><a href="class-SQL_Update.html">SQL_Update</a></li>
+				<li><a href="class-SQL_Where.html">SQL_Where</a></li>
+			</ul>
+
+
+
+
+
+			<h3>Functions</h3>
+			<ul>
+				<li><a href="function-myFunction.html">myFunction</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class ACMS_RAM</h1>
+
+
+	<div class="description">
+	<p>ACMS_RAM</p>
+
+<p>idを与えると，そのidに対応したレコードの
+特定フィールドの値を返すメソッド群です
+各テーブルに実在するフィールド名と対応しています</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="alert alert-info">
+		
+		
+		
+		<b>Package:</b> ACMS<br>
+
+		<b>Located at</b> <a href="source-class-ACMS_RAM.html#10-1189" title="Go to source code">RAM.php</a><br>
+	</div>
+
+
+
+		<h2>Methods summary</h2>
+		<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="_mapping" id="__mapping">
+
+			<td class="attributes"><code>
+				 public static
+				boolean|null
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#__mapping">#</a>
+			<code><a href="source-class-ACMS_RAM.html#21-67" title="Go to source code">_mapping</a>( <span>string <var>$key</var></span>, <span>integer <var>$id</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>各種レコードの静的なキャッシュテーブルに対するセッター兼ゲッターメソッド</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>各種レコードの静的なキャッシュテーブルに対するセッター兼ゲッターメソッド</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$key</var></dt>
+						<dd>
+</dd>
+						<dt><var>$id</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>boolean|null</code><br><p>bool|null</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blog" id="_blog">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#71-82" title="Go to source code">blog</a>( <span>integer <var>$bid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogCode" id="_blogCode">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogCode">#</a>
+			<code><a href="source-class-ACMS_RAM.html#84-94" title="Go to source code">blogCode</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログコードを返します
+$code = ACMS_RAM::blogCode($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログコードを返します
+$code = ACMS_RAM::blogCode($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogDomain" id="_blogDomain">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogDomain">#</a>
+			<code><a href="source-class-ACMS_RAM.html#96-106" title="Go to source code">blogDomain</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログドメインを返します
+$domain = ACMS_RAM::blogDomain($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログドメインを返します
+$domain = ACMS_RAM::blogDomain($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogLeft" id="_blogLeft">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogLeft">#</a>
+			<code><a href="source-class-ACMS_RAM.html#108-118" title="Go to source code">blogLeft</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの木構造leftを返します
+$left = ACMS_RAM::blogLeft($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの木構造leftを返します
+$left = ACMS_RAM::blogLeft($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogRight" id="_blogRight">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogRight">#</a>
+			<code><a href="source-class-ACMS_RAM.html#120-130" title="Go to source code">blogRight</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの木構造rihgtを返します
+$right = ACMS_RAM::blogRight($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの木構造rihgtを返します
+$right = ACMS_RAM::blogRight($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogStatus" id="_blogStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#132-142" title="Go to source code">blogStatus</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのステータスを返します
+$status = ACMS_RAM::blogStatus($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのステータスを返します
+$status = ACMS_RAM::blogStatus($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogName" id="_blogName">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogName">#</a>
+			<code><a href="source-class-ACMS_RAM.html#144-154" title="Go to source code">blogName</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの名前を返します
+$name = ACMS_RAM::blogName($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの名前を返します
+$name = ACMS_RAM::blogName($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogIndexing" id="_blogIndexing">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogIndexing">#</a>
+			<code><a href="source-class-ACMS_RAM.html#156-166" title="Go to source code">blogIndexing</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのインデキシングの状態を返します
+$indexing = ACMS_RAM::blogIndexing($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのインデキシングの状態を返します
+$indexing = ACMS_RAM::blogIndexing($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogSort" id="_blogSort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#168-178" title="Go to source code">blogSort</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのソート番号を返します
+$sort = ACMS_RAM::blogSort($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのソート番号を返します
+$sort = ACMS_RAM::blogSort($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogParent" id="_blogParent">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogParent">#</a>
+			<code><a href="source-class-ACMS_RAM.html#180-190" title="Go to source code">blogParent</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの親ブログIDを返します
+$parent_bid = ACMS_RAM::blogParent($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの親ブログIDを返します
+$parent_bid = ACMS_RAM::blogParent($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogGeneratedDatetime" id="_blogGeneratedDatetime">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogGeneratedDatetime">#</a>
+			<code><a href="source-class-ACMS_RAM.html#192-202" title="Go to source code">blogGeneratedDatetime</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの生成日時を返します
+$gen_datetime = ACMS_RAM::blogGeneratedDatetime($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの生成日時を返します
+$gen_datetime = ACMS_RAM::blogGeneratedDatetime($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogAliasStatus" id="_blogAliasStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogAliasStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#204-214" title="Go to source code">blogAliasStatus</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのエイリアスとしての公開状態を返します
+$alias_status = ACMS_RAM::blogAliasStatus($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのエイリアスとしての公開状態を返します
+$alias_status = ACMS_RAM::blogAliasStatus($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogAliasSort" id="_blogAliasSort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogAliasSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#216-226" title="Go to source code">blogAliasSort</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログのエイリアスとしてのソート番号を返します
+$alias_sort = ACMS_RAM::blogAliasSort($bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログのエイリアスとしてのソート番号を返します
+$alias_sort = ACMS_RAM::blogAliasSort($bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogAliasPrimary" id="_blogAliasPrimary">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogAliasPrimary">#</a>
+			<code><a href="source-class-ACMS_RAM.html#228-239" title="Go to source code">blogAliasPrimary</a>( <span>integer <var>$bid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するブログの主エイリアスIDを返します
+$alias_primary = ACMS_RAM::blogAliasPrimary$(bid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するブログの主エイリアスIDを返します
+$alias_primary = ACMS_RAM::blogAliasPrimary$(bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setBlogAliasPrimary" id="_setBlogAliasPrimary">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setBlogAliasPrimary">#</a>
+			<code><a href="source-class-ACMS_RAM.html#241-244" title="Go to source code">setBlogAliasPrimary</a>( <span>mixed <var>$bid</var></span>, <span>mixed <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="alias" id="_alias">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_alias">#</a>
+			<code><a href="source-class-ACMS_RAM.html#249-260" title="Go to source code">alias</a>( <span>integer <var>$aid</var></span>, <span>null <var>$row</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$row</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasStatus" id="_aliasStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#262-272" title="Go to source code">aliasStatus</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスの公開状態を返します
+$status = ACMS_RAM::aliasStatus($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスの公開状態を返します
+$status = ACMS_RAM::aliasStatus($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasSort" id="_aliasSort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#274-284" title="Go to source code">aliasSort</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスのソート番号を返します
+$sort = ACMS_RAM::aliasSort($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスのソート番号を返します
+$sort = ACMS_RAM::aliasSort($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasDomain" id="_aliasDomain">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasDomain">#</a>
+			<code><a href="source-class-ACMS_RAM.html#286-296" title="Go to source code">aliasDomain</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスのドメインを返します
+$domain = ACMS_RAM::aliasDomain($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスのドメインを返します
+$domain = ACMS_RAM::aliasDomain($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasCode" id="_aliasCode">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasCode">#</a>
+			<code><a href="source-class-ACMS_RAM.html#298-308" title="Go to source code">aliasCode</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスのコードを返します
+$code = ACMS_RAM::aliasCode($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスのコードを返します
+$code = ACMS_RAM::aliasCode($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasBlog" id="_aliasBlog">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#310-320" title="Go to source code">aliasBlog</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスのブログIDを返します
+$alias_bid = ACMS_RAM::aliasBlog($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスのブログIDを返します
+$alias_bid = ACMS_RAM::aliasBlog($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="aliasName" id="_aliasName">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_aliasName">#</a>
+			<code><a href="source-class-ACMS_RAM.html#322-332" title="Go to source code">aliasName</a>( <span>integer <var>$aid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエイリアスの名前を返します
+$name = ACMS_RAM::aliasName($aid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエイリアスの名前を返します
+$name = ACMS_RAM::aliasName($aid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$aid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="user" id="_user">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_user">#</a>
+			<code><a href="source-class-ACMS_RAM.html#337-348" title="Go to source code">user</a>( <span>integer <var>$uid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userCode" id="_userCode">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userCode">#</a>
+			<code><a href="source-class-ACMS_RAM.html#350-360" title="Go to source code">userCode</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのコードを返します
+$code = ACMS_RAM::userCode($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのコードを返します
+$code = ACMS_RAM::userCode($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userStatus" id="_userStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#362-372" title="Go to source code">userStatus</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーの公開状態を返します
+$status = ACMS_RAM::userStatus($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーの公開状態を返します
+$status = ACMS_RAM::userStatus($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userSort" id="_userSort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#374-384" title="Go to source code">userSort</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのソート番号を返します
+$sort = ACMS_RAM::userSort($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのソート番号を返します
+$sort = ACMS_RAM::userSort($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userName" id="_userName">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userName">#</a>
+			<code><a href="source-class-ACMS_RAM.html#386-396" title="Go to source code">userName</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーの名前を返します
+$name = ACMS_RAM::userName($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーの名前を返します
+$name = ACMS_RAM::userName($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userMail" id="_userMail">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userMail">#</a>
+			<code><a href="source-class-ACMS_RAM.html#398-408" title="Go to source code">userMail</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのメールアドレスを返します
+$mail = ACMS_RAM::userMail($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのメールアドレスを返します
+$mail = ACMS_RAM::userMail($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userMailMobile" id="_userMailMobile">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userMailMobile">#</a>
+			<code><a href="source-class-ACMS_RAM.html#410-420" title="Go to source code">userMailMobile</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのモバイルメールアドレスを返します
+$mobile = ACMS_RAM::userMailMobile($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのモバイルメールアドレスを返します
+$mobile = ACMS_RAM::userMailMobile($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userUrl" id="_userUrl">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userUrl">#</a>
+			<code><a href="source-class-ACMS_RAM.html#422-432" title="Go to source code">userUrl</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのURLを返します
+$url = ACMS_RAM::userUrl($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのURLを返します
+$url = ACMS_RAM::userUrl($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userAuth" id="_userAuth">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userAuth">#</a>
+			<code><a href="source-class-ACMS_RAM.html#434-444" title="Go to source code">userAuth</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーの権限を返します
+$auth = ACMS_RAM::userAuth($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーの権限を返します
+$auth = ACMS_RAM::userAuth($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userIndexing" id="_userIndexing">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userIndexing">#</a>
+			<code><a href="source-class-ACMS_RAM.html#446-456" title="Go to source code">userIndexing</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのインデキシングを返します
+$indexing = ACMS_RAM::userIndexing($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのインデキシングを返します
+$indexing = ACMS_RAM::userIndexing($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userLoginAnywhere" id="_userLoginAnywhere">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userLoginAnywhere">#</a>
+			<code><a href="source-class-ACMS_RAM.html#458-468" title="Go to source code">userLoginAnywhere</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのどこでもログイン機能のon/offを返します
+$anywhere = ACMS_RAM::userLoginAnywhere($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのどこでもログイン機能のon/offを返します
+$anywhere = ACMS_RAM::userLoginAnywhere($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userLoginExpire" id="_userLoginExpire">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userLoginExpire">#</a>
+			<code><a href="source-class-ACMS_RAM.html#470-480" title="Go to source code">userLoginExpire</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーのログイン有効期限を返します
+$expire = ACMS_RAM::userLoginExpire($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーのログイン有効期限を返します
+$expire = ACMS_RAM::userLoginExpire($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userLoginDatetime" id="_userLoginDatetime">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userLoginDatetime">#</a>
+			<code><a href="source-class-ACMS_RAM.html#482-492" title="Go to source code">userLoginDatetime</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーの最終ログイン日時を返します
+$last_login = ACMS_RAM::userLoginDatetime($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーの最終ログイン日時を返します
+$last_login = ACMS_RAM::userLoginDatetime($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userBlog" id="_userBlog">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#494-504" title="Go to source code">userBlog</a>( <span>integer <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユーザーの所属するブログIDを返します
+$user_bid = ACMS_RAM::userBlog($uid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユーザーの所属するブログIDを返します
+$user_bid = ACMS_RAM::userBlog($uid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="category" id="_category">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_category">#</a>
+			<code><a href="source-class-ACMS_RAM.html#510-521" title="Go to source code">category</a>( <span>integer <var>$cid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryCode" id="_categoryCode">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryCode">#</a>
+			<code><a href="source-class-ACMS_RAM.html#523-533" title="Go to source code">categoryCode</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのコードを返します
+$code = ACMS_RAM::categoryCode($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのコードを返します
+$code = ACMS_RAM::categoryCode($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryParent" id="_categoryParent">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryParent">#</a>
+			<code><a href="source-class-ACMS_RAM.html#535-545" title="Go to source code">categoryParent</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーの親カテゴリーIDを返します
+$parent_cid = ACMS_RAM::categoryParent($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーの親カテゴリーIDを返します
+$parent_cid = ACMS_RAM::categoryParent($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryLeft" id="_categoryLeft">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryLeft">#</a>
+			<code><a href="source-class-ACMS_RAM.html#547-557" title="Go to source code">categoryLeft</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーの木構造leftを返します
+$left = ACMS_RAM::categoryLeft($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーの木構造leftを返します
+$left = ACMS_RAM::categoryLeft($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryRight" id="_categoryRight">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryRight">#</a>
+			<code><a href="source-class-ACMS_RAM.html#559-569" title="Go to source code">categoryRight</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーの木構造rihgtを返します
+$right = ACMS_RAM::categoryRight($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーの木構造rihgtを返します
+$right = ACMS_RAM::categoryRight($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryBlog" id="_categoryBlog">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#571-581" title="Go to source code">categoryBlog</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのブログIDを返します
+$category_bid = ACMS_RAM::categoryBlog($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのブログIDを返します
+$category_bid = ACMS_RAM::categoryBlog($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryName" id="_categoryName">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryName">#</a>
+			<code><a href="source-class-ACMS_RAM.html#583-593" title="Go to source code">categoryName</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーの名前を返します
+$name = ACMS_RAM::categoryName($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーの名前を返します
+$name = ACMS_RAM::categoryName($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryIndexing" id="_categoryIndexing">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryIndexing">#</a>
+			<code><a href="source-class-ACMS_RAM.html#595-605" title="Go to source code">categoryIndexing</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのインデキシングの状態を返します
+$indexing = ACMS_RAM::categoryIndexing($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのインデキシングの状態を返します
+$indexing = ACMS_RAM::categoryIndexing($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryStatus" id="_categoryStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#607-617" title="Go to source code">categoryStatus</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーの公開状態を返します
+$status = ACMS_RAM::categoryStatus($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーの公開状態を返します
+$status = ACMS_RAM::categoryStatus($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryScope" id="_categoryScope">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryScope">#</a>
+			<code><a href="source-class-ACMS_RAM.html#619-629" title="Go to source code">categoryScope</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのグローバル状態を返します
+$scope = ACMS_RAM::categoryScope($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのグローバル状態を返します
+$scope = ACMS_RAM::categoryScope($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categorySort" id="_categorySort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categorySort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#631-641" title="Go to source code">categorySort</a>( <span>integer <var>$cid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するカテゴリーのソート番号を返します
+$sort = ACMS_RAM::categorySort($cid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するカテゴリーのソート番号を返します
+$sort = ACMS_RAM::categorySort($cid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entry" id="_entry">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entry">#</a>
+			<code><a href="source-class-ACMS_RAM.html#646-657" title="Go to source code">entry</a>( <span>integer <var>$eid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryCode" id="_entryCode">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryCode">#</a>
+			<code><a href="source-class-ACMS_RAM.html#659-669" title="Go to source code">entryCode</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのコードを返します
+$code = ACMS_RAM::entryCode($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのコードを返します
+$code = ACMS_RAM::entryCode($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryCategory" id="_entryCategory">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryCategory">#</a>
+			<code><a href="source-class-ACMS_RAM.html#671-681" title="Go to source code">entryCategory</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのカテゴリーIDを返します
+$entry_cid = ACMS_RAM::entryCategory($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのカテゴリーIDを返します
+$entry_cid = ACMS_RAM::entryCategory($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryBlog" id="_entryBlog">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#683-693" title="Go to source code">entryBlog</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのブログIDを返します
+$entry_bid = ACMS_RAM::entryBlog($eid)</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのブログIDを返します
+$entry_bid = ACMS_RAM::entryBlog($eid)</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryUser" id="_entryUser">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryUser">#</a>
+			<code><a href="source-class-ACMS_RAM.html#695-705" title="Go to source code">entryUser</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのユーザーIDを返します
+$entry_uid = ACMS_RAM::entryUser($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのユーザーIDを返します
+$entry_uid = ACMS_RAM::entryUser($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryTitle" id="_entryTitle">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryTitle">#</a>
+			<code><a href="source-class-ACMS_RAM.html#707-717" title="Go to source code">entryTitle</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのタイトルを返します
+$title = ACMS_RAM::entryTitle($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのタイトルを返します
+$title = ACMS_RAM::entryTitle($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryDatetime" id="_entryDatetime">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryDatetime">#</a>
+			<code><a href="source-class-ACMS_RAM.html#719-729" title="Go to source code">entryDatetime</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーの日付を返します
+$datetime = ACMS_RAM::entryDatetime($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーの日付を返します
+$datetime = ACMS_RAM::entryDatetime($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryStartDatetime" id="_entryStartDatetime">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryStartDatetime">#</a>
+			<code><a href="source-class-ACMS_RAM.html#731-741" title="Go to source code">entryStartDatetime</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーの公開開始日付を返します
+$datetime = ACMS_RAM::entryStartDatetime($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーの公開開始日付を返します
+$datetime = ACMS_RAM::entryStartDatetime($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryEndDatetime" id="_entryEndDatetime">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryEndDatetime">#</a>
+			<code><a href="source-class-ACMS_RAM.html#743-753" title="Go to source code">entryEndDatetime</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーの公開終了日付を返します
+$datetime = ACMS_RAM::entryEndDatetime($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーの公開終了日付を返します
+$datetime = ACMS_RAM::entryEndDatetime($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entrySort" id="_entrySort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entrySort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#755-765" title="Go to source code">entrySort</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのソート番号を返します
+$sort = ACMS_RAM::entrySort($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのソート番号を返します
+$sort = ACMS_RAM::entrySort($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryUserSort" id="_entryUserSort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryUserSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#767-777" title="Go to source code">entryUserSort</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのユーザー内ソート番号を返します
+$user_sort = ACMS_RAM::entryUserSort($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのユーザー内ソート番号を返します
+$user_sort = ACMS_RAM::entryUserSort($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryCategorySort" id="_entryCategorySort">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryCategorySort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#779-789" title="Go to source code">entryCategorySort</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのカテゴリー内ソート番号を返します
+$category_sort = ACMS_RAM::entryCategorySort($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのカテゴリー内ソート番号を返します
+$category_sort = ACMS_RAM::entryCategorySort($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryIndexing" id="_entryIndexing">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryIndexing">#</a>
+			<code><a href="source-class-ACMS_RAM.html#791-801" title="Go to source code">entryIndexing</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのインデキシングの状態を返します
+$indexing = ACMS_RAM::entryIndexing($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのインデキシングの状態を返します
+$indexing = ACMS_RAM::entryIndexing($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryPrimaryImage" id="_entryPrimaryImage">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryPrimaryImage">#</a>
+			<code><a href="source-class-ACMS_RAM.html#803-813" title="Go to source code">entryPrimaryImage</a>( <span>mixed <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーのメイン画像のユニットIDを返します
+$primaryImage = ACMS_RAM::entryPrimaryImage($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーのメイン画像のユニットIDを返します
+$primaryImage = ACMS_RAM::entryPrimaryImage($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryStatus" id="_entryStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#815-825" title="Go to source code">entryStatus</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーの公開状態を返します
+$status = ACMS_RAM::entryStatus($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーの公開状態を返します
+$status = ACMS_RAM::entryStatus($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryApproval" id="_entryApproval">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryApproval">#</a>
+			<code><a href="source-class-ACMS_RAM.html#827-837" title="Go to source code">entryApproval</a>( <span>integer <var>$eid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するエントリーの承認状態を返します
+$status = ACMS_RAM::entryStatus($eid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するエントリーの承認状態を返します
+$status = ACMS_RAM::entryStatus($eid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$eid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unit" id="_unit">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unit">#</a>
+			<code><a href="source-class-ACMS_RAM.html#842-853" title="Go to source code">unit</a>( <span>integer <var>$utid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>&lt;p&gt;$uid&lt;/p&gt;
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitSort" id="_unitSort">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitSort">#</a>
+			<code><a href="source-class-ACMS_RAM.html#855-865" title="Go to source code">unitSort</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのソート番号を返します
+$sort = ACMS_RAM::unitSort($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのソート番号を返します
+$sort = ACMS_RAM::unitSort($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitAlign" id="_unitAlign">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitAlign">#</a>
+			<code><a href="source-class-ACMS_RAM.html#867-877" title="Go to source code">unitAlign</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットの揃え位置を返します
+$align = ACMS_RAM::unitAlign($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットの揃え位置を返します
+$align = ACMS_RAM::unitAlign($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitType" id="_unitType">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitType">#</a>
+			<code><a href="source-class-ACMS_RAM.html#879-889" title="Go to source code">unitType</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットの種別を返します
+$type = ACMS_RAM::unitType($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットの種別を返します
+$type = ACMS_RAM::unitType($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitAttr" id="_unitAttr">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitAttr">#</a>
+			<code><a href="source-class-ACMS_RAM.html#891-901" title="Go to source code">unitAttr</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットの属性を返します
+$attr = ACMS_RAM::unitAttr($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットの属性を返します
+$attr = ACMS_RAM::unitAttr($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitSize" id="_unitSize">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitSize">#</a>
+			<code><a href="source-class-ACMS_RAM.html#903-913" title="Go to source code">unitSize</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのサイズを返します
+$size = ACMS_RAM::unitSize($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのサイズを返します
+$size = ACMS_RAM::unitSize($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitField1" id="_unitField1">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitField1">#</a>
+			<code><a href="source-class-ACMS_RAM.html#915-925" title="Go to source code">unitField1</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのフィールド1を返します
+$field1 = ACMS_RAM::unitField1($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのフィールド1を返します
+$field1 = ACMS_RAM::unitField1($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitField2" id="_unitField2">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitField2">#</a>
+			<code><a href="source-class-ACMS_RAM.html#927-937" title="Go to source code">unitField2</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのフィールド2を返します
+$field2 = ACMS_RAM::unitField2($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのフィールド2を返します
+$field2 = ACMS_RAM::unitField2($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitField3" id="_unitField3">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitField3">#</a>
+			<code><a href="source-class-ACMS_RAM.html#939-949" title="Go to source code">unitField3</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのフィールド3を返します
+$field3 = ACMS_RAM::unitField3($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのフィールド3を返します
+$field3 = ACMS_RAM::unitField3($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitField4" id="_unitField4">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitField4">#</a>
+			<code><a href="source-class-ACMS_RAM.html#951-961" title="Go to source code">unitField4</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのフィールド4を返します
+$field4 = ACMS_RAM::unitField4($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのフィールド4を返します
+$field4 = ACMS_RAM::unitField4($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitField5" id="_unitField5">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitField5">#</a>
+			<code><a href="source-class-ACMS_RAM.html#963-973" title="Go to source code">unitField5</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットのフィールド5を返します
+$field5 = ACMS_RAM::unitField5($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットのフィールド5を返します
+$field5 = ACMS_RAM::unitField5($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitEntry" id="_unitEntry">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitEntry">#</a>
+			<code><a href="source-class-ACMS_RAM.html#975-985" title="Go to source code">unitEntry</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットの所属するエントリーIDを返します
+$unit_eid = ACMS_RAM::unitEntry($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットの所属するエントリーIDを返します
+$unit_eid = ACMS_RAM::unitEntry($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="unitBlog" id="_unitBlog">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_unitBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#987-997" title="Go to source code">unitBlog</a>( <span>integer <var>$utid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するユニットの所属するブログIDを返します
+$unit_bid = ACMS_RAM::unitBlog($utid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するユニットの所属するブログIDを返します
+$unit_bid = ACMS_RAM::unitBlog($utid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$utid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="comment" id="_comment">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_comment">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1002-1013" title="Go to source code">comment</a>( <span>integer <var>$cmid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentName" id="_commentName">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentName">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1015-1025" title="Go to source code">commentName</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの名前を返します
+$name = ACMS_RAM::commentName($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの名前を返します
+$name = ACMS_RAM::commentName($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentMail" id="_commentMail">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentMail">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1027-1037" title="Go to source code">commentMail</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのメールアドレスを返します
+$mail = ACMS_RAM::commentMail($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのメールアドレスを返します
+$mail = ACMS_RAM::commentMail($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentUrl" id="_commentUrl">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentUrl">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1039-1049" title="Go to source code">commentUrl</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのURLを返します
+$url = ACMS_RAM::commentUrl($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのURLを返します
+$url = ACMS_RAM::commentUrl($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentTitle" id="_commentTitle">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentTitle">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1051-1061" title="Go to source code">commentTitle</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのタイトルを返します
+$title = ACMS_RAM::commentTitle($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのタイトルを返します
+$title = ACMS_RAM::commentTitle($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentBody" id="_commentBody">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentBody">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1063-1073" title="Go to source code">commentBody</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの本文を返します
+$body = ACMS_RAM::commentBody($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの本文を返します
+$body = ACMS_RAM::commentBody($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentPass" id="_commentPass">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentPass">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1075-1085" title="Go to source code">commentPass</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのパスワード(md5)を返します
+$pass = ACMS_RAM::commentPass($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのパスワード(md5)を返します
+$pass = ACMS_RAM::commentPass($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentEntry" id="_commentEntry">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentEntry">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1087-1097" title="Go to source code">commentEntry</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの所属するエントリーIDを返します
+$comment_eid = ACMS_RAM::commentEntry($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの所属するエントリーIDを返します
+$comment_eid = ACMS_RAM::commentEntry($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentUser" id="_commentUser">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentUser">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1099-1109" title="Go to source code">commentUser</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントのユーザーIDを返します
+$comment_uid = ACMS_RAM::commentUser($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントのユーザーIDを返します
+$comment_uid = ACMS_RAM::commentUser($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentBlog" id="_commentBlog">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentBlog">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1111-1121" title="Go to source code">commentBlog</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの所属するブログIDを返します
+$commnet_bid = ACMS_RAM::commentBlog($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの所属するブログIDを返します
+$commnet_bid = ACMS_RAM::commentBlog($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentLeft" id="_commentLeft">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentLeft">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1123-1133" title="Go to source code">commentLeft</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの木構造leftを返します
+$left = ACMS_RAM::commentLeft($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの木構造leftを返します
+$left = ACMS_RAM::commentLeft($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentRight" id="_commentRight">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentRight">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1135-1145" title="Go to source code">commentRight</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの木構造rightを返します
+$right = ACMS_RAM::commentRight($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの木構造rightを返します
+$right = ACMS_RAM::commentRight($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="commentStatus" id="_commentStatus">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_commentStatus">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1147-1157" title="Go to source code">commentStatus</a>( <span>integer <var>$cmid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するコメントの公開状態を返します
+$status = ACMS_RAM::commentStatus($cmid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するコメントの公開状態を返します
+$status = ACMS_RAM::commentStatus($cmid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$cmid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>string</code><br><p>string</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="trackback" id="_trackback">
+
+			<td class="attributes"><code>
+				 public static
+				array|boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_trackback">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1162-1173" title="Go to source code">trackback</a>( <span>integer <var>$tbid</var></span>, <span>null <var>$val</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するトラックバックのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するトラックバックのレコードを配列で返します
+$valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$tbid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$val</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>array|boolean</code><br><p>array|bool</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="trackbackEntry" id="_trackbackEntry">
+
+			<td class="attributes"><code>
+				 public static
+				integer
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_trackbackEntry">#</a>
+			<code><a href="source-class-ACMS_RAM.html#1175-1185" title="Go to source code">trackbackEntry</a>( <span>integer <var>$tbid</var></span> )</code>
+
+			<div class="description short">
+				<p>指定されたidから該当するトラックバックの所属するエントリーIDを返します
+$trackback_eid = ACMS_RAM::trackbackEntry($tbid);</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定されたidから該当するトラックバックの所属するエントリーIDを返します
+$trackback_eid = ACMS_RAM::trackbackEntry($tbid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$tbid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code>integer</code><br><p>int</p>
+<br>
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		</table>
+
+
+
+		<h3>Magic methods summary</h3>
+
+
+
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		a-blog cms docs API documentation generated by <a href="http://apigen.org">ApiGen @package_version@</a>
+	</div>
+</div>
+<script src="resources/combined.js?371644040"></script>
+<script src="elementlist.js?147159760"></script>
+</body>
+</html>

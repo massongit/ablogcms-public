@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen @package_version@">
+	<meta name="robots" content="noindex">
+
+	<title>File ET/Touch/SpecialCategory.php | a-blog cms docs</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?260161822">
+	<link rel="stylesheet" href="resources/style.css?2767127047">
+
+</head>
+
+<body>
+	<div id="navigation" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a href="index.html" class="brand">a-blog cms docs</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li>
+							<a href="class-ACMS_User_GET_Touch_SpecialCategory.html" title="Summary of ACMS_User_GET_Touch_SpecialCategory"><span>Class</span></a>
+						</li>
+
+						<li class="divider-vertical"></li>
+
+						<li>
+							<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+						</li>
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="left">
+	<div id="menu">
+		<form id="search" class="form-search">
+			<input type="hidden" name="cx" value="">
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="text" name="q" class="search-query" placeholder="Search">
+		</form>
+
+
+		<div id="groups">
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-ACMS_Filter.html">ACMS_Filter</a></li>
+				<li><a href="class-ACMS_RAM.html">ACMS_RAM</a></li>
+				<li><a href="class-ACMS_User_Corrector.html">ACMS_User_Corrector</a></li>
+				<li><a href="class-ACMS_User_GET_EntryExtendSample_Edit.html">ACMS_User_GET_EntryExtendSample_Edit</a></li>
+				<li><a href="class-ACMS_User_GET_Sample.html">ACMS_User_GET_Sample</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_NotSpecialCategory.html">ACMS_User_GET_Touch_NotSpecialCategory</a></li>
+				<li class="active"><a href="class-ACMS_User_GET_Touch_SpecialCategory.html">ACMS_User_GET_Touch_SpecialCategory</a></li>
+				<li><a href="class-ACMS_User_Hook.html">ACMS_User_Hook</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Insert.html">ACMS_User_POST_EntryExtendSample_Insert</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Update.html">ACMS_User_POST_EntryExtendSample_Update</a></li>
+				<li><a href="class-ACMS_User_POST_Sample.html">ACMS_User_POST_Sample</a></li>
+				<li><a href="class-DB.html">DB</a></li>
+				<li><a href="class-SQL.html">SQL</a></li>
+				<li><a href="class-SQL_Binary.html">SQL_Binary</a></li>
+				<li><a href="class-SQL_Delete.html">SQL_Delete</a></li>
+				<li><a href="class-SQL_Field.html">SQL_Field</a></li>
+				<li><a href="class-SQL_Field_Case.html">SQL_Field_Case</a></li>
+				<li><a href="class-SQL_Field_Function.html">SQL_Field_Function</a></li>
+				<li><a href="class-SQL_Field_Operator.html">SQL_Field_Operator</a></li>
+				<li><a href="class-SQL_Field_Operator_Between.html">SQL_Field_Operator_Between</a></li>
+				<li><a href="class-SQL_Field_Operator_In.html">SQL_Field_Operator_In</a></li>
+				<li><a href="class-SQL_Insert.html">SQL_Insert</a></li>
+				<li><a href="class-SQL_Replace.html">SQL_Replace</a></li>
+				<li><a href="class-SQL_Select.html">SQL_Select</a></li>
+				<li><a href="class-SQL_Sequence.html">SQL_Sequence</a></li>
+				<li><a href="class-SQL_Update.html">SQL_Update</a></li>
+				<li><a href="class-SQL_Where.html">SQL_Where</a></li>
+			</ul>
+
+
+
+
+
+			<h3>Functions</h3>
+			<ul>
+				<li><a href="function-myFunction.html">myFunction</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<pre id="source"><code><span id="1" class="l"><a class="l" href="#1"> 1 </a><span class="xlang">&lt;?php</span>
+</span><span id="2" class="l"><a class="l" href="#2"> 2 </a><span class="php-comment">/**
+</span></span><span id="3" class="l"><a class="l" href="#3"> 3 </a><span class="php-comment"> * ACMS_User_GET_Touch_SpecialCategory
+</span></span><span id="4" class="l"><a class="l" href="#4"> 4 </a><span class="php-comment"> *
+</span></span><span id="5" class="l"><a class="l" href="#5"> 5 </a><span class="php-comment"> * This file is part of the a-blog cms package.
+</span></span><span id="6" class="l"><a class="l" href="#6"> 6 </a><span class="php-comment"> * Please see LICENSE. Complete license information is there.
+</span></span><span id="7" class="l"><a class="l" href="#7"> 7 </a><span class="php-comment"> *
+</span></span><span id="8" class="l"><a class="l" href="#8"> 8 </a><span class="php-comment"> * (c) appleple inc. &lt;info@appleple.com&gt;
+</span></span><span id="9" class="l"><a class="l" href="#9"> 9 </a><span class="php-comment"> */</span>
+</span><span id="10" class="l"><a class="l" href="#10">10 </a><span class="php-keyword1">class</span> <a id="ACMS_User_GET_Touch_SpecialCategory" href="#ACMS_User_GET_Touch_SpecialCategory">ACMS_User_GET_Touch_SpecialCategory</a> <span class="php-keyword1">extends</span> ACMS_GET
+</span><span id="11" class="l"><a class="l" href="#11">11 </a>{
+</span><span id="12" class="l"><a class="l" href="#12">12 </a>    <span class="php-keyword1">var</span> <span class="php-var"><a id="$_scope" href="#$_scope">$_scope</a></span> = <span class="php-keyword1">array</span>(
+</span><span id="13" class="l"><a class="l" href="#13">13 </a>        <span class="php-quote">'cid'</span>   =&gt; <span class="php-quote">'global'</span>,
+</span><span id="14" class="l"><a class="l" href="#14">14 </a>    );
+</span><span id="15" class="l"><a class="l" href="#15">15 </a>    <span class="php-keyword1">function</span> <a id="_get" href="#_get">get</a>()
+</span><span id="16" class="l"><a class="l" href="#16">16 </a>    {
+</span><span id="17" class="l"><a class="l" href="#17">17 </a>        <span class="php-comment">// 限定したいカテゴリのID</span>
+</span><span id="18" class="l"><a class="l" href="#18">18 </a>        <span class="php-var">$ary_category</span> = <span class="php-keyword1">array</span>(<span class="php-num">1</span>,<span class="php-num">2</span>,<span class="php-num">3</span>);
+</span><span id="19" class="l"><a class="l" href="#19">19 </a>        <span class="php-keyword1">return</span> ( <span class="php-keyword2">in_array</span>( <span class="php-var">$this</span>-&gt;cid, <span class="php-var">$ary_category</span> ) ) ? <span class="php-var">$this</span>-&gt;tpl : <span class="php-keyword1">false</span>;
+</span><span id="20" class="l"><a class="l" href="#20">20 </a>    }
+</span><span id="21" class="l"><a class="l" href="#21">21 </a>}
+</span><span id="22" class="l"><a class="l" href="#22">22 </a></span></code></pre>
+	</div>
+
+	<div id="footer">
+		a-blog cms docs API documentation generated by <a href="http://apigen.org">ApiGen @package_version@</a>
+	</div>
+</div>
+<script src="resources/combined.js?371644040"></script>
+<script src="elementlist.js?147159760"></script>
+</body>
+</html>

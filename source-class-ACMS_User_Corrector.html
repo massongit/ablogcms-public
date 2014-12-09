@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen @package_version@">
+	<meta name="robots" content="noindex">
+
+	<title>File orrector.php | a-blog cms docs</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?260161822">
+	<link rel="stylesheet" href="resources/style.css?2767127047">
+
+</head>
+
+<body>
+	<div id="navigation" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a href="index.html" class="brand">a-blog cms docs</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li>
+							<a href="class-ACMS_User_Corrector.html" title="Summary of ACMS_User_Corrector"><span>Class</span></a>
+						</li>
+
+						<li class="divider-vertical"></li>
+
+						<li>
+							<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+						</li>
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="left">
+	<div id="menu">
+		<form id="search" class="form-search">
+			<input type="hidden" name="cx" value="">
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="text" name="q" class="search-query" placeholder="Search">
+		</form>
+
+
+		<div id="groups">
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-ACMS_Filter.html">ACMS_Filter</a></li>
+				<li><a href="class-ACMS_RAM.html">ACMS_RAM</a></li>
+				<li class="active"><a href="class-ACMS_User_Corrector.html">ACMS_User_Corrector</a></li>
+				<li><a href="class-ACMS_User_GET_EntryExtendSample_Edit.html">ACMS_User_GET_EntryExtendSample_Edit</a></li>
+				<li><a href="class-ACMS_User_GET_Sample.html">ACMS_User_GET_Sample</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_NotSpecialCategory.html">ACMS_User_GET_Touch_NotSpecialCategory</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_SpecialCategory.html">ACMS_User_GET_Touch_SpecialCategory</a></li>
+				<li><a href="class-ACMS_User_Hook.html">ACMS_User_Hook</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Insert.html">ACMS_User_POST_EntryExtendSample_Insert</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Update.html">ACMS_User_POST_EntryExtendSample_Update</a></li>
+				<li><a href="class-ACMS_User_POST_Sample.html">ACMS_User_POST_Sample</a></li>
+				<li><a href="class-DB.html">DB</a></li>
+				<li><a href="class-SQL.html">SQL</a></li>
+				<li><a href="class-SQL_Binary.html">SQL_Binary</a></li>
+				<li><a href="class-SQL_Delete.html">SQL_Delete</a></li>
+				<li><a href="class-SQL_Field.html">SQL_Field</a></li>
+				<li><a href="class-SQL_Field_Case.html">SQL_Field_Case</a></li>
+				<li><a href="class-SQL_Field_Function.html">SQL_Field_Function</a></li>
+				<li><a href="class-SQL_Field_Operator.html">SQL_Field_Operator</a></li>
+				<li><a href="class-SQL_Field_Operator_Between.html">SQL_Field_Operator_Between</a></li>
+				<li><a href="class-SQL_Field_Operator_In.html">SQL_Field_Operator_In</a></li>
+				<li><a href="class-SQL_Insert.html">SQL_Insert</a></li>
+				<li><a href="class-SQL_Replace.html">SQL_Replace</a></li>
+				<li><a href="class-SQL_Select.html">SQL_Select</a></li>
+				<li><a href="class-SQL_Sequence.html">SQL_Sequence</a></li>
+				<li><a href="class-SQL_Update.html">SQL_Update</a></li>
+				<li><a href="class-SQL_Where.html">SQL_Where</a></li>
+			</ul>
+
+
+
+
+
+			<h3>Functions</h3>
+			<ul>
+				<li><a href="function-myFunction.html">myFunction</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<pre id="source"><code><span id="1" class="l"><a class="l" href="#1"> 1 </a><span class="xlang">&lt;?php</span>
+</span><span id="2" class="l"><a class="l" href="#2"> 2 </a><span class="php-comment">/**
+</span></span><span id="3" class="l"><a class="l" href="#3"> 3 </a><span class="php-comment"> * ACMS_User_Corrector
+</span></span><span id="4" class="l"><a class="l" href="#4"> 4 </a><span class="php-comment"> *
+</span></span><span id="5" class="l"><a class="l" href="#5"> 5 </a><span class="php-comment"> * This file is part of the a-blog cms package.
+</span></span><span id="6" class="l"><a class="l" href="#6"> 6 </a><span class="php-comment"> * Please see LICENSE. Complete license information is there.
+</span></span><span id="7" class="l"><a class="l" href="#7"> 7 </a><span class="php-comment"> *
+</span></span><span id="8" class="l"><a class="l" href="#8"> 8 </a><span class="php-comment"> * (c) appleple inc. &lt;info@appleple.com&gt;
+</span></span><span id="9" class="l"><a class="l" href="#9"> 9 </a><span class="php-comment"> */</span>
+</span><span id="10" class="l"><a class="l" href="#10">10 </a><span class="php-comment">/**
+</span></span><span id="11" class="l"><a class="l" href="#11">11 </a><span class="php-comment"> * php/ACMS/User/Corrector.php
+</span></span><span id="12" class="l"><a class="l" href="#12">12 </a><span class="php-comment"> * 校正オプションにユーザー定義のメソッドを追加します
+</span></span><span id="13" class="l"><a class="l" href="#13">13 </a><span class="php-comment"> *
+</span></span><span id="14" class="l"><a class="l" href="#14">14 </a><span class="php-comment"> * ユーザー定義のメソッドが優先されます。
+</span></span><span id="15" class="l"><a class="l" href="#15">15 </a><span class="php-comment"> * ユーザー定義の関数を利用する場合は、所定の位置にこのファイルをコピーまたは作成します。
+</span></span><span id="16" class="l"><a class="l" href="#16">16 </a><span class="php-comment"> * 所定位置に存在しなければ、このファイルは読み込まれません。
+</span></span><span id="17" class="l"><a class="l" href="#17">17 </a><span class="php-comment"> *
+</span></span><span id="18" class="l"><a class="l" href="#18">18 </a><span class="php-comment"> * @package ACMS
+</span></span><span id="19" class="l"><a class="l" href="#19">19 </a><span class="php-comment"> */</span>
+</span><span id="20" class="l"><a class="l" href="#20">20 </a><span class="php-keyword1">class</span> <a id="ACMS_User_Corrector" href="#ACMS_User_Corrector">ACMS_User_Corrector</a>
+</span><span id="21" class="l"><a class="l" href="#21">21 </a>{
+</span><span id="22" class="l"><a class="l" href="#22">22 </a>    <span class="php-comment">/**
+</span></span><span id="23" class="l"><a class="l" href="#23">23 </a><span class="php-comment">     * sample
+</span></span><span id="24" class="l"><a class="l" href="#24">24 </a><span class="php-comment">     * 校正オプションのサンプルメソッド
+</span></span><span id="25" class="l"><a class="l" href="#25">25 </a><span class="php-comment">     *
+</span></span><span id="26" class="l"><a class="l" href="#26">26 </a><span class="php-comment">     * @param  string $txt  - 校正オプションが適用されている文字列
+</span></span><span id="27" class="l"><a class="l" href="#27">27 </a><span class="php-comment">     * @param  array  $args - 校正オプションの引数　{var}[sample('ここの値')]
+</span></span><span id="28" class="l"><a class="l" href="#28">28 </a><span class="php-comment">     * @return string       - 校正後の文字列
+</span></span><span id="29" class="l"><a class="l" href="#29">29 </a><span class="php-comment">     */</span>
+</span><span id="30" class="l"><a class="l" href="#30">30 </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> <a id="_sample" href="#_sample">sample</a>(<span class="php-var">$txt</span>, <span class="php-var">$args</span> = <span class="php-keyword1">array</span>())
+</span><span id="31" class="l"><a class="l" href="#31">31 </a>    {
+</span><span id="32" class="l"><a class="l" href="#32">32 </a>        <span class="php-comment">// 例 {var}[sample('hoge','fuga')]</span>
+</span><span id="33" class="l"><a class="l" href="#33">33 </a>        <span class="php-comment">// {var}の中は，'a-blogcms' とする</span>
+</span><span id="34" class="l"><a class="l" href="#34">34 </a>
+</span><span id="35" class="l"><a class="l" href="#35">35 </a>        <span class="php-var">$hoge</span> = <span class="php-keyword1">isset</span>(<span class="php-var">$args</span>[<span class="php-num">0</span>]) ? <span class="php-var">$args</span>[<span class="php-num">0</span>] : <span class="php-keyword1">null</span>; <span class="php-comment">// 'hoge'</span>
+</span><span id="36" class="l"><a class="l" href="#36">36 </a>        <span class="php-var">$fuga</span> = <span class="php-keyword1">isset</span>(<span class="php-var">$args</span>[<span class="php-num">1</span>]) ? <span class="php-var">$args</span>[<span class="php-num">1</span>] : <span class="php-keyword1">null</span>; <span class="php-comment">// 'fuga'</span>
+</span><span id="37" class="l"><a class="l" href="#37">37 </a>
+</span><span id="38" class="l"><a class="l" href="#38">38 </a>        <span class="php-keyword1">return</span> <span class="php-var">$hoge</span>.<span class="php-var">$fuga</span>.<span class="php-quote">'+'</span>.<span class="php-var">$txt</span>; <span class="php-comment">// 'hogefuga+a-blog cms'</span>
+</span><span id="39" class="l"><a class="l" href="#39">39 </a>    }
+</span><span id="40" class="l"><a class="l" href="#40">40 </a>}
+</span><span id="41" class="l"><a class="l" href="#41">41 </a>
+</span><span id="42" class="l"><a class="l" href="#42">42 </a></span></code></pre>
+	</div>
+
+	<div id="footer">
+		a-blog cms docs API documentation generated by <a href="http://apigen.org">ApiGen @package_version@</a>
+	</div>
+</div>
+<script src="resources/combined.js?371644040"></script>
+<script src="elementlist.js?147159760"></script>
+</body>
+</html>

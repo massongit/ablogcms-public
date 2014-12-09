@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen @package_version@">
+
+	<title>Class ACMS_Filter | a-blog cms docs</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?260161822">
+	<link rel="stylesheet" href="resources/style.css?2767127047">
+
+</head>
+
+<body>
+	<div id="navigation" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a href="index.html" class="brand">a-blog cms docs</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active">
+<span>Class</span>						</li>
+
+						<li class="divider-vertical"></li>
+
+						<li>
+							<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+						</li>
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="left">
+	<div id="menu">
+		<form id="search" class="form-search">
+			<input type="hidden" name="cx" value="">
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="text" name="q" class="search-query" placeholder="Search">
+		</form>
+
+
+		<div id="groups">
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-ACMS_Filter.html">ACMS_Filter</a></li>
+				<li><a href="class-ACMS_RAM.html">ACMS_RAM</a></li>
+				<li><a href="class-ACMS_User_Corrector.html">ACMS_User_Corrector</a></li>
+				<li><a href="class-ACMS_User_GET_EntryExtendSample_Edit.html">ACMS_User_GET_EntryExtendSample_Edit</a></li>
+				<li><a href="class-ACMS_User_GET_Sample.html">ACMS_User_GET_Sample</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_NotSpecialCategory.html">ACMS_User_GET_Touch_NotSpecialCategory</a></li>
+				<li><a href="class-ACMS_User_GET_Touch_SpecialCategory.html">ACMS_User_GET_Touch_SpecialCategory</a></li>
+				<li><a href="class-ACMS_User_Hook.html">ACMS_User_Hook</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Insert.html">ACMS_User_POST_EntryExtendSample_Insert</a></li>
+				<li><a href="class-ACMS_User_POST_EntryExtendSample_Update.html">ACMS_User_POST_EntryExtendSample_Update</a></li>
+				<li><a href="class-ACMS_User_POST_Sample.html">ACMS_User_POST_Sample</a></li>
+				<li><a href="class-DB.html">DB</a></li>
+				<li><a href="class-SQL.html">SQL</a></li>
+				<li><a href="class-SQL_Binary.html">SQL_Binary</a></li>
+				<li><a href="class-SQL_Delete.html">SQL_Delete</a></li>
+				<li><a href="class-SQL_Field.html">SQL_Field</a></li>
+				<li><a href="class-SQL_Field_Case.html">SQL_Field_Case</a></li>
+				<li><a href="class-SQL_Field_Function.html">SQL_Field_Function</a></li>
+				<li><a href="class-SQL_Field_Operator.html">SQL_Field_Operator</a></li>
+				<li><a href="class-SQL_Field_Operator_Between.html">SQL_Field_Operator_Between</a></li>
+				<li><a href="class-SQL_Field_Operator_In.html">SQL_Field_Operator_In</a></li>
+				<li><a href="class-SQL_Insert.html">SQL_Insert</a></li>
+				<li><a href="class-SQL_Replace.html">SQL_Replace</a></li>
+				<li><a href="class-SQL_Select.html">SQL_Select</a></li>
+				<li><a href="class-SQL_Sequence.html">SQL_Sequence</a></li>
+				<li><a href="class-SQL_Update.html">SQL_Update</a></li>
+				<li><a href="class-SQL_Where.html">SQL_Where</a></li>
+			</ul>
+
+
+
+
+
+			<h3>Functions</h3>
+			<ul>
+				<li><a href="function-myFunction.html">myFunction</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class ACMS_Filter</h1>
+
+
+	<div class="description">
+	<p>ACMS_Filter</p>
+
+<p>SQLヘルパの各種処理をラップしたメソッド群です
+メソッドの外で，条件対象のテーブルが選択されている必要があります
+例外で，_field, _keywordはメソッド内でテーブルを自動で選択します</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="alert alert-info">
+		
+		
+		
+		<b>Package:</b> ACMS<br>
+
+		<b>Located at</b> <a href="source-class-ACMS_Filter.html#10-1106" title="Go to source code">Filter.php</a><br>
+	</div>
+
+
+
+		<h2>Methods summary</h2>
+		<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="blogTree" id="_blogTree">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogTree">#</a>
+			<code><a href="source-class-ACMS_Filter.html#24-64" title="Go to source code">blogTree</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>integer <var>$bid</var></span>, <span>string <var>$axis</var> = <span class="line">1: </span><span class="php-quote">'self'</span></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ブログの階層構造を，axisを指定して絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログの階層構造を，axisを指定して絞り込みます</p>
+
+<p>[example]
+self         : 指定されたbidのブログ
+descendant   : 指定されたbidの子孫ブログ
+ancestor     : 指定されたbidの先祖ブログ</p>
+
+<p>ACMS_Filter::blogTree($SQL, $bid, 'self-or-descendant');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$axis</var></dt>
+						<dd>&lt;p&gt;self|descendant|ancestor&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogStatus" id="_blogStatus">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogStatus">#</a>
+			<code><a href="source-class-ACMS_Filter.html#66-84" title="Go to source code">blogStatus</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ブログの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+<p>ACMS_Filter::blogStatus($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogField" id="_blogField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#86-98" title="Go to source code">blogField</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>ブログをfieldテーブルから，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログをfieldテーブルから，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::blogField($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogDisclosureSecretStatus" id="_blogDisclosureSecretStatus">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogDisclosureSecretStatus">#</a>
+			<code><a href="source-class-ACMS_Filter.html#100-119" title="Go to source code">blogDisclosureSecretStatus</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ブログの公開状態とアクセス中の権限に応じて，表示条件を振り分けます
+secretモードを表示対象にします</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログの公開状態とアクセス中の権限に応じて，表示条件を振り分けます
+secretモードを表示対象にします</p>
+
+<p>ACMS_Filter::blogDisclosureSecretStatus($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogOrder" id="_blogOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#121-139" title="Go to source code">blogOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ブログの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+id-desc     : ID降順
+code-asc    : コード昇順</p>
+
+<p>ACMS_Filter::blogOrder($SQL, 'id-desc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="blogKeyword" id="_blogKeyword">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_blogKeyword">#</a>
+			<code><a href="source-class-ACMS_Filter.html#141-153" title="Go to source code">blogKeyword</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$keyword</var></span> )</code>
+
+			<div class="description short">
+				<p>ブログをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ブログをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+<p>ACMS_Filter::blogKeyword($SQL, 'first second third keywords')</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$keyword</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userStatus" id="_userStatus">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userStatus">#</a>
+			<code><a href="source-class-ACMS_Filter.html#158-172" title="Go to source code">userStatus</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ユーザーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ユーザーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+<p>ACMS_Filter::userStatus($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userOrder" id="_userOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#174-219" title="Go to source code">userOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>ユーザーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ユーザーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+id-desc     : ID降順
+code-asc    : コード昇順</p>
+
+<p>ACMS_Filter::userOrder($SQL, 'code-desc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userKeyword" id="_userKeyword">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userKeyword">#</a>
+			<code><a href="source-class-ACMS_Filter.html#221-233" title="Go to source code">userKeyword</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$keyword</var></span> )</code>
+
+			<div class="description short">
+				<p>ユーザーをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ユーザーをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+<p>ACMS_Filter::userKeyword($SQL, 'first second third keywords')</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$keyword</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="userField" id="_userField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_userField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#235-247" title="Go to source code">userField</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>ユーザーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>ユーザーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::userField($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryStatus" id="_categoryStatus">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryStatus">#</a>
+			<code><a href="source-class-ACMS_Filter.html#253-270" title="Go to source code">categoryStatus</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+<p>ACMS_Filter::categoryStatus($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryTreeGlobal" id="_categoryTreeGlobal">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryTreeGlobal">#</a>
+			<code><a href="source-class-ACMS_Filter.html#272-305" title="Go to source code">categoryTreeGlobal</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>integer <var>$bid</var></span>, <span>boolean <var>$self</var> = <span class="line">1: </span><span class="php-keyword1">true</span></span>, <span>null <var>$categoryScope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>null <var>$blogScope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーの階層構造で，指定されたbid以下すべてを対象とします</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーの階層構造で，指定されたbid以下すべてを対象とします</p>
+
+<p>ACMS_Filter::categoryTreeGlobal($SQL, $bid);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$bid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$self</var></dt>
+						<dd>
+</dd>
+						<dt><var>$categoryScope</var></dt>
+						<dd>
+</dd>
+						<dt><var>$blogScope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryField" id="_categoryField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#307-319" title="Go to source code">categoryField</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::categoryField($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryTree" id="_categoryTree">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryTree">#</a>
+			<code><a href="source-class-ACMS_Filter.html#321-369" title="Go to source code">categoryTree</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>integer <var>$cid</var></span>, <span>string <var>$axis</var> = <span class="line">1: </span><span class="php-quote">'self'</span></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーの階層構造を，axisを指定して絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーの階層構造を，axisを指定して絞り込みます</p>
+
+<p>[example]
+self         : 指定されたbidのカテゴリー
+descendant   : 指定されたbidの子孫カテゴリー
+ancestor     : 指定されたbidの先祖カテゴリー</p>
+
+<p>ACMS_Filter::categoryTree($SQL, $cid, 'descendant');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$axis</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryOrder" id="_categoryOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#371-391" title="Go to source code">categoryOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+id-desc     : ID降順
+code-asc    : コード昇順</p>
+
+<p>ACMS_Filter::categoryOrder($SQL, 'code-desc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="categoryKeyword" id="_categoryKeyword">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_categoryKeyword">#</a>
+			<code><a href="source-class-ACMS_Filter.html#393-405" title="Go to source code">categoryKeyword</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$keyword</var></span> )</code>
+
+			<div class="description short">
+				<p>カテゴリーをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>カテゴリーをfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+<p>ACMS_Filter::categoryKeyword($SQL, 'first second third keywords')</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$keyword</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryStatus" id="_entryStatus">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryStatus">#</a>
+			<code><a href="source-class-ACMS_Filter.html#410-431" title="Go to source code">entryStatus</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>エントリーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーの公開状態とアクセス中の権限に応じて，表示条件を振り分けます</p>
+
+<p>ACMS_Filter::entryStatus($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryValidSpan" id="_entryValidSpan">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryValidSpan">#</a>
+			<code><a href="source-class-ACMS_Filter.html#433-447" title="Go to source code">entryValidSpan</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$datetime</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>指定された日時が，公開期間に含まれているエントリーを絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>指定された日時が，公開期間に含まれているエントリーを絞り込みます</p>
+
+<p>ACMS_Filter::entryValidSpan($SQL, '2011-04-21 13:00:00');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$datetime</var></dt>
+						<dd>&lt;p&gt;'1001-01-01 00:00:00'&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entrySession" id="_entrySession">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entrySession">#</a>
+			<code><a href="source-class-ACMS_Filter.html#449-497" title="Go to source code">entrySession</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>現在の日時が，公開期間に含まれていて，アクセス中の権限で表示可能なエントリーを絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>現在の日時が，公開期間に含まれていて，アクセス中の権限で表示可能なエントリーを絞り込みます</p>
+
+<p>ACMS_Filter::entrySession($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entrySpan" id="_entrySpan">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entrySpan">#</a>
+			<code><a href="source-class-ACMS_Filter.html#499-513" title="Go to source code">entrySpan</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$start</var></span>, <span>string <var>$end</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>開始〜終了の指定による期間の該当する日付のエントリーを絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>開始〜終了の指定による期間の該当する日付のエントリーを絞り込みます</p>
+
+<p>ACMS_Filter::entrySpan($SQL, '2010-01-01', '2010-12-31');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$start</var></dt>
+						<dd>&lt;p&gt;'1001-01-01 00:00:00'&lt;/p&gt;
+</dd>
+						<dt><var>$end</var></dt>
+						<dd>&lt;p&gt;'9999-12-31 23:59:59'&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryTag" id="_entryTag">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryTag">#</a>
+			<code><a href="source-class-ACMS_Filter.html#515-538" title="Go to source code">entryTag</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>array <var>$tags</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>エントリーをタグで絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーをタグで絞り込みます</p>
+
+<p>ACMS_Filter::entryTag($SQL, $tags);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$tags</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryKeyword" id="_entryKeyword">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryKeyword">#</a>
+			<code><a href="source-class-ACMS_Filter.html#540-552" title="Go to source code">entryKeyword</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$keyword</var></span> )</code>
+
+			<div class="description short">
+				<p>エントリーfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーfulltextテーブルから，指定されたキーワードで全文検索します</p>
+
+<p>ACMS_Filter::entryKeyword($SQL, 'first second third keywords');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$keyword</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryField" id="_entryField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#554-566" title="Go to source code">entryField</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>エントリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::entryField($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="entryOrder" id="_entryOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_entryOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#568-638" title="Go to source code">entryOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$uid</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>null <var>$cid</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>エントリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+id-desc     : ID降順
+code-asc    : コード昇順</p>
+
+<p>ACMS_Filter::entryOrder($SQL, 'code-asc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="tagOrder" id="_tagOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_tagOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#643-660" title="Go to source code">tagOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>タグの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>タグの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+name-desc   : 名前降順</p>
+
+<p>ACMS_Filter::tagOrder($SQL, 'name-desc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="mediaOrder" id="_mediaOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_mediaOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#662-679" title="Go to source code">mediaOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>メディアの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>メディアの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+name-desc   : 名前降順</p>
+
+<p>ACMS_Filter::mediaOrder($SQL, 'name-desc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="fieldList" id="_fieldList">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_fieldList">#</a>
+			<code><a href="source-class-ACMS_Filter.html#684-696" title="Go to source code">fieldList</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>fieldテーブルを，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>fieldテーブルを，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::fieldList($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="formbuildOrder" id="_formbuildOrder">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_formbuildOrder">#</a>
+			<code><a href="source-class-ACMS_Filter.html#882-952" title="Go to source code">formbuildOrder</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$order</var></span>, <span>null <var>$uid</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span>, <span>null <var>$cid</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>エントリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーの特定フィールドを指定して，昇順または降順で並び替えます</p>
+
+<p>[example]
+id-desc     : ID降順
+code-asc    : コード昇順</p>
+
+<p>ACMS_Filter::formbuildOrder($SQL, 'code-asc');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$order</var></dt>
+						<dd>&lt;p&gt;asc|desc&lt;/p&gt;
+</dd>
+						<dt><var>$uid</var></dt>
+						<dd>
+</dd>
+						<dt><var>$cid</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="formbuildSession" id="_formbuildSession">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_formbuildSession">#</a>
+			<code><a href="source-class-ACMS_Filter.html#953-993" title="Go to source code">formbuildSession</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>null <var>$scp</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>現在の日時が，公開期間に含まれていて，アクセス中の権限で表示可能なエントリーを絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>現在の日時が，公開期間に含まれていて，アクセス中の権限で表示可能なエントリーを絞り込みます</p>
+
+<p>ACMS_Filter::formbuildSession($SQL);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$scp</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="formbuildSpan" id="_formbuildSpan">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_formbuildSpan">#</a>
+			<code><a href="source-class-ACMS_Filter.html#994-1008" title="Go to source code">formbuildSpan</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>string <var>$start</var></span>, <span>string <var>$end</var></span>, <span>null <var>$scope</var> = <span class="line">1: </span><span class="php-keyword1">null</span></span> )</code>
+
+			<div class="description short">
+				<p>開始〜終了の指定による期間の該当する日付のエントリーを絞り込みます</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>開始〜終了の指定による期間の該当する日付のエントリーを絞り込みます</p>
+
+<p>ACMS_Filter::formbuildSpan($SQL, '2010-01-01', '2010-12-31');</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$start</var></dt>
+						<dd>&lt;p&gt;'1001-01-01 00:00:00'&lt;/p&gt;
+</dd>
+						<dt><var>$end</var></dt>
+						<dd>&lt;p&gt;'9999-12-31 23:59:59'&lt;/p&gt;
+</dd>
+						<dt><var>$scope</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="formbuildField" id="_formbuildField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_formbuildField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#1010-1022" title="Go to source code">formbuildField</a>( <span><code><a href="class-SQL_Select.html">SQL_Select</a></code>|<code><a href="class-SQL_Update.html">SQL_Update</a></code>|<code><a href="class-SQL_Delete.html">SQL_Delete</a></code> <var>&amp; $SQL</var></span>, <span>Field <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				<p>エントリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				<p>エントリーをfieldテーブルから，指定されたフィールドで検索します</p>
+
+<p>ACMS_Filter::formbuildField($SQL, $Field);</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$SQL</var></dt>
+						<dd>
+</dd>
+						<dt><var>$Field</var></dt>
+						<dd>
+</dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="crmMailField" id="_crmMailField">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_crmMailField">#</a>
+			<code><a href="source-class-ACMS_Filter.html#1024-1104" title="Go to source code">crmMailField</a>( <span>mixed <var>&amp; $SQL</var></span>, <span>mixed <var>$Field</var></span> )</code>
+
+			<div class="description short">
+				
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		</table>
+
+
+
+		<h3>Magic methods summary</h3>
+
+
+
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		a-blog cms docs API documentation generated by <a href="http://apigen.org">ApiGen @package_version@</a>
+	</div>
+</div>
+<script src="resources/combined.js?371644040"></script>
+<script src="elementlist.js?147159760"></script>
+</body>
+</html>
