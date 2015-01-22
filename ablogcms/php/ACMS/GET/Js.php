@@ -21,6 +21,8 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('cid', CID);
         jsModule('eid', EID);
         jsModule('bcd', ACMS_RAM::blogCode(BID));
+        jsModule('rid', $this->Get->get('rid', null));
+        jsModule('mid', $this->Get->get('mid', null));
         jsModule('yahooApiKey', config('yahoo_search_api_key'));
         jsModule('jQuery', config('jquery_version'));
 
