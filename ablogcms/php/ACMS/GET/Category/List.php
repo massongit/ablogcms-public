@@ -14,6 +14,32 @@ class ACMS_GET_Category_List extends ACMS_GET
         'bid'   => 'descendant-or-self',
     );
 
+    function getAncestorsMap($Map, $root, & $i=0)
+    {
+        foreach ( $Map as $c => $p ) {
+            if ( !isset($Map[$p]) && $p !== $root ) {
+                $Front      = array();
+                $Back       = array();
+                $Tmp[$p]    = ACMS_RAM::categoryParent($p);
+
+                $j = 0;
+                foreach ( $Map as $c_ => $p_ ) {
+                    if ( $j < $i ) $Front[$c_] = $p_;
+                    $j++;
+                }
+                $j = 0;
+                foreach ( $Map as $c_ => $p_ ) {
+                    if ( $j >= $i ) $Back[$c_] = $p_;
+                    $j++;
+                }
+                $Map = $Front + $this->getAncestorsMap($Tmp, $root, $k) + $Back;
+                $i   += $k;
+            }
+            $i++;
+        }
+        return $Map;
+    }
+
     function get()
     {
         $DB     = DB::singleton(dsn());
@@ -27,6 +53,7 @@ class ACMS_GET_Category_List extends ACMS_GET
         $SQL->addLeftJoin('entry', 'entry_category_id', 'category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
 
+        ACMS_Filter::blogTree($SQL, $this->bid, 'descendant-or-self');
         ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
         ACMS_Filter::categoryStatus($SQL);
         if ( !empty($this->keyword) ) {
@@ -138,6 +165,15 @@ class ACMS_GET_Category_List extends ACMS_GET
             $Map[$cid]  = intval($All['category_parent'][$cid]);
         }
 
+        //-------
+        // stack
+        $root   = ACMS_RAM::categoryParent($this->cid) ? intval(ACMS_RAM::categoryParent($this->cid)) : 0;
+        $stack  = array($root);
+
+        //-------------------------
+        // restructure (ancestors)
+        $Map    = $this->getAncestorsMap($Map, $root);
+
         if ( empty($Map) ) return '';
 
         //-------
@@ -145,16 +181,6 @@ class ACMS_GET_Category_List extends ACMS_GET
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
         $Tpl->add('ul#front');
         $Tpl->add('category:loop');
-
-        //-------
-        // stack
-        $aryTemp    = array();
-        foreach ( array_unique($All['category_parent']) as $pid ) {
-            $aryTemp[intval(isset($All['category_left'][$pid]) ? $All['category_left'][$pid] : 0)]  = $pid;
-        }
-        ksort($aryTemp);
-        $pid    = array_shift($aryTemp);
-        $stack  = array($pid);
 
         //-------
         // level
@@ -170,38 +196,44 @@ class ACMS_GET_Category_List extends ACMS_GET
                 unset($Map[$cid]);
 
                 $depth  = count($stack) + 1;
-                $vars   = array(
-                    'bid'       => $this->bid,
-                    'cid'       => $cid,
-                    'ccd'       => $All['category_code'][$cid],
-                    'name'      => $All['category_name'][$cid],
-                    'amount'    => $All['all_amount'][$cid],
-                    'singleAmount'  => $All['category_entry_amount'][$cid],
-                    'level'     => $depth,
-                    'url'       => acmsLink(array(
-                        'bid'   => $this->bid,
-                        'cid'   => $cid,
-                    )),
-                );
-                if ( 'on' <> config('category_list_amount') ) unset($vars['amount']);
-                if ( $this->cid == $cid ) {
-                    $vars['selected']   = config('attr_selected');
+
+                if ( isset($All['category_id'][$cid]) ) {
+                    $vars   = array(
+                        'bid'       => $this->bid,
+                        'cid'       => $cid,
+                        'ccd'       => $All['category_code'][$cid],
+                        'name'      => $All['category_name'][$cid],
+                        'amount'    => $All['all_amount'][$cid],
+                        'singleAmount'  => $All['category_entry_amount'][$cid],
+                        'level'     => $depth,
+                        'url'       => acmsLink(array(
+                            'bid'   => $this->bid,
+                            'cid'   => $cid,
+                        )),
+                    );
+                    if ( 'on' <> config('category_list_amount') ) unset($vars['amount']);
+                    if ( $this->cid == $cid ) {
+                        $vars['selected']   = config('attr_selected');
+                    }
+
+                    //-------
+                    // field
+                    $vars   += $this->buildField(loadCategoryField($cid), $Tpl);
+
+                    $Tpl->add('li#front', $vars);
+
+                    $i++;
+                    //------
+                    // glue
+                    if ( $i !== $j ) {
+                        $Tpl->add('glue');
+                    }
+
+                    $Tpl->add('category:loop', $vars);
+                } else {
+                    $Tpl->add('li#front');
+                    $Tpl->add('category:loop');
                 }
-
-                //-------
-                // field
-                $vars   += $this->buildField(loadCategoryField($cid), $Tpl);
-
-                $Tpl->add('li#front', $vars);
-
-                $i++;
-                //------
-                // glue
-                if ( $i !== $j ) {
-                    $Tpl->add('glue');
-                }
-
-                $Tpl->add('category:loop', $vars);
 
                 if ( $level > $depth ) {
                     if ( !!array_search($cid, $Map) ) {

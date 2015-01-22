@@ -67,7 +67,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
 
                 //--------------------
                 // entry build query
-                if ( $cRow['category_indexing'] == 'on' ) {
+                if ( !('on' == $this->_config['categoryIndexing'] and 'on' <> $cRow['category_indexing']) ) {
                     if ( $eQ = $this->buildQuery($cid, $Tpl) ) {
                         if ( !!$DB->query($eQ, 'fetch') and !!($eRow = $DB->fetch($eQ)) );
                     }
