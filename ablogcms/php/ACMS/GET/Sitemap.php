@@ -65,6 +65,7 @@ class ACMS_GET_Sitemap extends ACMS_GET
             $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
             $SQL->addSelect('entry_updated_datetime');
             ACMS_Filter::entryStatus($SQL);
+            ACMS_Filter::entrySession($SQL);
             ACMS_Filter::blogTree($SQL, $bid, $this->blogAxis());
             if ( 'on' == config('sitemap_entry_indexing') ) {
                 $SQL->addWhereOpr('entry_indexing', 'on');
@@ -111,6 +112,7 @@ class ACMS_GET_Sitemap extends ACMS_GET
                     $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
                     $SQL->addSelect('entry_updated_datetime');
                     ACMS_Filter::entryStatus($SQL);
+                    ACMS_Filter::entrySession($SQL);
                     ACMS_Filter::categoryTree($SQL, $cid, $this->categoryAxis());
                     $SQL->addWhereOpr('entry_blog_id', $bid);
                     if ( 'on' == config('sitemap_entry_indexing') ) {
@@ -132,6 +134,10 @@ class ACMS_GET_Sitemap extends ACMS_GET
                 $SQL->addSelect('entry_id');
                 $SQL->addSelect('entry_updated_datetime');
                 ACMS_Filter::entryStatus($SQL);
+                ACMS_Filter::entrySession($SQL);
+                if ( !empty($this->Field) ) {
+                    ACMS_Filter::entryField($SQL, $this->Field);
+                }
                 $SQL->addWhereOpr('entry_category_id', $cid);
                 $SQL->addWhereOpr('entry_blog_id', $bid);
 

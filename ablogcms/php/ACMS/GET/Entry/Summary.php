@@ -153,10 +153,21 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
                         'cid'   => $this->cid,
                     )),
                     'indexBlogName' => $blogName,
+                    'blogName'      => $blogName,
+                    'blogCode'      => ACMS_RAM::blogCode($this->bid),
+                    'blogUrl'       => acmsLink(array(
+                        'bid'   => $this->bid,
+                    )),
                 );
                 if ( !empty($this->cid) ) {
                     $categoryName   = ACMS_RAM::categoryName($this->cid);
                     $vars['indexCategoryName']  = $categoryName;
+                    $vars['categoryName']       = $categoryName;
+                    $vars['categoryCode']       = ACMS_RAM::categoryCode($this->cid);
+                    $vars['categoryUrl']        = acmsLink(array(
+                        'bid'   => $this->bid,
+                        'cid'   => $this->cid,
+                    ));
                 }
                 $Tpl->add(null, $vars);
                 if ( 'on' == $config['notfoundStatus404'] ) {
@@ -202,11 +213,20 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             )),
             'indexBlogName' => $blogName,
             'blogName'      => $blogName,
+            'blogCode'      => ACMS_RAM::blogCode($this->bid),
+            'blogUrl'       => acmsLink(array(
+                'bid'   => $this->bid,
+            )),
         );
         if ( !empty($this->cid) ) {
             $categoryName   = ACMS_RAM::categoryName($this->cid);
             $vars['indexCategoryName']  = $categoryName;
             $vars['categoryName']       = $categoryName;
+            $vars['categoryCode']       = ACMS_RAM::categoryCode($this->cid);
+            $vars['categoryUrl']        = acmsLink(array(
+                'bid'   => $this->bid,
+                'cid'   => $this->cid,
+            ));
         }
 
         if ( 'random' <> $config['order'] ) {
