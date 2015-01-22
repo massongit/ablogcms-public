@@ -14,10 +14,17 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
         if ( !($column = $this->Get->get('column')) ) { return false; }
         list($pfx, $type)   = explode('-', $column, 2);
 
+        //--------------
+        // Config Data
+        $Config = new Field(Field::singleton('config'));
+        if ( $rid = intval($this->Get->get('rid')) ) {
+            $Config->overload(loadConfig(BID, $rid));
+        }
+
         // typeで参照できるラベルの連想配列
         $aryTypeLabel    = array();
-        foreach ( configArray('column_add_type') as $i => $_type ) {
-            $aryTypeLabel[$_type]    = config('column_add_type_label', '', $i);
+        foreach ( $Config->getArray('column_add_type') as $i => $_type ) {
+            $aryTypeLabel[$_type]    = $Config->get('column_add_type_label', '', $i);
         }
 
         // 特定指定子を含むユニットタイプ
@@ -25,15 +32,11 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
         // 特定指定子を除外した、一般名のユニット種別
         $type = detectUnitTypeSpecifier($type);
 
-        $Config = new Field(Field::singleton('config'));
-        if ( $rid = intval($this->Get->get('rid')) ) {
-            $Config->overload(loadConfig(BID, $rid));
-        }
-
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
 
         $Column = new Field();
         $Column->setField('pfx', $pfx);
+
         switch ( $type ) {
             case 'text':
                 foreach ( $Config->getArray('column_text_tag') as $i => $tag ) {
@@ -118,14 +121,14 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                 return '';
         }
 
-        if ( 'on' === config('unit_group') ) {
-            $classes = configArray('unit_group_class');
-            $labels  = configArray('unit_group_label');
+        if ( 'on' === $Config->get('unit_group') ) {
+            $classes = $Config->getArray('unit_group_class');
+            $labels  = $Config->getArray('unit_group_label');
             foreach ( $labels as $i => $label ) {
                 $Tpl->add(array('group:loop', 'group:veil', $type), array(
                      'group.value'     => $classes[$i],
                      'group.label'     => $label,
-                     'group.selected'  => ($classes[$i] === $Config->get('group')) ? config('attr_selected') : '',
+                     'group.selected'  => ($classes[$i] === $Config->get('group')) ? $Config->get('attr_selected') : '',
                 ));
             }
             $Tpl->add(array('group:veil', $type), array(

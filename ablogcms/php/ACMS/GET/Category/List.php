@@ -53,7 +53,6 @@ class ACMS_GET_Category_List extends ACMS_GET
         $SQL->addLeftJoin('entry', 'entry_category_id', 'category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
 
-        ACMS_Filter::blogTree($SQL, $this->bid, 'descendant-or-self');
         ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
         ACMS_Filter::categoryStatus($SQL);
         if ( !empty($this->keyword) ) {
@@ -161,6 +160,8 @@ class ACMS_GET_Category_List extends ACMS_GET
                 $key    = 'category_id';
         }
         if ( $isDesc ) arsort($All[$key]);
+
+        $Map    = array();
         foreach ( $All[$key] as $cid => $kipple ) {
             $Map[$cid]  = intval($All['category_parent'][$cid]);
         }
@@ -194,6 +195,14 @@ class ACMS_GET_Category_List extends ACMS_GET
             $pid    = array_pop($stack);
             while ( !!($cid = array_search($pid, $Map)) ) {
                 unset($Map[$cid]);
+
+                if ( !isset($All['category_id'][$cid]) ) {
+                    if ( !!array_search($cid, $Map) ) {
+                        array_push($stack, $pid, $cid);
+                        $level++;
+                        continue 2;
+                    }
+                }
 
                 $depth  = count($stack) + 1;
 
@@ -235,7 +244,7 @@ class ACMS_GET_Category_List extends ACMS_GET
                     $Tpl->add('category:loop');
                 }
 
-                if ( $level > $depth ) {
+                if ( $level >= $depth ) {
                     if ( !!array_search($cid, $Map) ) {
                         $Tpl->add('ul#front');
                         $Tpl->add('category:loop');
