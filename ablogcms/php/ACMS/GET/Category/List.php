@@ -53,6 +53,7 @@ class ACMS_GET_Category_List extends ACMS_GET
         $SQL->addLeftJoin('entry', 'entry_category_id', 'category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
 
+        ACMS_Filter::blogTree($SQL, $this->bid, 'ancestor-or-self');
         ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
         ACMS_Filter::categoryStatus($SQL);
         if ( !empty($this->keyword) ) {

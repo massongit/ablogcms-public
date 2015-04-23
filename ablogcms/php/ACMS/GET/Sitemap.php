@@ -83,8 +83,16 @@ class ACMS_GET_Sitemap extends ACMS_GET
              */
             $SQL    = SQL::newSelect('category');
             $SQL->setSelect('category_id');
+            $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
+
+            ACMS_Filter::blogTree($SQL, $bid, $this->blogAxis());
             ACMS_Filter::categoryStatus($SQL);
-            $SQL->addWhereOpr('category_blog_id', $bid);
+            
+            $Where  = SQL::newWhere();
+            $Where->addWhereOpr('category_blog_id', $bid, '=', 'OR');
+            $Where->addWhereOpr('category_scope', 'global', '=', 'OR');
+            $SQL->addWhere($Where);
+
 
             // indexing
             if ( 'on' == config('sitemap_category_indexing') ) {

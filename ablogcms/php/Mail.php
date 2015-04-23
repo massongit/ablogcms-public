@@ -83,6 +83,27 @@ class Mail
         return true;
     }
 
+    function covertEncoding($contents, $to, $from)
+    {
+        $contents   = $this->charReplace($contents, $to);
+        $contents   = mb_convert_encoding($contents, $to, $from);
+
+        return $contents;
+    }
+
+    function charReplace($contents, $to)
+    {
+        $charset    = strtolower($to);
+        $path       = config('const_mail_convert_dir').$charset.'.php';
+
+        if ( file_exists($path) ) {
+            $const  = array();
+            include $path;
+            $contents   = str_replace(array_keys($const), array_values($const), $contents);
+        }
+        return $contents;
+    }
+
     function setConfig ( $key, $value )
     {
         $set    = true;
@@ -172,7 +193,8 @@ class Mail
                     }
 
                     $mbchar = array_shift($mbstack);
-                    $encode    .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
+
+                    $encode    .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
                     if ( !empty($mbstack) ) {
                         $mbchar = array_pop($mbstack);
                         if ( !empty($mbstack) ) {
@@ -184,7 +206,7 @@ class Mail
                                     $j++;
                                     if ( $j >= 8 ) {
                                         $encode .= ' ';
-                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
                                         $j  = 0;
                                         break;
                                     }
@@ -192,14 +214,14 @@ class Mail
                                 if ( is_null($_mbchar) ) {
                                     if ( !empty($part) ) {
                                         $encode .= ' ';
-                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($$part, $this->_rfc2047Charset, 'UTF-8')).'?=';
                                     }
                                     break;
                                 }
                             }
                         }
                         $encode .= ' ';
-                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
                     }
 
                     $encode    .= $wsp;
@@ -223,7 +245,7 @@ class Mail
                         $j++;
                         if ( $j >= 8 ) {
                             $encode .= ' ';
-                            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
                             $j  = 0;
                             break;
                         }
@@ -232,14 +254,14 @@ class Mail
                     if ( is_null($_mbchar) ) {
                         if ( !empty($part) ) {
                             $encode .= ' ';
-                            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
                         }
                         break;
                     }
                 }
             }
             $encode .= ' ';
-            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode(mb_convert_encoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
+            $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($mbchar, $this->_rfc2047Charset, 'UTF-8')).'?=';
         }
 
 
@@ -396,7 +418,7 @@ class Mail
             if ( !empty($boundary) ) {
                 $data   .= '--'.$boundary.$this->_crlf;
             } else if ( !empty($charset) ) {
-                $body   = mb_convert_encoding($body, $charset, 'UTF-8');
+                $body   = $this->covertEncoding($body, $this->_rfc2047Charset, 'UTF-8');
             }
 
             if ( 'base64' == $encoding ) {
