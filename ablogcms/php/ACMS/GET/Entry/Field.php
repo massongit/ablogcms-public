@@ -42,10 +42,13 @@ class ACMS_GET_Entry_Field extends ACMS_GET
         if ( !$allow ) return '';
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+
         $Field  = loadEntryField($this->eid);
         foreach ( $row as $key => $val ) {
             $Field->setField(preg_replace('@^entry_@', '', $key), $val);
         }
+
         $Tpl->add(null, $this->buildField($Field, $Tpl));
         return $Tpl->get();
     }

@@ -19,6 +19,7 @@ class ACMS_GET_Comment_Body extends ACMS_GET
         if ( ADMIN ) return false;
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( ALT or !$this->Post->isNull() ) {
             $DB     = DB::singleton(dsn());

@@ -22,11 +22,14 @@ class ACMS_GET_Category_Field extends ACMS_GET
         if (!sessionWithAdministration() and 'close' === $status) return '';
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+
         $Field  = loadCategoryField($this->cid);
         foreach ( $row as $key => $val ) {
             $Field->setField(preg_replace('@^category_@', '', $key), $val);
         }
         $Tpl->add(null, $this->buildField($Field, $Tpl));
+        
         return $Tpl->get();
     }
 }

@@ -55,6 +55,8 @@ class ACMS_GET_Tag_Cloud extends ACMS_GET
         $x  = ceil(sqrt($min) * $c);
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+        
         $i      = 0;
         foreach ( $tags as $tag => $amount ) {
             if ( !empty($i) ) $Tpl->add('glue'); 

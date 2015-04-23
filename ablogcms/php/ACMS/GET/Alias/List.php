@@ -51,6 +51,8 @@ class ACMS_GET_Alias_List extends ACMS_GET
         if ( 'desc' == $order ) { arsort($sort); } else { asort($sort); }
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+        
         $i  = 0;
         $limit  = config('alias_list_limit');
         foreach ( $sort as $aid => $kipple ) {

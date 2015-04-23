@@ -25,7 +25,7 @@ class ACMS_GET_Entry extends ACMS_GET
         );
         $unitGroupEnable= (config('unit_group') === 'on');
 
-        foreach ( $Column as $i => $data ) {
+        foreach ( $Column as $k => $data ) {
             $type   = $data['type'];
             $align  = $data['align'];
             $sort   = $data['sort'];
@@ -101,15 +101,8 @@ class ACMS_GET_Entry extends ACMS_GET
                     'text'          => $data['text'],
                     'extend_tag'    => $data['extend_tag'],
                 );
-                $textData = explode(':acms_unit_text_delimiter:', $data['text']);
-                if ( is_array($textData) ) {
-                    foreach ( $textData as $u => $text ) {
-                        $text =  str_replace(':acms-unit-text-delimiter:', ':acms_unit_text_delimiter:', $text);
-                        if ($u == 0) $u = '';
-                        else $u++;
-                        $vars['text'.$u] = $text;
-                    }
-                }
+                buildUnitData($vars['text'], $vars, 'text');
+
                 if ( !empty($data['attr']) ) {
                     $vars['attr']   = $data['attr'];
                     $vars['class']  = $data['attr']; // legacy
@@ -127,17 +120,33 @@ class ACMS_GET_Entry extends ACMS_GET
             // image
             } else if ( 'image' == $type ) {
                 if ( empty($data['path']) ) continue;
-                $path   = ARCHIVES_DIR.$data['path'];
-                $xy     = @getimagesize($path);
 
-                $vars   = array();
-                $vars['path']   = $path;
-                $vars['x']      = $xy[0];
-                $vars['y']      = $xy[1];
+                $vars       = array();
+                $pathAry    = explodeUnitData($data['path']);
+
+                $pattern        = '@^\.\./'.REVISON_ARCHIVES_DIR.'@';
+                $revisonPath    = preg_match($pattern, $data['path']) ? '../'.REVISON_ARCHIVES_DIR : '';
+
+                foreach ( $pathAry as $i => $path_ ) {
+                    if ( empty($i) ) {
+                        $i = '';
+                    } else {
+                        $i++;
+                        $path_  = $revisonPath.$path_;
+                    }
+                    $path   = ARCHIVES_DIR.$path_;
+                    $xy     = @getimagesize($path);
+
+                    $vars['path'.$i]   = $path;
+                    $vars['x'.$i]      = $xy[0];
+                    $vars['y'.$i]      = $xy[1];
+                }
+
                 $vars['alt']    = $data['alt'];
+
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -146,25 +155,40 @@ class ACMS_GET_Entry extends ACMS_GET
                     }
                 }
 
-                if ( !empty($data['caption']) ) $vars['caption'] = $data['caption'];
+                if ( !empty($data['caption']) ) {
+                    $vars['caption'] = $data['caption'];
+                }
 
                 $vars['align']  = $data['align'];
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
-                if ( !empty($data['link']) ) {
-                    $Tpl->add(array_merge(array('link#front', 'unit#'.$actualType), $rootBlock), array(
-                        'url'   => $data['link'],
-                    ));
-                    $Tpl->add(array_merge(array('link#rear', 'unit#'.$actualType), $rootBlock));
-                } else {
-                    $name   = basename($path);
-                    $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
-                    if ( $xy = @getimagesize($large) ) {
-                        $Tpl->add(array_merge(array('link#front', 'unit#'.$actualType), $rootBlock), array(
-                            'url'   => BASE_URL.$large,
-                            'viewer'=> str_replace('{unit_eid}', $eid, config('entry_body_image_viewer')),
+                $linkAry        = explodeUnitData($data['link']);
+                foreach ( $pathAry as $i => $path_ ) {
+                    if ( empty($i) ) $j = '';
+                    else $j = $i + 1;
+                    
+                    $link_ = isset($linkAry[$i]) ? $linkAry[$i] : '';
+                    if ( empty($link_) ) {
+                        if ( isset($pathAry[$i]) ) {
+                            $path   = ARCHIVES_DIR.$pathAry[$i];
+                        } else {
+                            $path   = ARCHIVES_DIR.$data['path'];
+                        }
+                        $name   = basename($path);
+                        $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
+
+                        if ( $xy = @getimagesize($large) ) {
+                            $Tpl->add(array_merge(array('link'.$j.'#front', 'unit#'.$actualType), $rootBlock), array(
+                                'url'.$j    => BASE_URL.$large,
+                                'viewer'.$j => str_replace('{unit_eid}', $eid, config('entry_body_image_viewer')),
+                            ));
+                            $Tpl->add(array_merge(array('link'.$j.'#rear', 'unit#'.$actualType), $rootBlock));
+                        }
+                    } else {
+                        $Tpl->add(array_merge(array('link'.$j.'#front', 'unit#'.$actualType), $rootBlock), array(
+                            'url'.$j  => $link_,
                         ));
-                        $Tpl->add(array_merge(array('link#rear', 'unit#'.$actualType), $rootBlock));
+                        $Tpl->add(array_merge(array('link'.$j.'#rear', 'unit#'.$actualType), $rootBlock));
                     }
                 }
 
@@ -184,23 +208,41 @@ class ACMS_GET_Entry extends ACMS_GET
 
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
+
+                foreach ( $vars as $key => $val ) {
+                     buildUnitData($val, $vars, $key);
+                }
                 $Tpl->add(array_merge(array('unit#'.$actualType), $rootBlock), $vars);
 
             //------
             // file
             } else if ( 'file' == $type ) {
                 if ( empty($data['path']) ) continue;
-                $path   = ARCHIVES_DIR.$data['path'];
-                $ext    = ite(pathinfo($path), 'extension');
-                $icon   = pathIcon($ext);
-                $xy     = getimagesize($icon);
-                $vars   = array(
-                    'path'  => $path,
-                    'icon'  => $icon,
-                    'x'     => $xy[0],
-                    'y'     => $xy[1],
-                );
+
+                $pathAry    = explodeUnitData($data['path']);
+                $vars       = array();
+
+                foreach ( $pathAry as $i => $val ) {
+                    if ( empty($i) ) $fx = '';
+                    else $fx = $i + 1;
+
+                    $path   = ARCHIVES_DIR.$val;
+                    $ext    = ite(pathinfo($path), 'extension');
+                    $icon   = pathIcon($ext);
+                    if ( !file_exists($icon) ) {
+                        continue;
+                    }
+                    $xy     = getimagesize($icon);
+                    $vars   += array(
+                        'path'.$fx  => $path,
+                        'icon'.$fx  => $icon,
+                        'x'.$fx     => $xy[0],
+                        'y'.$fx     => $xy[1],
+                    );
+                }
                 if ( !empty($data['caption']) ) $vars['caption'] = $data['caption'];
+                buildUnitData($data['caption'], $vars, 'caption');
+
                 $vars['align']  = $data['align'];
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
@@ -230,7 +272,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 );
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -276,7 +318,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 );
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -300,9 +342,11 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y' => $y,
                     'align' => $data['align'],
                 );
+                buildUnitData($data['youtube_id'], $vars, 'youtubeId');
+
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -326,9 +370,11 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y' => $y,
                     'align' => $data['align'],
                 );
+                buildUnitData($data['video_id'], $vars, 'videoId');
+
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -346,14 +392,26 @@ class ACMS_GET_Entry extends ACMS_GET
             } else if ( 'eximage' == $type ) {
                 if ( empty($data['normal']) ) continue;
                 list($x, $y) = explode('x', $data['size']);
-                $url    = !empty($data['link']) ? $data['link'] : (!empty($data['large']) ? $data['large'] : null);
-                if ( !empty($url) ) {
-                    $vars   = array(
-                        'url'   => $url,
-                    );
-                    if ( empty($data['link']) ) $vars['viewer'] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
-                    $Tpl->add(array_merge(array('link#front', 'unit#'.$actualType), $rootBlock), $vars);
-                    $Tpl->add(array_merge(array('link#rear', 'unit#'.$actualType), $rootBlock));
+
+                $normalAry  = explodeUnitData($data['normal']);
+                $linkAry    = explodeUnitData($data['link']);
+                $largeAry   = explodeUnitData($data['large']);
+                foreach ( $normalAry as $i => $normal ) {
+                    if ( empty($i) ) $j = '';
+                    else $j = $i + 1;
+
+                    $link_  = isset($linkAry[$i]) ? $linkAry[$i] : '';
+                    $large_ = isset($largeAry[$i]) ? $largeAry[$i] : '';
+
+                    $url    = !empty($link_) ? $link_ : (!empty($large_) ? $large_ : null);
+                    if ( !empty($url) ) {
+                        $vars   = array(
+                            'url'.$j    => $url,
+                        );
+                        if ( empty($link_) ) $vars['viewer'.$j] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
+                        $Tpl->add(array_merge(array('link'.$j.'#front', 'unit#'.$actualType), $rootBlock), $vars);
+                        $Tpl->add(array_merge(array('link'.$j.'#rear', 'unit#'.$actualType), $rootBlock));
+                    }
                 }
 
                 $vars   = array(
@@ -362,10 +420,12 @@ class ACMS_GET_Entry extends ACMS_GET
                     'y'         => $y,
                     'alt'       => $data['alt'],
                     'large'     => $data['large'],
+                    'caption'   => '',
                 );
+
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $vars['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -380,6 +440,13 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 if ( !empty($data['attr']) ) $vars['attr'] = $data['attr'];
 
+                buildUnitData($vars['normal'], $vars, 'normal');
+                buildUnitData($x, $vars, 'x');
+                buildUnitData($y, $vars, 'y');
+                buildUnitData($vars['alt'], $vars, 'alt');
+                buildUnitData($vars['large'], $vars, 'large');
+                buildUnitData($vars['caption'], $vars, 'caption');
+
                 $Tpl->add(array_merge(array('unit#'.$actualType), $rootBlock), $vars);
 
             //-------
@@ -390,12 +457,32 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars   = array(
                     'quote_url' => $url,
                 );
-                if ( !empty($data['html']) ) $vars['quote_html']                = $data['html'];
-                if ( !empty($data['site_name']) ) $vars['quote_site_name']      = $data['site_name'];
-                if ( !empty($data['author']) ) $vars['quote_author']            = $data['author'];
-                if ( !empty($data['title']) ) $vars['quote_title']              = $data['title'];
-                if ( !empty($data['description']) ) $vars['quote_description']  = $data['description'];
-                if ( !empty($data['image']) ) $vars['quote_image']              = $data['image'];
+                buildUnitData($vars['quote_url'], $vars, 'quote_url');
+
+                if ( !empty($data['html']) ) {
+                    $vars['quote_html']         = $data['html'];
+                    buildUnitData($vars['quote_html'], $vars, 'quote_html');
+                }
+                if ( !empty($data['site_name']) ) {
+                    $vars['quote_site_name']    = $data['site_name'];
+                    buildUnitData($vars['quote_site_name'], $vars, 'quote_site_name');
+                }
+                if ( !empty($data['author']) ) {
+                    $vars['quote_author']       = $data['author'];
+                    buildUnitData($vars['quote_author'], $vars, 'quote_author');
+                }
+                if ( !empty($data['title']) ) {
+                    $vars['quote_title']        = $data['title'];
+                    buildUnitData($vars['quote_title'], $vars, 'quote_title');
+                }
+                if ( !empty($data['description']) ) {
+                    $vars['quote_description']  = $data['description'];
+                    buildUnitData($vars['quote_description'], $vars, 'quote_description');
+                }
+                if ( !empty($data['image']) ) {
+                    $vars['quote_image']        = $data['image'];
+                    buildUnitData($vars['quote_image'], $vars, 'quote_image');
+                }
 
                 $vars['align']      = $data['align'];
                 $vars['utid']       = $utid;
@@ -410,70 +497,75 @@ class ACMS_GET_Entry extends ACMS_GET
                 if ( empty($data['media_id']) ) continue;
 
                 $DB     = DB::singleton(dsn());
-                $SQL    = SQL::newSelect('media');
-                $SQL->addWhereOpr('media_id', $data['media_id']);
-                
-                if ( !($media = $DB->query($SQL->get(dsn()), 'row')) ) {
-                    continue;
-                }
 
-                $path   = MEDIA_LIBRARY_DIR.$media['media_path'];
-                $vars   = array(
-                    'path'      => $path,
-                    'alt'       => $media['media_field_3'],
-                );
-                if ( !empty($media['media_field_1']) ) {
-                    $vars['caption']    = $media['media_field_1'];
-                }
-                if ( !empty($media['media_field_4']) ) {
-                    $vars['text']    = $media['media_field_4'];
-                }
+                $midAry = explodeUnitData($data['media_id']);
+                foreach ( $midAry as $i => $mid ) {
+                    if ( empty($i) ) $fx = '';
+                    else $fx = $i + 1;
+                    
+                    $vars   = array();
 
-                if ( $media['media_type'] == 'image' ) {
-                    $vars   += array(
-                        'x'         => $data['size'],
-                    );
-
-                    $name   = basename($path);
-                    $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
-                    if ( !empty($media['media_field_2']) ) {
-                        $url    = $media['media_field_2'];
-                    } else if ( $xy = @getimagesize($large) ) {
-                        $url    = BASE_URL.$large;
+                    $SQL    = SQL::newSelect('media');
+                    $SQL->addWhereOpr('media_id', $mid);
+                    if ( !($media = $DB->query($SQL->get(dsn()), 'row')) ) {
+                        continue;
                     }
 
-                    if ( !empty($url) ) {
-                        $varsLink   = array(
-                            'url'   => $url,
-                        );
-                        if ( empty($media['media_field_2']) ) $varsLink['viewer'] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
-                        $Tpl->add(array_merge(array('link#front', 'type#'.$media['media_type'], 'unit#'.$actualType), $rootBlock), $varsLink);
-                        $Tpl->add(array_merge(array('link#rear', 'type#'.$media['media_type'], 'unit#'.$actualType), $rootBlock));
+                    $path   = MEDIA_LIBRARY_DIR.$media['media_path'];
+                    $vars['path'.$fx]   = $path;
+                    $vars['alt'.$fx]    = $media['media_field_3'];
+                    if ( !empty($media['media_field_1']) ) {
+                        $vars['caption'.$fx] = $media['media_field_1'];
+                    }
+                    if ( !empty($media['media_field_4']) ) {
+                        $vars['text'.$fx] = $media['media_field_4'];
                     }
 
-                } else if ( $media['media_type'] == 'file' ) {
-                    if ( empty($media['media_thumbnail']) ) {
-                        $ext    = ite(pathinfo($path), 'extension');
-                        $icon   = pathIcon($ext);
-                        $xy     = getimagesize($icon);
-                        $vars   += array(
-                            'icon'      => $icon,
-                            'x'         => $xy[0],
-                            'y'         => $xy[1],
-                        );
-                    } else {
-                        $xy     = getimagesize(ARCHIVES_DIR.$media['media_thumbnail']);
-                        $vars   += array(
-                            'thumbnail' => $media['media_thumbnail'],
-                            'x'         => $xy[0],
-                            'y'         => $xy[1],
-                        );
+                    if ( $media['media_type'] == 'image' ) {
+                        $vars['x'.$fx] = $data['size'];
+
+                        $name   = basename($path);
+                        $large  = substr($path, 0, strlen($path) - strlen($name)).'large-'.$name;
+                        if ( !empty($media['media_field_2']) ) {
+                            $url    = $media['media_field_2'];
+                        } else if ( $xy = @getimagesize($large) ) {
+                            $url    = BASE_URL.$large;
+                        }
+
+                        if ( !empty($url) ) {
+                            $varsLink   = array(
+                                'url'.$fx   => $url,
+                            );
+                            if ( empty($media['media_field_2']) ) $varsLink['viewer'.$fx] = str_replace('{unit_eid}', $eid, config('entry_body_image_viewer'));
+                            $Tpl->add(array_merge(array('link'.$fx.'#front', 'type'.$fx.'#'.$media['media_type'], 'unit'.$fx.'#'.$actualType), $rootBlock), $varsLink);
+                            $Tpl->add(array_merge(array('link'.$fx.'#rear', 'type'.$fx.'#'.$media['media_type'], 'unit'.$fx.'#'.$actualType), $rootBlock));
+                        }
+
+                    } else if ( $media['media_type'] == 'file' ) {
+                        if ( empty($media['media_thumbnail']) ) {
+                            $ext    = ite(pathinfo($path), 'extension');
+                            $icon   = pathIcon($ext);
+                            $xy     = getimagesize($icon);
+                            $vars   += array(
+                                'icon'.$fx  => $icon,
+                                'x'.$fx     => $xy[0],
+                                'y'.$fx     => $xy[1],
+                            );
+                        } else {
+                            $xy     = getimagesize(ARCHIVES_DIR.$media['media_thumbnail']);
+                            $vars   += array(
+                                'thumbnail'.$fx => $media['media_thumbnail'],
+                                'x'.$fx         => $xy[0],
+                                'y'.$fx         => $xy[1],
+                            );
+                        }
                     }
+                    $Tpl->add(array_merge(array('type'.$fx.'#'.$media['media_type'], 'unit#'.$actualType), $rootBlock), $vars);
                 }
 
                 if ( !empty($data['display_size']) ) {
                     $dsize = $data['display_size'];
-                    if ( intval($dsize) > 0 ) {
+                    if ( is_numeric($dsize) && intval($dsize) > 0 ) {
                         $varsRoot['display_size']   = ' style="width: '.$data['display_size'].'%"';
                     } else {
                         $viewClass = $data['display_size'];
@@ -486,7 +578,6 @@ class ACMS_GET_Entry extends ACMS_GET
                 $varsRoot['utid']       = $utid;
                 $varsRoot['unit_eid']   = $eid;
 
-                $Tpl->add(array_merge(array('type#'.$media['media_type'], 'unit#'.$actualType), $rootBlock), $vars);
                 $Tpl->add(array_merge(array('unit#'.$actualType), $rootBlock), $varsRoot);
             
             //-------
@@ -497,6 +588,33 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars   = array(
                     'label'  => $data['label'],
                 );
+
+                if ( !empty($data['attr']) ) {
+                    $vars['attr']   = $data['attr'];
+                    $vars['class']  = $data['attr']; // legacy
+                }
+
+                $vars['utid']       = $utid;
+                $vars['unit_eid']   = $eid;
+                $vars['align']      = $data['align'];
+
+                $Tpl->add(array_merge(array('unit#'.$actualType), $rootBlock), $vars);
+
+            //--------
+            // module
+            } else if ( 'module' == $type ) {
+
+                if ( empty($data['mid']) ) continue;
+                
+                // ToDo: モジュールのテンプレートを構築
+                $mid    = $data['mid'];
+                $tpl    = $data['tpl'];
+                if ( !empty($mid) ) {
+                    $module     = loadModule($mid);
+                    $name       = $module->get('name');
+                    $identifier = $module->get('identifier');
+                    $vars['view'] = ACMS_GET_Layout::spreadModule($name, $identifier, $tpl);
+                }
 
                 if ( !empty($data['attr']) ) {
                     $vars['attr']   = $data['attr'];
@@ -562,7 +680,7 @@ class ACMS_GET_Entry extends ACMS_GET
 
             //-------------
             // close group
-            if ( $i === $columnAmount && $currentGroup !== null ) {
+            if ( $k === $columnAmount && $currentGroup !== null ) {
                 $Tpl->add(array_merge(array('unitGroup#last', 'unit:loop'), $rootBlock));
             }
 

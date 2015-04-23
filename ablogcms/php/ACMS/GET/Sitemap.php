@@ -17,7 +17,12 @@ class ACMS_GET_Sitemap extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl);
+        $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
+
+        $blogField      = new Field_Search(config('sitemap_blog_field'));
+        $categoryField  = new Field_Search(config('sitemap_category_field'));
+        $entryField     = new Field_Search(config('sitemap_entry_field'));
 
         $SQL    = SQL::newSelect('blog');
         $SQL->addSelect('blog_id');
@@ -40,6 +45,9 @@ class ACMS_GET_Sitemap extends ACMS_GET
         $SQL->setSelect('blog_id');
         ACMS_Filter::blogStatus($SQL);
         ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+        if ( !empty($blogField) ) {
+            ACMS_Filter::blogField($SQL, $blogField);
+        }
 
         // indexing
         if ( 'on' == config('sitemap_blog_indexing') ) {
@@ -85,14 +93,17 @@ class ACMS_GET_Sitemap extends ACMS_GET
             $SQL->setSelect('category_id');
             $SQL->addLeftJoin('blog', 'blog_id', 'category_blog_id');
 
-            ACMS_Filter::blogTree($SQL, $bid, $this->blogAxis());
+            ACMS_Filter::blogTree($SQL, $bid, 'ancestor-or-self');
             ACMS_Filter::categoryStatus($SQL);
-            
+
+            if ( !empty($categoryField) ) {
+                ACMS_Filter::categoryField($SQL, $categoryField);
+            }
+
             $Where  = SQL::newWhere();
             $Where->addWhereOpr('category_blog_id', $bid, '=', 'OR');
             $Where->addWhereOpr('category_scope', 'global', '=', 'OR');
             $SQL->addWhere($Where);
-
 
             // indexing
             if ( 'on' == config('sitemap_category_indexing') ) {
@@ -143,8 +154,8 @@ class ACMS_GET_Sitemap extends ACMS_GET
                 $SQL->addSelect('entry_updated_datetime');
                 ACMS_Filter::entryStatus($SQL);
                 ACMS_Filter::entrySession($SQL);
-                if ( !empty($this->Field) ) {
-                    ACMS_Filter::entryField($SQL, $this->Field);
+                if ( !empty($entryField) ) {
+                    ACMS_Filter::entryField($SQL, $entryField);
                 }
                 $SQL->addWhereOpr('entry_category_id', $cid);
                 $SQL->addWhereOpr('entry_blog_id', $bid);

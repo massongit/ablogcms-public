@@ -181,14 +181,23 @@ class ACMS_GET_Category_List extends ACMS_GET
         //-------
         // tpl
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $Tpl->add('ul#front');
         $Tpl->add('category:loop');
+
+        //-----------
+        // protocol
+        $protocol   = HTTPS ? 'https' : 'http';
 
         //-------
         // level
         $level  = intval(config('category_list_level'));
         if ( empty($level) ) $level = 1000;
         $level--;
+
+        //------------
+        // descendant
+        $descendant = $this->categoryAxis() === 'descendant';
 
         $i = 0;
         $j = $DB->affected_rows();
@@ -208,6 +217,11 @@ class ACMS_GET_Category_List extends ACMS_GET
                 $depth  = count($stack) + 1;
 
                 if ( isset($All['category_id'][$cid]) ) {
+                    $domain = blogDomain($this->bid);
+                    $url    = acmsLink(array(
+                        'bid'   => $this->bid,
+                        'cid'   => $cid,
+                    ));
                     $vars   = array(
                         'bid'       => $this->bid,
                         'cid'       => $cid,
@@ -216,19 +230,18 @@ class ACMS_GET_Category_List extends ACMS_GET
                         'amount'    => $All['all_amount'][$cid],
                         'singleAmount'  => $All['category_entry_amount'][$cid],
                         'level'     => $depth,
-                        'url'       => acmsLink(array(
-                            'bid'   => $this->bid,
-                            'cid'   => $cid,
-                        )),
+                        'url'       => $url,
                     );
                     if ( 'on' <> config('category_list_amount') ) unset($vars['amount']);
-                    if ( $this->cid == $cid ) {
+                    if ( CID == $cid ) {
                         $vars['selected']   = config('attr_selected');
                     }
 
                     //-------
                     // field
-                    $vars   += $this->buildField(loadCategoryField($cid), $Tpl);
+                    if ( config('category_list_field') === 'on' ) {
+                        $vars   += $this->buildField(loadCategoryField($cid), $Tpl);
+                    }
 
                     $Tpl->add('li#front', $vars);
 
@@ -258,14 +271,16 @@ class ACMS_GET_Category_List extends ACMS_GET
                 $Tpl->add('category:loop');
             }
 
-            $Tpl->add('ul#rear');
-            $Tpl->add('category:loop');
-            if ( !empty($stack) ) {
-                $Tpl->add('li#rear');
+            if ( !$descendant || count($stack) !== 1 ) {
+                $Tpl->add('ul#rear');
                 $Tpl->add('category:loop');
+                if ( !empty($stack) ) {
+                    $Tpl->add('li#rear');
+                    $Tpl->add('category:loop');
+                }
             }
         }
-
+        
         return $Tpl->get();
     }
 }

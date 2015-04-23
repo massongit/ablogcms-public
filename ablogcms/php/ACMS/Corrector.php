@@ -38,7 +38,7 @@ class ACMS_Corrector
                     $correct_match = configArray('corrector_match');
                     foreach ( $correct_regex as $i => $regex ) {
                         if ( preg_match($regex, $opt) ) {
-                            $opt = $correct_match[$i];
+                            $opt = isset($correct_match[$i]) ? $correct_match[$i] : '';
                             break;
                         }
                     }
@@ -89,6 +89,11 @@ class ACMS_Corrector
     function nl2br4html($txt)
     {
         return nl2br($txt, false);
+    }
+
+    function delnl($txt)
+    {
+        return preg_replace("/(\xe2\x80[\xa8-\xa9]|\xc2\x85|\r\n|\r|\n)/", "", $txt);
     }
 
     function escape($txt, $args=array())
@@ -474,6 +479,28 @@ class ACMS_Corrector
             $this->const = $const;
         }
         return str_replace(array_keys($this->const), '', $txt);
+    }
+
+    function split($txt, $args=array())
+    {
+        if ( !isset($args[1]) ) return $txt;
+
+        $count      = intval($args[1]);
+        $pattern    = isset($args[0]) ? $args[0] : '';
+        $data       = preg_split('@'.$pattern.'@', $txt);
+        if ( !isset($data[$count]) ) return $txt;
+
+        return $data[$count];
+    }
+
+    function lowercase($txt)
+    {
+        return strtolower($txt);
+    }
+
+    function uppercase($txt)
+    {
+        return strtoupper($txt);
     }
 
     function buildGlobalVars($txt)

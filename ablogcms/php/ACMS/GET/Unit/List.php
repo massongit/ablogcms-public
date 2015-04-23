@@ -24,6 +24,7 @@ class ACMS_GET_Unit_List extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
         $vars   = array();
 
@@ -57,9 +58,9 @@ class ACMS_GET_Unit_List extends ACMS_GET
         } else {
             $SQL->addOrder('entry_datetime', 'DESC');
         }
+
         $limit  = intval(config('column_list_limit'));
         $from   = ($this->page - 1) * $limit;
-        $limit  = ((($from + $limit) > $itemsAmount) ? ($itemsAmount - $from) : $limit);
         $over   = $itemsAmount <= $from;
 
         if ( !$itemsAmount || $over ) {
@@ -195,6 +196,7 @@ class ACMS_GET_Unit_List extends ACMS_GET
         if ( 'random' <> $order && config('column_list_pager_on') === 'on' ) {
             $vars += $this->buildPager($this->page, $limit, $itemsAmount, config('column_list_pager_delta'), config('column_list_pager_cur_attr'), $Tpl);
         }
+        
         $Tpl->add(null, $vars);
 
         return $Tpl->get();

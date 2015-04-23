@@ -12,6 +12,8 @@ class ACMS_GET_Comment_List extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+        
         $DB     = DB::singleton(dsn());
         $SQL    = SQL::newSelect('comment');
         $SQL->addSelect('comment_blog_id');

@@ -32,6 +32,7 @@ class ACMS_GET_Topicpath extends ACMS_GET
         $this->self = true;
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
         $cnt    = 0;
 
@@ -79,10 +80,14 @@ class ACMS_GET_Topicpath extends ACMS_GET
                 } elseif ( !!($altLabel = config('mo_topicpath_root_label')) ) {
                     $row['blog_name'] = $altLabel;
                 }
+                $bid    = intval($row['blog_id']);
+                if ( 'on' === config('mo_topicpath_blog_field') ) {
+                    $Tpl->add(array('blogField', 'blog:loop'), $this->buildField(loadBlogField($bid), $Tpl));
+                }
                 $Tpl->add('blog:loop', array(
                     'name' => $row['blog_name'],
                     'url'   => acmsLink(array(
-                        'bid'   => intval($row['blog_id']),
+                        'bid'   => $bid,
                     )),
                 ));
                 $cnt++;
@@ -131,11 +136,17 @@ class ACMS_GET_Topicpath extends ACMS_GET
 
             foreach ( $all as $i => $row ) {
                 if ( !empty($cnt) ) $Tpl->add(array('glue', 'category:loop'));
+
+                $cid    = intval($row['category_id']);
+                if ( 'on' === config('mo_topicpath_category_field') ) {
+                    $Tpl->add(array('categoryField', 'category:loop'), $this->buildField(loadCategoryField($cid), $Tpl));
+                }
+
                 $Tpl->add('category:loop', array(
                     'name'  => $row['category_name'],
                     'url'   => acmsLink(array(
                         'bid'   => $this->bid,
-                        'cid'   => intval($row['category_id']),
+                        'cid'   => $cid,
                     )),
                 ));
                 $cnt++;
@@ -152,11 +163,17 @@ class ACMS_GET_Topicpath extends ACMS_GET
                 // ignore block
             } else {
                 if ( !empty($cnt) ) $Tpl->add(array('glue', 'entry'));
+
+                $eid    = intval($row['entry_id']);
+                if ( 'on' === config('mo_topicpath_entry_field') ) {
+                    $Tpl->add(array('entryField', 'entry'), $this->buildField(loadEntryField($eid), $Tpl));
+                }
+
                 $Tpl->add('entry', array(
                     'title' => $row['entry_title'],
                     'url'   => acmsLink(array(
                         'bid'   => $this->bid,
-                        'eid'   => intval($row['entry_id']),
+                        'eid'   => $eid,
                     )),
                 ));
             }

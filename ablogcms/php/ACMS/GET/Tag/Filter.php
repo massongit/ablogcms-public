@@ -17,6 +17,7 @@ class ACMS_GET_Tag_Filter extends ACMS_GET
     {
         if ( !$cnt = count($this->tags) ) { return false; }
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( $cnt > config('tag_filter_selected_limit') ) {
             $cnt    = config('tag_filter_selected_limit');

@@ -21,6 +21,7 @@ class ACMS_GET_Field_ValueList extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         $DB = DB::singleton(dsn());
         $SQL = SQL::newSelect('field');

@@ -49,6 +49,7 @@ class ACMS_GET_User_Profile extends ACMS_GET
         }
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( !($all = $DB->query($SQL->get(dsn()), 'all')) ) {
             $Tpl->add('notFound');

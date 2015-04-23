@@ -113,6 +113,9 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                     ));
                 }
                 break;
+            case 'module':
+                
+                break;
             case 'break':
                 break;
             case 'custom':
@@ -121,7 +124,10 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
                 return '';
         }
 
-        if ( 'on' === $Config->get('unit_group') ) {
+        if ( 1
+            && 'on' === $Config->get('unit_group')
+            && !preg_match('/^(break|module|custom)$/', $type)
+        ) {
             $classes = $Config->getArray('unit_group_class');
             $labels  = $Config->getArray('unit_group_label');
             foreach ( $labels as $i => $label ) {

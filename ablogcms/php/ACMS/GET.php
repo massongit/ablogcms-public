@@ -51,13 +51,14 @@ class ACMS_GET
     var $mid  = null;
     var $mbid = null;
 
-    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid = null, $mbid = null, $identify = null, $aryMultiAcms = null)
+    function ACMS_GET($tpl, $acms, $scope, $axis, $Post, $mid=null, $mbid=null, $identifier=null, $aryMultiAcms=null, $showField=false)
     {
         $this->tpl  = $tpl;
         $this->Post = new Field_Validation($Post, true);
         $this->Get  = new Field(Field::singleton('get'));
         $this->Q    = new Field(Field::singleton('query'), true);
-        $this->identify = $identify;
+        $this->identifier   = $identifier;
+        $this->showField    = $showField;
 
         //-------
         // scope
@@ -112,7 +113,13 @@ class ACMS_GET
 
         $keyword    = $this->Q->get('keyword');
         $qkeyword   = $this->Get->get(KEYWORD_SEGMENT);
-        if ( !empty($qkeyword) && config('query_keyword') == 'on' ) $keyword = $qkeyword;
+        if ( 1
+            && !empty($qkeyword)
+            && config('query_keyword') == 'on'
+            && ('global' == (!empty($scope['keyword']) ? $scope['keyword'] : (!empty($this->_scope['keyword']) ? $this->_scope['keyword'] : 'local')))
+        ) {
+            $keyword = $this->Get->get(KEYWORD_SEGMENT);
+        }
 
         $this->keyword  = $keyword;
         $this->start    = $this->Q->get('start');
@@ -169,13 +176,13 @@ class ACMS_GET
                 '{admin_module_mid}',
                 '{admin_module_url}',
                 '{admin_module_name}',
-                '{admin_module_identify}',
+                '{admin_module_identifier}',
             ), array(
                 $bid,
                 $this->mid,
                 $url,
                 $className,
-                $this->identify,
+                $this->identifier,
             ), $this->tpl);
 
             $this->tpl = preg_replace('@<!--[\t 　]*(BEGIN|END)[\t 　]module_setting[\t 　]-->@', '', $this->tpl);
@@ -197,6 +204,14 @@ class ACMS_GET
     function get()
     {
         return false;
+    }
+
+    function buildModuleField(& $Tpl)
+    {
+        if ( $this->mid && $this->showField ) {
+            $vars = $this->buildField(loadModuleField($this->mid), $Tpl, 'moduleField');
+            $Tpl->add('moduleField', $vars);
+        }
     }
 
     function buildDate($datetime, & $Tpl, $block=array(), $prefix='date#')
@@ -565,8 +580,9 @@ class ACMS_GET
     
     function buildImage(&$Tpl, $pimageId, $config)
     {
-        $vars = array();
-        $DB     = DB::singleton(dsn());
+        $DB         = DB::singleton(dsn());
+        $vars       = array();
+        $pathAry    = array();
         
         //-------
         // image
@@ -576,147 +592,154 @@ class ACMS_GET
             $pimage = $DB->query($SQL->get(dsn()), 'row');
             $filename   = $pimage['column_field_2'];
             $align      = $pimage['column_align'];
-            $path       = ARCHIVES_DIR.$filename;
-            if ( $align === 'hidden' ) $path = null;
+            $pathAry    = explodeUnitData($filename);
         } else {
             $path   = null;
         }
-
-        //-------------------
-        // image is readble?
-        if ( is_readable($path) ) {
-            list($x, $y)    = @getimagesize($path);
-
-            if ( max($config['imageX'], $config['imageY']) > max($x, $y) ) {
-                $_path  = preg_replace('@(.*?)([^/]+)$@', '$1large-$2',  $path);
-                if ( $xy = @getimagesize($_path) ) {
-                    $path   = $_path;
-                    $x      = $xy[0];
-                    $y      = $xy[1];
-                }
-            }
-
-            $vars   += array(
-                'path'  => $path,
-            );
-            if ( 'on' == $config['imageTrim'] ) {
-                if ( $x > $config['imageX'] and $y > $config['imageY'] ) {
-                    if ( ($x / $config['imageX']) < ($y / $config['imageY']) ) {
-                        $imgX   = $config['imageX'];
-                        $imgY   = @round($y / ($x / $config['imageX']));
-                    } else {
-                        $imgY   = $config['imageY'];
-                        $imgX   = @round($x / ($y / $config['imageY']));
-                    }
-                } else {
-                    if ( $x < $config['imageX'] ) {
-                        $imgX   = $config['imageX'];
-                        $imgY   = @round($y * ($config['imageX'] / $x));
-                    } else if ( $y < $config['imageY'] ) {
-                        $imgY   = $config['imageY'];
-                        $imgX   = @round($x * ($config['imageY'] / $y));
-                    } else {
-                        if ( ($config['imageX'] - $x) > ($config['imageY'] - $y) ) {
-                            $imgX   = $config['imageX'];
-                            $imgY   = @round($y * ($config['imageX'] / $x));
-                        } else {
-                            $imgY   = $config['imageY'];
-                            $imgX   = @round($x * ($config['imageY'] / $y));
-                        }
-                    }
-                }
-                $config['imageCenter']  = 'on';
-            } else {
-                if ( $x > $config['imageX'] ) {
-                    if ( $y > $config['imageY'] ) {
-                        if ( ($x - $config['imageX']) < ($y - $config['imageY']) ) {
-                            $imgY   = $config['imageY'];
-                            $imgX   = @round($x / ($y / $config['imageY']));
-                        } else {
-                            $imgX   = $config['imageX'];
-                            $imgY   = @round($y / ($x / $config['imageX']));
-                        }
-                    } else {
-                        $imgX   = $config['imageX'];
-                        $imgY   = round($y / ($x / $config['imageX']));
-                    }
-                } else if ( $y > $config['imageY'] ) {
-                    $imgY   = $config['imageY'];
-                    $imgX   = round($x / ($y / $config['imageY']));
-                } else {
-                    if ( 'on' == $config['imageZoom'] ) {
-                        if ( ($config['imageX'] - $x) > ($config['imageY'] - $y) ) {
-                            $imgY   = $config['imageY'];
-                            $imgX   = round($x * ($config['imageY'] / $y));
-                        } else {
-                            $imgX   = $config['imageX'];
-                            $imgY   = round($y * ($config['imageX'] / $x));
-                        }
-                    } else {
-                        $imgX   = $x;
-                        $imgY   = $y;
-                    }
-                }
-            }
-
-            //-------
-            // align
-            if ( 'on' == $config['imageCenter'] ) {
-                if ( $imgX > $config['imageX'] ) {
-                    $left   = round((-1 * ($imgX - $config['imageX'])) / 2);
-                } else {
-                    $left   = round(($config['imageX'] - $imgX) / 2);
-                }
-                if ( $imgY > $config['imageY'] ) {
-                    $top    = round((-1 * ($imgY - $config['imageY'])) / 2);
-                } else {
-                    $top    = round(($config['imageY'] - $imgY) / 2);
-                }
-            } else {
-                $left   = 0;
-                $top    = 0;
-            }
-
-            $vars   += array(
-                'imgX'  => $imgX,
-                'imgY'  => $imgY,
-                'left'  => $left,
-                'top'   => $top,
-                'alt'   => $pimage['column_field_4'],
-            );
-
-            //------
-            // tiny
-            $tiny   = ARCHIVES_DIR.preg_replace('@(.*?)([^/]+)$@', '$1tiny-$2', $filename);
-            if ( $xy = @getimagesize($tiny) ) {
-                $vars   += array(
-                    'tinyPath'  => $tiny,
-                    'tinyX'     => $xy[0],
-                    'tinyY'     => $xy[1],
-                );
-            }
-            
-            //--------
-            // square
-            $square = ARCHIVES_DIR.preg_replace('@(.*?)([^/]+)$@', '$1square-$2', $filename);
-            if ( @is_file($square) ) {
-                $vars   += array(
-                    'squarePath'    => $square,
-                    'squareX'       => $this->squareSize,
-                    'squareY'       => $this->squareSize,
-                );
-            }
-
-        } else {
-            $Tpl->add('noimage');
+        if ( empty($pathAry) ) {
+            return array();
         }
 
-        $vars   += array(
-            'x' => $config['imageX'],
-            'y' => $config['imageY'],
-        );
+        foreach ( $pathAry as $i => $path ) {
+            if ($i == 0) $fx = '';
+            else $fx = ++$i;
 
+            $path       = ARCHIVES_DIR.$path;
+            if ( $align === 'hidden' ) $path = null;
 
+            //-------------------
+            // image is readble?
+            if ( is_readable($path) ) {
+                list($x, $y)    = @getimagesize($path);
+
+                if ( max($config['imageX'], $config['imageY']) > max($x, $y) ) {
+                    $_path  = preg_replace('@(.*?)([^/]+)$@', '$1large-$2',  $path);
+                    if ( $xy = @getimagesize($_path) ) {
+                        $path   = $_path;
+                        $x      = $xy[0];
+                        $y      = $xy[1];
+                    }
+                }
+
+                $vars   += array(
+                    'path'.$fx  => $path,
+                );
+                if ( 'on' == $config['imageTrim'] ) {
+                    if ( $x > $config['imageX'] and $y > $config['imageY'] ) {
+                        if ( ($x / $config['imageX']) < ($y / $config['imageY']) ) {
+                            $imgX   = $config['imageX'];
+                            $imgY   = @round($y / ($x / $config['imageX']));
+                        } else {
+                            $imgY   = $config['imageY'];
+                            $imgX   = @round($x / ($y / $config['imageY']));
+                        }
+                    } else {
+                        if ( $x < $config['imageX'] ) {
+                            $imgX   = $config['imageX'];
+                            $imgY   = @round($y * ($config['imageX'] / $x));
+                        } else if ( $y < $config['imageY'] ) {
+                            $imgY   = $config['imageY'];
+                            $imgX   = @round($x * ($config['imageY'] / $y));
+                        } else {
+                            if ( ($config['imageX'] - $x) > ($config['imageY'] - $y) ) {
+                                $imgX   = $config['imageX'];
+                                $imgY   = @round($y * ($config['imageX'] / $x));
+                            } else {
+                                $imgY   = $config['imageY'];
+                                $imgX   = @round($x * ($config['imageY'] / $y));
+                            }
+                        }
+                    }
+                    $config['imageCenter']  = 'on';
+                } else {
+                    if ( $x > $config['imageX'] ) {
+                        if ( $y > $config['imageY'] ) {
+                            if ( ($x - $config['imageX']) < ($y - $config['imageY']) ) {
+                                $imgY   = $config['imageY'];
+                                $imgX   = @round($x / ($y / $config['imageY']));
+                            } else {
+                                $imgX   = $config['imageX'];
+                                $imgY   = @round($y / ($x / $config['imageX']));
+                            }
+                        } else {
+                            $imgX   = $config['imageX'];
+                            $imgY   = round($y / ($x / $config['imageX']));
+                        }
+                    } else if ( $y > $config['imageY'] ) {
+                        $imgY   = $config['imageY'];
+                        $imgX   = round($x / ($y / $config['imageY']));
+                    } else {
+                        if ( 'on' == $config['imageZoom'] ) {
+                            if ( ($config['imageX'] - $x) > ($config['imageY'] - $y) ) {
+                                $imgY   = $config['imageY'];
+                                $imgX   = round($x * ($config['imageY'] / $y));
+                            } else {
+                                $imgX   = $config['imageX'];
+                                $imgY   = round($y * ($config['imageX'] / $x));
+                            }
+                        } else {
+                            $imgX   = $x;
+                            $imgY   = $y;
+                        }
+                    }
+                }
+
+                //-------
+                // align
+                if ( 'on' == $config['imageCenter'] ) {
+                    if ( $imgX > $config['imageX'] ) {
+                        $left   = round((-1 * ($imgX - $config['imageX'])) / 2);
+                    } else {
+                        $left   = round(($config['imageX'] - $imgX) / 2);
+                    }
+                    if ( $imgY > $config['imageY'] ) {
+                        $top    = round((-1 * ($imgY - $config['imageY'])) / 2);
+                    } else {
+                        $top    = round(($config['imageY'] - $imgY) / 2);
+                    }
+                } else {
+                    $left   = 0;
+                    $top    = 0;
+                }
+
+                $vars   += array(
+                    'imgX'.$fx  => $imgX,
+                    'imgY'.$fx  => $imgY,
+                    'left'.$fx  => $left,
+                    'top'.$fx   => $top,
+                    'alt'.$fx   => $pimage['column_field_4'],
+                );
+
+                //------
+                // tiny
+                $tiny   = ARCHIVES_DIR.preg_replace('@(.*?)([^/]+)$@', '$1tiny-$2', $filename);
+                if ( $xy = @getimagesize($tiny) ) {
+                    $vars   += array(
+                        'tinyPath'.$fx  => $tiny,
+                        'tinyX'.$fx     => $xy[0],
+                        'tinyY'.$fx     => $xy[1],
+                    );
+                }
+                
+                //--------
+                // square
+                $square = ARCHIVES_DIR.preg_replace('@(.*?)([^/]+)$@', '$1square-$2', $filename);
+                if ( @is_file($square) ) {
+                    $vars   += array(
+                        'squarePath'.$fx    => $square,
+                        'squareX'.$fx       => $this->squareSize,
+                        'squareY'.$fx       => $this->squareSize,
+                    );
+                }
+
+            } else {
+                $Tpl->add('noimage');
+            }
+            $vars   += array(
+                'x'.$fx => $config['imageX'],
+                'y'.$fx => $config['imageY'],
+            );
+        }
         
         return $vars;
     }
@@ -739,7 +762,7 @@ class ACMS_GET
             array_push($stack, $row);
             array_push($stack, $DB->fetch($q));
             while ( $row = array_shift($stack) ) {
-                if ( !empty($stack[0]) ) $Tpl->add(array('glue', 'tag:loop'));
+                if ( !empty($stack[0]) ) $Tpl->add(array('tagGlue', 'tag:loop'));
                 $Tpl->add('tag:loop', array(
                     'name'  => $row['tag_name'],
                     'url'   => acmsLink(array(
@@ -863,7 +886,7 @@ class ACMS_GET
 
             //-----
             //image
-            if(!isset($config['mainImageOn']) or $config['mainImageOn'] === 'on'){
+            if(!isset($config['mainImageOn']) or $config['mainImageOn'] === 'on') {
                 $vars   += $this->buildImage($Tpl, $clid, $config);
             }
 
@@ -984,7 +1007,7 @@ class ACMS_GET
                         break;
                 }
                 $text   = preg_replace('@\s+@', ' ', strip_tags($_text));
-                $data   = explode(':acms_unit_text_delimiter:', $text);
+                $data   = explodeUnitData($text);
                 foreach ( $data as $i => $txt ) {
                     if ( isset($textData[$i]) ) {
                         $textData[$i] .= $txt.' ';
@@ -994,13 +1017,6 @@ class ACMS_GET
                 }
             }
         } while ( $row = $DB->fetch($q) ); }
-        if ( is_array($textData) ) {
-            foreach ( $textData as $u => $val ) {
-                $val =  str_replace(':acms-unit-text-delimiter:', ':acms_unit_text_delimiter:', $val);
-                if ($u == 0) $u = '';
-                else $u++;
-                $vars['summary'.$u] = trim($val);
-            }
-        }
+        buildUnitData($textData, $vars, 'summary');
     }
 }

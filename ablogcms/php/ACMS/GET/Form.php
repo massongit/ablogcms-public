@@ -62,7 +62,7 @@ class ACMS_GET_Form extends ACMS_GET
         //---------
         // CSRF対策
         // リファラチェックとトークン埋め込みでCSRF対策を行っている
-        if ( $step == 'confirm' ) {
+        if ( $step == 'confirm' && config('form_csrf_enable', 'on') !== 'off' ) {
             if ( !isset($_SESSION) ) session_start();
 
             $tpl    = $Tpl->get();

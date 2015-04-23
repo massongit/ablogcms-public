@@ -94,7 +94,7 @@ class Mail
     function charReplace($contents, $to)
     {
         $charset    = strtolower($to);
-        $path       = config('const_mail_convert_dir').$charset.'.php';
+        $path       = SCRIPT_DIR.config('const_mail_convert_dir').$charset.'.php';
 
         if ( file_exists($path) ) {
             $const  = array();
@@ -214,7 +214,7 @@ class Mail
                                 if ( is_null($_mbchar) ) {
                                     if ( !empty($part) ) {
                                         $encode .= ' ';
-                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($$part, $this->_rfc2047Charset, 'UTF-8')).'?=';
+                                        $encode .= '=?'.$this->_rfc2047Charset.'?B?'.base64_encode($this->covertEncoding($part, $this->_rfc2047Charset, 'UTF-8')).'?=';
                                     }
                                     break;
                                 }
@@ -418,7 +418,7 @@ class Mail
             if ( !empty($boundary) ) {
                 $data   .= '--'.$boundary.$this->_crlf;
             } else if ( !empty($charset) ) {
-                $body   = $this->covertEncoding($body, $this->_rfc2047Charset, 'UTF-8');
+                $body   = $this->covertEncoding($body, $charset, 'UTF-8');
             }
 
             if ( 'base64' == $encoding ) {

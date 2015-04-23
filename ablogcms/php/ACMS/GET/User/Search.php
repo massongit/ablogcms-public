@@ -82,6 +82,7 @@ class ACMS_GET_User_Search extends ACMS_GET
 
         // tpl
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         // no data
         if ( empty($itemsAmount) ) {
@@ -97,6 +98,11 @@ class ACMS_GET_User_Search extends ACMS_GET
             $SQL->setLimit($limit, $from);
         }
 
+        // entry list config
+        $entry_list_enable      = config('user_search_entry_list_enable') === 'on';
+        $this->entry_list_order = config('user_search_entry_list_order');
+        $this->entry_list_limit = config('user_search_entry_list_limit');
+
         //-----------
         // user:loop
         $q      = $SQL->get(dsn());
@@ -111,10 +117,14 @@ class ACMS_GET_User_Search extends ACMS_GET
                 if ( strpos($key, 'user_') !== 0 ) continue;
                 $vars[substr($key, strlen('user_'))]    = $value;
             }
-            $uid = intval($row['user_id']);
-            $vars['icon']       = loadUserIcon($uid);
-            if ( $large = loadUserLargeIcon($uid) ) {
+            $id = intval($row['user_id']);
+            $vars['icon']   = loadUserIcon($id);
+            if ( $large = loadUserLargeIcon($id) ) {
                 $vars['largeIcon']  = $large;
+            }
+
+            if ( $entry_list_enable ) {
+                $this->loadUserEntry($Tpl, $id, array('user:loop'));
             }
 
             $Tpl->add('user:loop', $vars);
@@ -130,5 +140,52 @@ class ACMS_GET_User_Search extends ACMS_GET
         }
 
         return $Tpl->get();
+    }
+
+    function loadUserEntry(& $Tpl, $uid, $block=array())
+    {
+        $DB     = DB::singleton(dsn());
+
+        $SQL    = SQL::newSelect('entry');
+        $SQL->addWhereOpr('entry_user_id', $uid);
+        $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
+        ACMS_Filter::entrySession($SQL);
+        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+
+        if ( !empty($this->bid) ) {
+            ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+            ACMS_Filter::blogStatus($SQL);
+        }
+        ACMS_Filter::entryOrder($SQL, $this->entry_list_order, $uid);
+        $SQL->setLimit($this->entry_list_limit, 0);
+        $SQL->setGroup('entry_id');
+        $q  = $SQL->get(dsn());
+
+        $entries = $DB->query($q, 'all');
+        foreach ( $entries as $i => $entry ) {
+            $eid    = $entry['entry_id'];
+            $link   = $entry['entry_link'];
+            $vars   = array();
+            $url    = acmsLink(array(
+                'bid'   => $entry['entry_blog_id'],
+                'cid'   => $entry['entry_category_id'],
+                'eid'   => $entry['entry_id'],
+            ));
+            if ( !empty($i) ) $Tpl->add(array_merge(array('glue', 'entry:loop')));
+
+            if ( $link != '#' ) {
+                $vars += array(
+                    'url' => !empty($link) ? $link : $url,
+                );
+                $Tpl->add(array_merge(array('url#rear', 'entry:loop'), $block));
+            }
+            $vars['title'] = addPrefixEntryTitle($entry['entry_title'],
+                $entry['entry_status'],
+                $entry['entry_start_datetime'],
+                $entry['entry_end_datetime'],
+                $entry['entry_approval']
+            );
+            $Tpl->add(array_merge(array('entry:loop'), $block), $vars);
+        }
     }
 }

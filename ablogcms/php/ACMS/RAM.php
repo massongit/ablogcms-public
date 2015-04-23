@@ -18,6 +18,44 @@
  */
 class ACMS_RAM
 {
+    private static $cacheAttached   = false;
+    private static $funcCache       = array();
+
+    /**
+     * functionキャッシュ
+     * 指定されたメソッドのキャッシュを取得、設定する
+     * 
+     * @param string $method
+     * @param array $args
+     * @return mixed
+     */
+    public static function cacheMethod($method, $args=array())
+    {
+        $key = $method.'_'.md5(serialize($args));
+
+        if ( isset(self::$funcCache[$key]) ) {
+            return self::$funcCache[$key];
+        }
+
+        self::$cacheAttached = true;
+        $ret = call_user_func_array($method, $args);
+        self::$cacheAttached = false;
+
+        self::$funcCache[$key] = $ret;
+
+        return $ret;
+    }
+
+    public static function cacheAttached()
+    {
+        return self::$cacheAttached;
+    }
+
+    public static function cacheDelete()
+    {
+        self::$funcCache = array();
+    }
+
     /**
      * 各種レコードの静的なキャッシュテーブルに対するセッター兼ゲッターメソッド
      * 
@@ -244,6 +282,34 @@ class ACMS_RAM
     }
 
     //  }}}
+    //  {{{ Rule
+
+    /**
+     * 指定されたidから該当するルールのレコードを配列で返します
+     * $valが指定されていると，一時的なレコードのキャッシュを上書きします（恒久的な書き換えではありません）
+     *
+     * @param int $rid
+     * @param null $row
+     * @return array|bool
+     */
+    public static function rule($rid, $row=null)
+    {
+        return is_null($row) ? ACMS_RAM::_mapping('rule', $rid) : ACMS_RAM::_mapping('rule', $rid, $row);
+    }
+
+    /**
+     * 指定されたidから該当するルールの名前を返します
+     * $name = ACMS_RAM::ruleName($rid);
+     *
+     * @param int $rid
+     * @return string
+     */
+    public static function ruleName($rid)
+    {
+        return ACMS_RAM::_mapping('rule_name', $rid);
+    }
+
+    //  }}}
     //  {{{ Alias
 
     /**
@@ -441,6 +507,18 @@ class ACMS_RAM
     public static function userAuth($uid)
     {
         return ACMS_RAM::_mapping('user_auth', $uid);
+    }
+
+    /**
+     * 指定されたidから該当するユーザーのロケールを返します
+     * $auth = ACMS_RAM::userLocale($uid);
+     *
+     * @param int $uid
+     * @return string
+     */
+    public static function userLocale($uid)
+    {
+        return ACMS_RAM::_mapping('user_locale', $uid);
     }
 
     /**

@@ -34,6 +34,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
         $this->_config = $this->initVars();
         
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
 
         $aryStack   = array(intval($this->cid));
@@ -137,7 +138,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                 }
             }
         }
-
+        
         return $Tpl->get();
     }
     

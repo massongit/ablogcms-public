@@ -15,6 +15,7 @@ class ACMS_GET_Blog_ChildList extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         
         $DB     = DB::singleton(dsn());
         $SQL    = SQL::newSelect('blog');

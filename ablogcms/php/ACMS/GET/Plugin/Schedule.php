@@ -79,6 +79,7 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         $this->week_label['JP'] = configArray('week_label');
 
         $Tpl = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( count($queryDate) == 1) { //年のみ
             $this->viewmode = 'year';

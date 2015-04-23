@@ -44,6 +44,7 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
         $config = $this->initVars();
         
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( empty($this->eid) ) return false;
 

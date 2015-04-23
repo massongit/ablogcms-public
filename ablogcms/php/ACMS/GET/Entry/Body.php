@@ -41,6 +41,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $this->tag_on               = config('entry_body_tag_on');
         $this->summary_on           = config('entry_body_summary_on');
         $this->show_all_index       = config('entry_body_show_all_index');
+        $this->date_on              = config('entry_body_date_on');
         $this->detail_date_on       = config('entry_body_detail_date_on');
         $this->comment_on           = config('entry_body_comment_on');
         $this->trackback_on         = config('entry_body_trackback_on');
@@ -392,8 +393,10 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         
         //------------
         // build date
-        $vars   += $this->buildDate($row['entry_datetime'], $Tpl, 'entry:loop');
-        if($this->detail_date_on === 'on'){
+        if ( $this->date_on === 'on' ) {
+            $vars   += $this->buildDate($row['entry_datetime'], $Tpl, 'entry:loop');
+        }
+        if( $this->detail_date_on === 'on' ) {
             $vars   += $this->buildDate($row['entry_updated_datetime'], $Tpl, 'entry:loop', 'udate#');
             $vars   += $this->buildDate($row['entry_posted_datetime'], $Tpl, 'entry:loop', 'pdate#');
         }
@@ -418,6 +421,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $this->initConfig();
         $DB     = DB::singleton(dsn());
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $entryOrder = $this->order;
 
         if ( 'entry-edit' == ADMIN || 'entry_editor' == ADMIN ) {
@@ -453,7 +457,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Tpl->add('adminEntryEdit');
             $Tpl->add('entry:loop', $vars);
 
-            if ( !empty($backend) ) {
+            if ( !empty($backend) && $this->Post->isValidAll() ) {
                 $Tpl->add(null, array('notice_mess' => 'show'));
             }
 
@@ -671,7 +675,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                         $Tpl->add('micropager', $vars);
                     }
                 }
-                
                 $Tpl->add(null, array('upperUrl' => acmsLink(array(
                     'eid'   => false,
                 ))));
@@ -810,7 +813,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 $itemsAmount -= $this->offset;
                 $vars       += $this->buildPager($this->page, $limit, $itemsAmount, $delta, $curAttr, $Tpl);
             }
-
             $Tpl->add(null, $vars);
         }
         return $Tpl->get();

@@ -12,6 +12,7 @@ class ACMS_GET_Api_Twitter_Statuses extends ACMS_GET_Api_Twitter
     function statuses()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         $this->resolveRequest($Tpl, 'twitter');
 
