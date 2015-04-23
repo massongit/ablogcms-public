@@ -26,7 +26,11 @@ class ACMS_GET_Login extends ACMS_GET
                 $Tpl->add(array('selectBlog:loop', $block), array(
                     'bid'   => $bid,
                     'name'  => ACMS_RAM::blogName($bid),
-                    'url'   => acmsLink(array('bid'=>$bid, '_protocol'=>'http'), false),
+                    'url'   => acmsLink(array(
+                        'bid'       => $bid,
+                        'sid'       => $Login->get('sid'),
+                        '_protocol' => 'http'
+                    ), false),
                 ));
             }
         //-----------
@@ -42,12 +46,21 @@ class ACMS_GET_Login extends ACMS_GET
         if ( $this->Post->isNull() ) {
             $Tpl->add(array('sendMsg#before', $block));
             $Tpl->add(array('submit', $block));
-            $vars   += array('mail' => $this->Get->get('reset', $this->Get->get('subscribe')));
+            $vars   += array(
+                'mail'  => $this->Get->get('reset', $this->Get->get('subscribe')),
+                'step'  => 'step',
+            );
         } else {
             if ( $this->Post->isValidAll() ) {
                 $Tpl->add(array('sendMsg#after', $block));
+                $vars   += array(
+                    'step'  => 'result',
+                );
             } else {
                 $Tpl->add(array('submit', $block));
+                $vars   += array(
+                    'step'  => 'reapply',
+                );
             }
         }
 

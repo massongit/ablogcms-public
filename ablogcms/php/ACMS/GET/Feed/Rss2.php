@@ -30,10 +30,15 @@ class ACMS_GET_Feed_Rss2 extends ACMS_GET_Entry
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
 
         $limit  = config('feed_rss2_limit');
         $order  = ORDER ? ORDER : config('feed_rss2_order');
+
+        $blogField      = new Field_Search(config('feed_rss2_blog_field'));
+        $categoryField  = new Field_Search(config('feed_rss2_category_field'));
+        $entryField     = new Field_Search(config('feed_rss2_entry_field'));
 
         $SQL    = SQL::newSelect('blog');
         $SQL->addSelect('blog_id');
@@ -75,8 +80,14 @@ class ACMS_GET_Feed_Rss2 extends ACMS_GET_Entry
         if ( !empty($this->keyword) ) {
             ACMS_Filter::entryKeyword($SQL, $this->keyword);
         }
-        if ( !empty($this->Field) ) {
-            ACMS_Filter::entryField($SQL, $this->Field);
+        if ( !empty($blogField) ) {
+            ACMS_Filter::blogField($SQL, $blogField);
+        }
+        if ( !empty($categoryField) ) {
+            ACMS_Filter::categoryField($SQL, $categoryField);
+        }
+        if ( !empty($entryField) ) {
+            ACMS_Filter::entryField($SQL, $entryField);
         }
 
         $Amount = new SQL_Select($SQL);

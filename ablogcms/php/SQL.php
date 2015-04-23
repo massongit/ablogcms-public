@@ -211,6 +211,46 @@ class SQL_Field_Operator_In extends SQL_Field_Operator
     }
 }
 
+class SQL_Field_Operator_Exists extends SQL_Field_Operator
+{
+//    function 
+
+    var $_not   = false;
+
+    function setNot($not)
+    {
+        $this->_not = $not;
+    }
+
+    function getNot()
+    {
+        return $this->_not;
+    }
+
+    function _right($dsn=null)
+    {
+        $q  = '';
+        $ope    = $this->_not ? 'NOT EXISTS' : 'EXISTS';
+        if ( SQL::isClass($this->_value, 'SQL_Select') ) {
+            $q  = ' '.$ope.' ('."\n"
+                .$this->_value->get($dsn)
+            ."\n".')';
+        } else {
+            return false;
+        }
+
+        return $q;
+    }
+
+    function _operator($dsn=null)
+    {
+        $q  = '';
+       
+        if ( $right = $this->_right($dsn) ) $q .= $right;
+        return $q;
+    }
+}
+
 class SQL_Field_Operator_Between extends SQL_Field_Operator
 {
     var $_a = null;
@@ -392,6 +432,22 @@ class SQL_Where extends SQL
         );
     }
 
+    function getWhereExists($vals, $gl='AND')
+    {
+        return array(
+            'where' => SQL::newOprExists($vals),
+            'glue'  => $gl,
+        );
+    }
+
+    function getWhereNotExists($vals, $gl='AND')
+    {
+        return array(
+            'where' => SQL::newOprNotExists($vals),
+            'glue'  => $gl,
+        );
+    }
+
     function getWhereBw($fd, $a, $b, $gl='AND', $scp=null, $func=null)
     {
         if ( SQL::isClass($fd, 'SQL_Field_Function') ) {
@@ -464,6 +520,36 @@ class SQL_Where extends SQL
     function addWhereNotIn($fd, $vals, $gl='AND', $scp=null, $func=null)
     {
         $this->_wheres[]    = $this->getWhereNotIn($fd, $vals, $gl, $scp, $func);
+        return true;
+    }
+
+     /**
+     * 指定されたSQL_SelectオブジェクトからEXISTS句を生成する。<br>
+     * $SQL->addWhereExists(SQL_SELECT);<br>
+     * WHERE 1 AND EXISTS (SELECT * ...)
+     *
+     * @param array $vals
+     * @param string $gl
+     * @return bool
+     */
+    function addWhereExists($vals, $gl='AND')
+    {
+        $this->_wheres[]    = $this->getWhereExists($vals, $gl);
+        return true;
+    }
+
+    /**
+     * 指定されたSQL_SelectオブジェクトからNOT EXISTS句を生成する。<br>
+     * $SQL->addWhereExists(SQL_SELECT);<br>
+     * WHERE 1 AND NOT EXISTS (SELECT * ...)
+     *
+     * @param array $vals
+     * @param string $gl
+     * @return bool
+     */
+    function addWhereNotExists($vals, $gl='AND')
+    {
+        $this->_wheres[]    = $this->getWhereNotExists($vals, $gl);
         return true;
     }
 
@@ -1135,6 +1221,104 @@ class SQL_Update extends SQL_Where
 }
 
 /**
+ * SQL_InsertOrUpdate
+ *
+ * SQLヘルパの INSERT ON DUPLICATE KEY UPDATE メソッド群です。<br>
+ * メソッドの外で，条件対象のテーブルが選択されている必要があります
+ *
+ * @package php
+ */
+class SQL_InsertOrUpdate extends SQL_Insert
+{
+    var $_insert    = null;
+    var $_update    = null;
+    var $_table     = null;
+
+    /**
+     * 指定されたfieldにON DUPLICATE KEY UPDATE句を生成する。<br>
+     * $SQL->addUpdate('entry_code', 'abc');<br>
+     * ... ON DUPLICATE KEY UPDATE entry_code = 'abc'
+     *
+     * @param string $fd
+     * @param string|int $val
+     * @return bool
+     */
+    function addUpdate($fd, $val)
+    {
+        if ( !is_string($fd) ) return false;
+        $this->_update[$fd] = $val;
+        return true;
+    }
+
+    function setUpdate($fd=null, $val=null)
+    {
+        $this->_update  = array();
+        if ( !empty($fd) ) $this->addUpdate($fd, $val);
+        return true;
+    }
+
+    function setTable($tb)
+    {
+        $this->_table   = $tb;
+    }
+
+    function get($dsn=null)
+    {
+        if ( empty($this->_table) ) return false;
+        if ( empty($this->_insert) ) return false;
+        $tbPfx  = !empty($dsn['prefix']) ? $dsn['prefix'] : '';
+
+        $q  = 'INSERT INTO '.$tbPfx.$this->_table;
+        if ( SQL::isClass($this->_insert, 'SQL_Select') ) {
+            $q  .= ' '.$this->_insert->get($dsn);
+        } else if ( !is_array($this->_insert) ) {
+            return false;
+        } else {
+            $fds   = array();
+            $vals   = array();
+            foreach ( $this->_insert as $fd => $val ) {
+                $fds[] = $fd;
+                if ( is_null($val) ) {
+                    $val    = 'NULL';
+                } else if ( is_string($val) ) {
+                    $_val   = mb_convert_encoding($val, $dsn['charset'], 'UTF-8');
+                    $val    = ($val === mb_convert_encoding($_val, 'UTF-8', $dsn['charset'])) ?
+                        "'".mysql_real_escape_string($_val)."'" : '0x'.bin2hex($val)
+                    ;
+                }
+                $vals[] = $val;
+            }
+            $q  .= ' ('.join(', ', $fds).') '
+                ."\n".' VALUES ('.join(', ', $vals).')'
+            ;
+
+            if ( empty($this->_update) ) return $q;
+
+
+            $q  .= ' ON DUPLICATE KEY UPDATE ';
+            $i  = 0;
+            foreach ( $this->_update as $fd => $val ) {
+                $q  .= !empty($i) ? "\n, " : "\n ";
+                if ( is_null($val) ) {
+                    $val    = 'NULL';
+                } else if ( SQL::isClass($val, 'SQL') ) {
+                    $val    = "(\n".$val->get($dsn)."\n)";
+                } else if ( is_string($val) ) {
+                    $_val   = mb_convert_encoding($val, $dsn['charset'], 'UTF-8');
+                    $val    = ($val === mb_convert_encoding($_val, 'UTF-8', $dsn['charset'])) ?
+                        "'".mysql_real_escape_string($_val)."'" : '0x'.bin2hex($val)
+                    ;
+                }
+                $q  .= $fd.' = '.$val;
+                $i++;
+            }
+        }
+
+        return $q;
+    }
+}
+
+/**
  * SQL_Delete
  *
  * SQLヘルパのDeleteメソッド群です。<br>
@@ -1448,6 +1632,24 @@ class SQL
         return $Obj;
     }
 
+    public static function newOprExists($val, $scp=null)
+    {
+        $Obj = new SQL_Field_Operator_Exists();
+        $Obj->setScope($scp);
+        $Obj->setValue($val);
+
+        return $Obj;
+    }
+
+    public static function newOprNotExists($val, $scp=null)
+    {
+        $Obj = new SQL_Field_Operator_Exists();
+        $Obj->setValue($val);
+        $Obj->setNot(true);
+
+        return $Obj;
+    }
+
     public static function newOprBw($fd, $a, $b, $scp=null, $func=null)
     {
         if ( SQL::isClass($fd, 'SQL_Field_Function') ) {
@@ -1533,6 +1735,21 @@ class SQL
     {
         $Obj    = new SQL_Update();
         if ( !empty($tb) ) $Obj->setTable($tb);
+        return $Obj;
+    }
+
+    /**
+     * TABLEを指定してINSERT ON DUPLICATE KEY UPDATE句を生成する為のSQL_InsertOrUpdateを返す 
+     *
+     * @static
+     * @param string|null $tb
+     * @param string|null $als
+     * @return SQL_Select
+     */
+    public static function newInsertOrUpdate($tb=null, $als=null)
+    {
+        $Obj    = new SQL_InsertOrUpdate();
+        if ( !empty($tb) ) $Obj->setTable($tb, $als);
         return $Obj;
     }
 

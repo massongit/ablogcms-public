@@ -29,6 +29,7 @@ class ACMS_GET_Entry_ArchiveList extends ACMS_GET_Entry
         
         $DB = DB::singleton(dsn());
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         
         /*
         * substring for datetime
@@ -126,7 +127,6 @@ class ACMS_GET_Entry_ArchiveList extends ACMS_GET_Entry
             
             $Tpl->add('archive:loop', $vars);
         }
-        
         return $Tpl->get();
     }
 }

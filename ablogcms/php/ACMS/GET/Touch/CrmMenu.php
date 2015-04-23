@@ -34,6 +34,7 @@ var $crm_admin_path = array(
 'crm_crm_edit',
 'crm_config_mail',
 'crm_config_search',
+'crm_config_auth',
 'crm_config_auth_index',
 'crm_config_auth_edit',
 'crm_config_graph_index',

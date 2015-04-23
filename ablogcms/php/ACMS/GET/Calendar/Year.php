@@ -121,6 +121,7 @@ class ACMS_GET_Calendar_Year extends ACMS_GET
         list($y, $m)    = explode('-', $ym);
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $unit   = config('calendar_year_unit', 1);
 
         for ( $mo=0; $mo<12; $mo++ ) {

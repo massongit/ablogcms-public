@@ -261,7 +261,7 @@ class ACMS_Filter
      */
     public static function categoryStatus(& $SQL, $scope=null)
     {
-        if ( !sessionWithCompilation() ) {
+        if ( !sessionWithContribution() ) {
             $Where  = SQL::newWhere();
             $Where->addWhereOpr('category_status', null, '=', 'OR', $scope);
             $Where->addWhereOpr('category_status', 'open', '=', 'OR', $scope);
@@ -709,7 +709,8 @@ class ACMS_Filter
      */
     private static function _field(& $SQL, $Field, $fieldKey = null, $tableKey = null)
     {
-        $unionAry = array();
+        $unionAry   = array();
+        $emptyAry   = array();
 
         foreach ( $Field->listFields() as $j => $fd ) {
             $Where          = SQL::newWhere();
@@ -760,13 +761,13 @@ class ACMS_Filter
                     case 'nre':
                         $operator   = 'NOT REGEXP';
                         break;
-                    case 'em':
-                        $operator   = '=';
-                        $value      = '';
-                        break;
                     case 'nem':
                         $operator   = '<>';
                         $value      = '';
+                        break;
+                    case 'em':
+                        $emptyAry[] = $fd;
+                        continue 3;
                         break;
                     default:    // exception
                         continue 2;
@@ -831,7 +832,6 @@ class ACMS_Filter
                 $SQL->addWhere($Where);
             }
         }
-
         $uniouCount = count($unionAry);
         if ( $uniouCount > 1 ) {
             $UNION = SQL::newSelect($unionAry[0], 'field_union_end');
@@ -844,6 +844,18 @@ class ACMS_Filter
             $SQL->addInnerJoin($UNION, $fieldKey, $tableKey, 'field_end');
         } else if ( $uniouCount > 0 ) {
             $SQL->addInnerJoin($unionAry[0], $fieldKey, $tableKey, 'field_end');
+        }
+
+        //-------
+        // empty
+        if ( !empty($emptyAry) ) {
+            $EXISTS = SQL::newSelect('field');
+            $EXISTS->addWhereIn('field_key', $emptyAry);
+            $EXISTS->addWhereOpr('field_value', '', '<>');
+            $Left   = SQL::newField($fieldKey);
+            $Right  = SQL::newField($tableKey);
+            $EXISTS->addWhere(SQL::newOpr($Left, $Right));
+            $SQL->addWhereNotExists($EXISTS);
         }
     }
 

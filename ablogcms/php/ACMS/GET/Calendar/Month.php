@@ -30,6 +30,7 @@ class ACMS_GET_Calendar_Month extends ACMS_GET
         $DB     = DB::singleton(dsn());
         $SQL    = SQL::newSelect('entry');
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         $SQL->addSelect(SQL::newFunction('entry_datetime', array('SUBSTR', 0, 10)), 'entry_date', null, 'DISTINCT');
 

@@ -24,6 +24,7 @@ class ACMS_GET_Api_Instagram_Users_Media_Recent extends ACMS_GET_Api_Instagram_U
         $this->crit   = config('instagram_users_media_recet_cache_expire');
 
         $Tpl = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         $this->resolveRequest($Tpl, 'instagram');
 

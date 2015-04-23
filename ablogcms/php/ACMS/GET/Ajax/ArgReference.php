@@ -19,14 +19,7 @@ class ACMS_GET_Ajax_ArgReference extends ACMS_GET_Admin
 
         switch ( $scope ) {
             case 'bid'  :
-                $SQL    = SQL::newSelect('blog');
-                $SQL->addWhereOpr('blog_left', ACMS_RAM::blogLeft(BID), '>=');
-                $SQL->addWhereOpr('blog_right', ACMS_RAM::blogRight(BID), '<=');
-                $blogs  = $DB->query($SQL->get(dsn()), 'all');
-
-                foreach ( $blogs as $blog ) {
-                    $Tpl->add(array('blog:loop', $root), $blog);
-                }
+                $this->buildBlogSelect($Tpl, BID, null, 'blog:loop', true, 'sort-asc');
                 break;
             case 'cid'  :
             case 'ccd'  :

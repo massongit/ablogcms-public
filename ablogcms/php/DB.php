@@ -145,6 +145,7 @@ class DB
 
         if ( empty($res) ) {
             if ( !empty($this->_dsn['debug']) ) {
+                var_dump(mysql_error());
                 var_dump(debug_backtrace());
                 trigger_error(mysql_error($this->_connection).'<pre>'.$sql.'</pre>', E_USER_ERROR);
             }
@@ -248,16 +249,16 @@ class DB
             unset($this->_fetch[$id]);
             return false;
         } else {
-            if ( is_array($row) and 'UTF-8' <> $this->charset() ) {
-                foreach ( $row as $key => $val ) {
-                    if ( !is_null($val) ) {
-                        $_val   = mb_convert_encoding($val, 'UTF-8', $this->charset());
-                        if ( $val === mb_convert_encoding($_val, $this->charset(), 'UTF-8') ) {
-                            $row[$key]  = $_val;
-                        }
-                    }
-                }
-            }
+            // if ( is_array($row) and 'UTF-8' <> $this->charset() ) {
+            //     foreach ( $row as $key => $val ) {
+            //         if ( !is_null($val) ) {
+            //             $_val   = mb_convert_encoding($val, 'UTF-8', $this->charset());
+            //             if ( $val === mb_convert_encoding($_val, $this->charset(), 'UTF-8') ) {
+            //                 $row[$key]  = $_val;
+            //             }
+            //         }
+            //     }
+            // }
             return $row;
         }
     }

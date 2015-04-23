@@ -179,22 +179,41 @@ class Template
         $blocks = array_reverse($blocks);
         if ( !is_array($vars) ) $vars = array();
 
-        $pt     = 0;
+        $pointAry   = array();
+        $endBlock   = end($blocks);
+        $parentAry  = array();
         foreach ( $blocks as $block ) {
             if ( !isset($this->_blockLabelId[$block]) ) return false;
-            $ids    = $this->_blockLabelId[$block];
+            $tempParent = array();
+            $ids        = $this->_blockLabelId[$block];
 
-            $id = null;
-            foreach ( $ids as $_id ) {
-                if ( $pt > $_id ) continue;
-                $id = $_id;
-                break;
+            foreach ( $ids as $id ) {
+                $layered = empty($parentAry);
+                foreach ( $parentAry as $ppt ) {
+                    if ( 1
+                        && $this->_blockIdTokenEnd[$ppt] >= $this->_blockIdTokenEnd[$id]
+                        && $this->_blockIdTokenBegin[$ppt] < $this->_blockIdTokenBegin[$id]
+                    ) {
+                        $layered        = true;
+                        $tempParent[]   = $id;
+                        continue;
+                    }
+                }
+                if ( $layered && $block === $endBlock ) {
+                    $pointAry[] = $id;
+                }
             }
-            if ( is_null($id) ) return false;
-            if ( $this->_blockIdTokenEnd[$pt] < $this->_blockIdTokenEnd[$id] ) return false;
-            $pt = $id;
+            $parentAry = empty($parentAry) ? $ids : $tempParent;
         }
+        if ( empty($blocks) && empty($pointAry) ) $pointAry = array(0);
 
+        foreach ( $pointAry as $pt ) {
+            $this->arrange($pt, $blocks, $vars);
+        }
+    }
+
+    function arrange($pt, $blocks, $vars)
+    {
         $begin  = $this->_blockIdTokenBegin[$pt];
         $end    = $this->_blockIdTokenEnd[$pt];
 

@@ -18,6 +18,7 @@ class ACMS_GET_Api_Bing_WebSearch extends ACMS_GET_Api_Bing
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         $base   = config('api_bing_web_search_base_url');
 
         if( version_compare(PHP_VERSION, '5.0.0', '<') ) {

@@ -12,6 +12,7 @@ class ACMS_GET_Banner extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( !$aryStatus = configArray('banner_status') ) return '';
         

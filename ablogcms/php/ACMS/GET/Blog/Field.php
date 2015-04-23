@@ -23,6 +23,8 @@ class ACMS_GET_Blog_Field extends ACMS_GET
         if (!sessionWithSubscription() and 'secret'  === $status) return '';
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+        
         $Field  = loadBlogField($this->bid);
         foreach ( $row as $key => $val ) {
             $Field->setField(preg_replace('@^blog_@', '', $key), $val);

@@ -31,6 +31,7 @@ class ACMS_GET_Entry_Continue extends ACMS_GET_Entry
     {
         $DB     = DB::singleton(dsn());
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         $SQL    = SQL::newSelect('entry');
         $SQL->addWhereOpr('entry_id', $this->eid);

@@ -23,6 +23,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
     function get()
     {
         $Tpl = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         
         $view_mode = config('entry_calendar_mode');
         $pager_count = config('entry_calendar_pager_count');
@@ -445,7 +446,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $vars += $week_title;
         
         $Tpl->add('date', $vars);
-        
+
         return $Tpl->get();
     }
     

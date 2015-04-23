@@ -14,6 +14,7 @@ class ACMS_GET_Navigation extends ACMS_GET
     function get()
     {
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
 
         if ( !$labels = configArray('navigation_label') ) return '';
 

@@ -20,6 +20,7 @@ class ACMS_GET_Feed_ExList extends ACMS_GET
         $this->kind             = config('feed_exlist_kind');
         
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
         
         //----------
         // cache

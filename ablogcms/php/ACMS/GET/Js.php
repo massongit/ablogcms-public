@@ -11,6 +11,9 @@ class ACMS_GET_Js extends ACMS_GET
 {
     function get()
     {
+        $Session    =& Field::singleton('session');
+        $delStorage = $Session->get('webStorageDeleteKey');
+
         $jquery = '';
         jsModule('offset', DIR_OFFSET);
         jsModule('jsDir', JS_DIR);
@@ -23,13 +26,17 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('bcd', ACMS_RAM::blogCode(BID));
         jsModule('rid', $this->Get->get('rid', null));
         jsModule('mid', $this->Get->get('mid', null));
+        jsModule('layout', LAYOUT_EDIT);
         jsModule('yahooApiKey', config('yahoo_search_api_key'));
         jsModule('jQuery', config('jquery_version'));
         jsModule('jQueryMigrate', config('jquery_migrate', 'off'));
+        jsModule('delStorage', $delStorage);
 
         jsModule('umfs', ini_get('upload_max_filesize'));
         jsModule('pms',  ini_get('post_max_size'));
         jsModule('mfu',  ini_get('max_file_uploads'));
+
+        $Session->delete('webStorageDeleteKey');
 
         //----------
         // category
