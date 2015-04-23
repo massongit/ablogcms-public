@@ -25,6 +25,7 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('mid', $this->Get->get('mid', null));
         jsModule('yahooApiKey', config('yahoo_search_api_key'));
         jsModule('jQuery', config('jquery_version'));
+        jsModule('jQueryMigrate', config('jquery_migrate', 'off'));
 
         jsModule('umfs', ini_get('upload_max_filesize'));
         jsModule('pms',  ini_get('post_max_size'));

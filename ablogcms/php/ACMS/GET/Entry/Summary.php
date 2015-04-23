@@ -134,6 +134,9 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         if ( 'on' <> $config['noimage'] ) {
             $SQL->addWhereOpr('entry_primary_image', null, '<>');
         }
+        if ( !!EID && 'on' === $config['hiddenCurrentEntry'] ) {
+            $SQL->addWhereOpr('entry_id', EID, '<>');
+        }
 
         $Amount = new SQL_Select($SQL);
         $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'count');
@@ -182,6 +185,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         ACMS_Filter::entryOrder($SQL, $config['order'], $this->uid, $this->cid);
         $SQL->setLimit($limit, ($from));
 
+
         $SQL->setGroup('entry_id');
 
         $q  = $SQL->get(dsn());
@@ -193,16 +197,9 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 
         $i = 0;
         $DB->query($q, 'fetch');
-        $hiddenCurrentEntry = $config['hiddenCurrentEntry'] !== 'on';
         while ( $row = $DB->fetch($q) ) {
             $i++;
-            if ( 0
-                or $hiddenCurrentEntry
-                or !EID
-                or intval($row['entry_id']) !== intval(EID)
-            ) {
-                $this->buildSummary($Tpl, $row, $i, $gluePoint, $config);
-            }
+            $this->buildSummary($Tpl, $row, $i, $gluePoint, $config);
         }
 
         $blogName   = ACMS_RAM::blogName($this->bid);

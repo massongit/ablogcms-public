@@ -861,19 +861,34 @@ class ACMS_Filter
         if ( empty($keyword) ) return false;
         if ( !$aryWord = preg_split('@(　|\s)+@', $keyword, -1, PREG_SPLIT_NO_EMPTY) ) return false;
 
+        //----------------------
+        // NGRAM & BOOLEAN MODE
         if ( config('ngram') ) {
             $against    = '';
             foreach ( $aryWord as $word ) {
+                $operator   = '+';
+                if ( substr($word, 0, 1) === '-' ) {
+                    $operator   = '-';
+                    $word       = substr($word, 1);
+                }
                 $aryToken   = ngram($word, config('ngram'));
-                $against    .= '+(+'.join(' +', $aryToken).')';
+                $against    .= ' '.$operator.'(+'.join(' +', $aryToken).')';
             }
+
             $ngramSQL   = SQL::newSelect('fulltext');
             $ngramSQL->setSelect($fulltextKey);
             $ngramSQL->addWhere('MATCH ( fulltext_ngram ) AGAINST ('."'".$against."'".' IN BOOLEAN MODE)');
             $SQL->addInnerJoin($ngramSQL, $fulltextKey, $tableKey, 'ft');
+        //-----------
+        // LIKE MODE
         } else {
             foreach ( $aryWord as $word ) {
-                $SQL->addWhereOpr('fulltext_value', '%'.$word.'%', 'LIKE');
+                if ( substr($word, 0, 1) === '-' ) {
+                    $word   = substr($word, 1);
+                    $SQL->addWhereOpr('fulltext_value', '%'.$word.'%', 'NOT LIKE');
+                } else {
+                    $SQL->addWhereOpr('fulltext_value', '%'.$word.'%', 'LIKE');
+                }
             }
             $SQL->addLeftJoin('fulltext', $fulltextKey, $tableKey);
         }

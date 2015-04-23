@@ -16,7 +16,7 @@ class ACMS_GET_Ajax_Unit extends ACMS_GET
 
         //--------------
         // Config Data
-        $Config = new Field(Field::singleton('config'));
+        $Config = Field::singleton('config');
         if ( $rid = intval($this->Get->get('rid')) ) {
             $Config->overload(loadConfig(BID, $rid));
         }
