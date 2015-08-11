@@ -287,7 +287,6 @@ class Template
                 }
                 $buf[$i]    = $this->_tokens[$i];
             }
-
             if ( isset($this->_varTokenId[$i]) ) {
                 if ( null !== $this->_tokens[$i] ) {
                     $txt    = '';

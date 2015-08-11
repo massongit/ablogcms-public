@@ -154,7 +154,7 @@ class ACMS_GET_Api_Facebook_OAuthLoginCallback extends ACMS_GET_Api_Facebook
 
             //---------------
             // profile image
-            $imgUri = "https://graph.facebook.com/$fbid/picture?type=normal";
+            $imgUri = "https://graph.facebook.com/$fbid/picture?type=large";
             if ( $rsrc = file_get_contents($imgUri) ) {
                 $POST       = new ACMS_POST();
 

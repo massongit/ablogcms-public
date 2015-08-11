@@ -298,7 +298,7 @@ class ACMS_GET
                                     $_vars[$key] = $val;
                                     $Tpl->add(array_merge(array($key), $loopblock), array($key => $val));
                                 }
-                            }                        
+                            }
                         }
                     }
                 }
@@ -317,6 +317,10 @@ class ACMS_GET
                 // n
                 $_vars['i']   = $i;
 
+                if ( !empty($i) ) {
+                    $Tpl->add(array_merge(array('glue'), $loopblock));
+                    $Tpl->add(array_merge(array($key.':glue'), $loopblock));
+                }
                 $Tpl->add($loopblock, $_vars);
             }
         }
@@ -599,7 +603,10 @@ class ACMS_GET
         } else {
             $path   = null;
         }
+
         if ( empty($pathAry) ) {
+            $Tpl->add('noimage');
+            
             return array();
         }
 
