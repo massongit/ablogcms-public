@@ -266,6 +266,8 @@ class ACMS_Filter
             $Where->addWhereOpr('category_status', null, '=', 'OR', $scope);
             $Where->addWhereOpr('category_status', 'open', '=', 'OR', $scope);
             $SQL->addWhere($Where, 'AND');
+        } else {
+            $SQL->addWhereOpr('category_status', null, '<>');
         }
     }
 
@@ -457,10 +459,6 @@ class ACMS_Filter
      */
     public static function entrySession(& $SQL, $scp=null)
     {
-        if ( !(defined('RVID') && RVID) && !isset($_GET['trash']) ) {
-            $SQL->addWhereOpr('entry_status', 'trash', '<>', 'AND', $scp);
-        }
-        
         if ( 1
             && !sessionWithCompilation()
             && !approvalAvailableUser(SUID)
@@ -470,8 +468,8 @@ class ACMS_Filter
             //------------
             // valid span
             // @todo issue: 秒のタイムスタンプを 00 に丸めてMySQLキャッシュを効かせるオプションが必要
-            $SQLWhereSession->addWhereOpr('entry_start_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '<=', 'AND', $scp);
-            $SQLWhereSession->addWhereOpr('entry_end_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '>=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('entry_start_datetime', date('Y-m-d H:i:s', requestTime()), '<=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('entry_end_datetime', date('Y-m-d H:i:s', requestTime()), '>=', 'AND', $scp);
 
             //--------
             // status
@@ -501,6 +499,8 @@ class ACMS_Filter
             } else {
                 $SQL->addWhere($SQLWhereSession);
             }
+        } else if ( !(defined('RVID') && RVID) && !isset($_GET['trash']) ) {
+            $SQL->addWhereOpr('entry_status', 'trash', '<>', 'AND', $scp);
         }
     }
 
@@ -593,6 +593,7 @@ class ACMS_Filter
         $aryOrder   = explode('-', $order);
         $fd         = isset($aryOrder[0]) ? $aryOrder[0] : null;
         $seq        = isset($aryOrder[1]) ? $aryOrder[1] : null;
+        $sortFd     = '';
 
         if ( 'random' == $fd ) {
             $SQL->setOrder(SQL::newFunction(null, 'random'));
@@ -603,10 +604,13 @@ class ACMS_Filter
                 case 'sort':
                     if ( !empty($uid) ) {
                         $SQL->addOrder('entry_user_sort', $seq);
+                        $sortFd = 'entry_user_sort';
                     } else if ( !empty($cid) ) {
                         $SQL->addOrder('entry_category_sort', $seq);
+                        $sortFd = 'entry_category_sort';
                     } else {
                         $SQL->addOrder('entry_sort', $seq);
+                        $sortFd = 'entry_sort';
                     }
                     break;
                 case 'code':
@@ -627,6 +631,7 @@ class ACMS_Filter
                 case 'user_id':
                 case 'blog_id':
                     $SQL->addOrder('entry_'.$fd, $seq);
+                    $sortFd = 'entry_'.$fd;
                     break;
                 case 'field':
                     if ( false !== strpos($SQL->get(), 'field_sort') ) {
@@ -643,6 +648,7 @@ class ACMS_Filter
             }
             $SQL->addOrder('entry_id', $seq);
         }
+        return $sortFd;
     }
 
     //-----
@@ -719,6 +725,7 @@ class ACMS_Filter
     {
         $unionAry   = array();
         $emptyAry   = array();
+
 
         foreach ( $Field->listFields() as $j => $fd ) {
             $Where          = SQL::newWhere();
@@ -797,6 +804,8 @@ class ACMS_Filter
             ) {
                 $SUB    = SQL::newSelect('field');
                 $SUB->addSelect($fieldKey);
+                $SUB->addSelect('field_value', 'field_sort');
+                $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
                 $SUB->addWhereOpr('field_key', $fd);
                 $SUB->addWhere($Where);
 
@@ -811,6 +820,8 @@ class ACMS_Filter
                         if ( $uniouCount > 1 ) {
                             $UNION = SQL::newSelect($unionAry[0], 'field_union'.$j);
                             $UNION->setSelect($fieldKey);
+                            $UNION->addSelect('field_sort');
+                            $UNION->addSelect('intfield_sort');
                         }
                         for ( $i=1; $i<$uniouCount; $i++ ) {
                             $UNION->addUnion($unionAry[$i]);
@@ -825,16 +836,6 @@ class ACMS_Filter
                         $unionAry[] = clone $SUB;
                     }
                 }
-                // sort
-                if ( empty($j) ) {
-                    $SUB    = SQL::newSelect('field');
-                    $SUB->addSelect($fieldKey);
-                    $SUB->addSelect('field_value', 'field_sort');
-                    $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
-                    $SUB->addWhereOpr('field_key', $fd);
-                    $SUB->addWhere($Where);
-                    $SQL->addLeftJoin($SUB, $fieldKey, $tableKey, 'field'.$j);
-                }
             } else {
                 $Where->addWhereOpr('field_key', $fd);
                 $SQL->addWhere($Where);
@@ -844,6 +845,8 @@ class ACMS_Filter
         if ( $uniouCount > 1 ) {
             $UNION = SQL::newSelect($unionAry[0], 'field_union_end');
             $UNION->setSelect($fieldKey);
+            $UNION->addSelect('field_sort');
+            $UNION->addSelect('intfield_sort');
         }
         for ( $i=1; $i<$uniouCount; $i++ ) {
             $UNION->addUnion($unionAry[$i]);
@@ -1003,8 +1006,8 @@ class ACMS_Filter
             //------------
             // valid span
             // @todo issue: 秒のタイムスタンプを 00 に丸めてMySQLキャッシュを効かせるオプションが必要
-            $SQLWhereSession->addWhereOpr('formbuild_start_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '<=', 'AND', $scp);
-            $SQLWhereSession->addWhereOpr('formbuild_end_datetime', date('Y-m-d H:i:s', REQUEST_TIME), '>=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('formbuild_start_datetime', date('Y-m-d H:i:s', requestTime()), '<=', 'AND', $scp);
+            $SQLWhereSession->addWhereOpr('formbuild_end_datetime', date('Y-m-d H:i:s', requestTime()), '>=', 'AND', $scp);
 
             //--------
             // status

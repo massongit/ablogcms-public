@@ -51,7 +51,10 @@ class ACMS_GET_Form extends ACMS_GET
             $SQL    = SQL::newSelect('form');
             $SQL->addSelect('form_code');
             $SQL->addWhereOpr('form_id', $fmid);
-            $SQL->addWhereOpr('form_blog_id', BID);
+            $Where  = SQL::newWhere();
+            $Where->addWhereOpr('form_blog_id', BID, '=', 'OR');
+            $Where->addWhereOpr('form_scope', 'global', '=', 'OR');
+            $SQL->addWhere($Where);
             $fcode  = $DB->query($SQL->get(dsn()), 'one');
 
             $this->Post->add('form_id', $fcode);

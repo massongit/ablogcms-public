@@ -119,6 +119,8 @@ class ACMS_GET_Unit_List extends ACMS_GET
             }
             $row = $tmp;
 
+            $row['unit:loop.class'] = config('entry_summary_loop_class');
+
             //-------------
             // entry field
             if ( config('column_list_entry_on') === 'on' ) {

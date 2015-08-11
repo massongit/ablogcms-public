@@ -24,7 +24,7 @@ class ACMS_GET_Calendar_Month extends ACMS_GET
     {
         $ym = substr($this->start, 0, 7);
 
-        if ( '1000-01' == $ym ) $ym = date('Y-m', REQUEST_TIME);
+        if ( '1000-01' == $ym ) $ym = date('Y-m', requestTime());
         list($y, $m)    = explode('-', $ym);
 
         $DB     = DB::singleton(dsn());

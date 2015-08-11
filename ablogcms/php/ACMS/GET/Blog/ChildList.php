@@ -31,6 +31,8 @@ class ACMS_GET_Blog_ChildList extends ACMS_GET
         }
         $SQL->setLimit(intval(config('blog_child_list_limit')));
         $q  = $SQL->get(dsn());
+
+        $loopClass  = config('blog_child_list_loop_class');
         
         if ( $DB->query($q, 'fetch') and ( $row = $DB->fetch($q)) ) {
             $i      = 0;
@@ -48,6 +50,7 @@ class ACMS_GET_Blog_ChildList extends ACMS_GET
                 $Field->set('url', acmsLink(array(
                     'bid'   => $bid,
                 )));
+                $Field->set('blog:loop.class', $loopClass);
 
                 //------
                 // glue

@@ -114,14 +114,12 @@ class ACMS_GET_Navigation extends ACMS_GET
                 if ( in_array('ul#front', $row['end']) ) {
                     $Tpl->add(array('childNavi', 'link#front', 'navigation:loop'));
                 }
-                if ( !empty($uri) ) {
-                    $Tpl->add(array('link#front', 'navigation:loop'), array(
-                        'url'       => $uri,
-                        'target'    => $_target,
-                        'attr'  => (substr($row['a_attr'], 0, 1) !== ' ' ? ' ' : '').$row['a_attr'],
-                    ));
-                    $Tpl->add(array('link#rear', 'navigation:loop'));
-                }
+                $Tpl->add(array('link#front', 'navigation:loop'), array(
+                    'url'       => $uri,
+                    'target'    => $_target,
+                    'attr'  => (substr($row['a_attr'], 0, 1) !== ' ' ? ' ' : '').$row['a_attr'],
+                ));
+                $Tpl->add(array('link#rear', 'navigation:loop'));
             }
 
             if ( preg_match('@^(https|http|acms)://@', $label, $match) ) {
@@ -155,11 +153,15 @@ class ACMS_GET_Navigation extends ACMS_GET
             $lvBlock    = 'level_'.strval($level);
 
             $vars   = array(
-                'attr'  => (substr($row['attr'], 0, 1) !== ' ' ? ' ' : '').$row['attr'],
                 'label' => $label,
                 'level' => strval($this->buildLevel(intval($row['id']))),
             );
-			
+            if ( !preg_match('/^#$/', $uri) ) {
+                $vars['attr']   = (substr($row['attr'], 0, 1) !== ' ' ? ' ' : '').$row['attr'];
+            } else {
+                $Tpl->add(array('li#front', 'navigation:loop'));
+            }
+            
             $Tpl->add(array($lvBlock, 'navigation:loop'));
             $Tpl->add('navigation:loop', $vars);
 

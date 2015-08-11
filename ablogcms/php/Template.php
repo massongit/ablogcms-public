@@ -182,13 +182,14 @@ class Template
         $pointAry   = array();
         $endBlock   = end($blocks);
         $parentAry  = array();
+
         foreach ( $blocks as $block ) {
             if ( !isset($this->_blockLabelId[$block]) ) return false;
             $tempParent = array();
             $ids        = $this->_blockLabelId[$block];
 
             foreach ( $ids as $id ) {
-                $layered = empty($parentAry);
+                $layered = false;
                 foreach ( $parentAry as $ppt ) {
                     if ( 1
                         && $this->_blockIdTokenEnd[$ppt] >= $this->_blockIdTokenEnd[$id]
@@ -199,7 +200,7 @@ class Template
                         continue;
                     }
                 }
-                if ( $layered && $block === $endBlock ) {
+                if ( (count($blocks) === 1 || $layered) && $block === $endBlock ) {
                     $pointAry[] = $id;
                 }
             }

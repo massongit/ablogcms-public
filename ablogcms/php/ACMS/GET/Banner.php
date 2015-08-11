@@ -16,8 +16,10 @@ class ACMS_GET_Banner extends ACMS_GET
 
         if ( !$aryStatus = configArray('banner_status') ) return '';
         
-        $order = config('banner_order');
-        switch( $order ){
+        $order      = config('banner_order');
+        $loopClass  = config('banner_loop_class');
+
+        switch ( $order ) {
             case 'random':
                 $keys = array_keys($aryStatus);
                 shuffle($keys);
@@ -35,14 +37,14 @@ class ACMS_GET_Banner extends ACMS_GET
         }
 
         $limit = config('banner_limit');
-		$int_display = 0;
+        $int_display = 0;
         if ( is_numeric($limit) && intval($limit) > 0 ) {
             //$aryStatus = array_slice($aryStatus, 0, $limit, true);
-        }else if( is_array($aryStatus) ){
-			$limit = count( $aryStatus );
-		}else {
-			$limit = 0;
-		}
+        } else if ( is_array($aryStatus) ) {
+            $limit = count( $aryStatus );
+        } else {
+            $limit = 0;
+        }
         
         foreach ( $aryStatus as $i => $status ) {
 
@@ -58,13 +60,13 @@ class ACMS_GET_Banner extends ACMS_GET
             $dateend = ( strlen($dateend) > 0 )?$dateend:'9999-12-31';
             $timeend = ( strlen($timeend) > 0 )?$timeend:'23:59:59';
             
-            if( ! ( ( ($datestart . ' ' . $timestart) <= date('Y-m-d H:i:s', REQUEST_TIME ) ) && ( date('Y-m-d H:i:s', REQUEST_TIME ) <= ($dateend . ' ' . $timeend) ) ) ) {
+            if( ! ( ( ($datestart . ' ' . $timestart) <= date('Y-m-d H:i:s', requestTime()) ) && ( date('Y-m-d H:i:s', requestTime()) <= ($dateend . ' ' . $timeend) ) ) ) {
                 continue;
             }
             
-			$int_display++;
-			if( $int_display > $limit )break;
-			
+            $int_display++;
+            if ( $int_display > $limit ) break;
+            
             if ( $img = config('banner_img', '', $i) ) {
                 $xy = @getimagesize(ARCHIVES_DIR.$img);
                 $Tpl->add('banner#img', array(
@@ -84,7 +86,9 @@ class ACMS_GET_Banner extends ACMS_GET
                     'nth'   => $i,
                 ));
             }
-            $Tpl->add('banner:loop');
+            $Tpl->add('banner:loop', array(
+                'banner:loop.class' => $loopClass,
+            ));
         }
 
         return setGlobalVars($Tpl->get());

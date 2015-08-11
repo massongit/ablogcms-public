@@ -26,6 +26,8 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
             'order'                         => config('category_entry_list_entry_order'),
             'limit'                         => config('category_entry_list_entry_limit'),
             'indexing'                      => config('category_entry_list_entry_indexing'),
+            'categoryLoopClass'             => config('category_entry_list_category_loop_class'),
+            'entryLoopClass'                => config('category_entry_list_entry_loop_class'),
         );
     }
 
@@ -51,6 +53,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
             ACMS_Filter::categoryOrder($SQL, $this->_config['categoryOrder']);
 
             $cQ     = $SQL->get(dsn());
+
             if ( !$DB->isFetched($cQ) and !$DB->query($cQ, 'fetch') ) {
                 array_shift($aryStack);
                 continue;
@@ -64,7 +67,6 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
 
             if ( intval($this->_config['categoryEntryListLevel']) >= $level ) { while ( !!($cRow = $DB->fetch($cQ)) ) {
                 $cid    = intval($cRow['category_id']);
-				
 
                 //--------------------
                 // entry build query
@@ -80,14 +82,14 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                 ) {
                     //-------
                     // entry
-					if( isset( $this->_config['entryActiveCategory'] ) && 'on' == $this->_config['entryActiveCategory'] && ( $cid != CID || intval(CID) == 0 ) ){
-					}else {
-						$i = 0;
-						if ( !empty($eRow) ) { do {
-							$i++;
-							$this->buildUnit($eRow, $Tpl, $cid, $level, $i);
-						} while ( !!($eRow = $DB->fetch($eQ) ) ); }
-					}
+                    if( isset( $this->_config['entryActiveCategory'] ) && 'on' == $this->_config['entryActiveCategory'] && ( $cid != CID || intval(CID) == 0 ) ){
+                    }else {
+                        $i = 0;
+                        if ( !empty($eRow) ) { do {
+                            $i++;
+                            $this->buildUnit($eRow, $Tpl, $cid, $level, $i);
+                        } while ( !!($eRow = $DB->fetch($eQ) ) ); }
+                    }
 
                     //----------
                     // category
@@ -102,6 +104,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                         'categoryCode'  => $cRow['category_code'],
                         'categoryId'    => $cid,
                         'categoryPid'   => $pid,
+                        'category:loop.class'   => $this->_config['categoryLoopClass'],
                     );
                     
                     if ( !isset($this->_config['categoryFieldOn']) or $this->_config['categoryFieldOn'] === 'on' ) {
@@ -145,10 +148,14 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
     function buildQuery($cid, &$Tpl)
     {
         $SQL = SQL::newSelect('entry');
-        $SQL->addWhereOpr('entry_category_id', $cid);
-        $SQL->addWhereOpr('entry_blog_id', $this->bid);
+        
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
         ACMS_Filter::entrySession($SQL);
+        if ( 'on' == $this->_config['indexing'] ) {
+            $SQL->addWhereOpr('entry_indexing', 'on');
+        }
+        $SQL->addWhereOpr('entry_blog_id', $this->bid);
+        $SQL->addWhereOpr('entry_category_id', $cid);
 
         if ( !empty($this->tags) ) {
             ACMS_Filter::entryTag($SQL, $this->tags);
@@ -160,10 +167,12 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
             ACMS_Filter::entryField($SQL, $this->Field);
         }
 
-        if ( 'on' == $this->_config['indexing'] ) {
-            $SQL->addWhereOpr('entry_indexing', 'on');
+        $sortFd = ACMS_Filter::entryOrder($SQL, $this->_config['order'], $this->uid, $cid);
+        if ( !empty($sortFd) ) {
+            $SQL->setGroup($sortFd);
         }
-        ACMS_Filter::entryOrder($SQL, $this->_config['order'], $this->uid, $cid);
+        $SQL->addGroup('entry_id');
+        
         $SQL->setLimit($this->_config['limit']);
         $eQ = $SQL->get(dsn());
         
@@ -194,6 +203,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
             'entryLevel'    => $level,
             'entryCode'     => $eRow['entry_code'],
             'entryId'       => $eid,
+            'entry:loop.class'  => $this->_config['entryLoopClass'],
         );
         $vars   += $this->buildField(loadEntryField($eid), $Tpl);
         $Tpl->add('entry:loop', $vars);

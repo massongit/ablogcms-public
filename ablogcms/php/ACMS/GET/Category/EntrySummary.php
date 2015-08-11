@@ -14,7 +14,6 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
         'cid'   => 'self',
     );
     
-    var $_itemsAmount = null;
     var $_endGluePoint = null;
     
     function initVars()
@@ -41,6 +40,10 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
             'mainImageOn'               => config('category_entry_summary_image_on'),
             'entryFieldOn'              => config('category_entry_summary_entry_field_on'),
             'categoryFieldOn'           => config('category_entry_summary_category_field_on'),
+            'categoryLoopClass'         => config('category_entry_summary_category_loop_class'),
+            'entryLoopClass'            => config('category_entry_summary_entry_loop_class'),
+            'fulltextWidth'             => config('category_entry_summary_fulltext_width'),
+            'fulltextMarker'            => config('category_entry_summary_fulltext_marker'),
         );
         if(!empty($this->order)){$config['order'] = $this->order;}
         
@@ -49,35 +52,43 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
     
     function buildQuery($cid, &$Tpl)
     {
+        $BlogSub        = null;
+        $CategorySub    = null;
+
         $DB     = DB::singleton(dsn());
         $SQL    = SQL::newSelect('entry');
         $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
         $SQL->addWhereOpr('entry_category_id', $cid);
-        
-        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
-        if ( 'on' === $this->_config['secret'] ) {
-            ACMS_Filter::blogDisclosureSecretStatus($SQL);
-        } else {
-            ACMS_Filter::blogStatus($SQL);
+
+        if ( !empty($this->bid) ) {
+            $BlogSub = SQL::newSelect('blog');
+            $BlogSub->setSelect('blog_id');
+            ACMS_Filter::blogTree($BlogSub, $this->bid, $this->blogAxis());
+
+            if ( 'on' === $this->_config['secret'] ) {
+                ACMS_Filter::blogDisclosureSecretStatus($BlogSub);
+            } else {
+                ACMS_Filter::blogStatus($BlogSub);
+            }
         }
-        
-        ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
-        ACMS_Filter::categoryStatus($SQL);
+
+        if ( !empty($this->cid) ) {
+            $CategorySub = SQL::newSelect('category');
+            $CategorySub->setSelect('category_id');
+            ACMS_Filter::categoryTree($CategorySub, $this->cid, $this->categoryAxis());
+            ACMS_Filter::categoryStatus($CategorySub);
+        }
         
         if ( $uid = intval($this->uid) ) {
             $SQL->addWhereOpr('entry_user_id', $this->uid);
         }
 
-        if ( empty($this->cid) and null !== $this->cid ) {
-            $SQL->addWhereOpr('entry_category_id', null);
-        }
-
         if ( !empty($this->eid) ) {
             $SQL->addWhereOpr('entry_id', $this->eid);
         }
-        ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+        ACMS_Filter::entrySession($SQL);
 
         if ( !empty($this->tags) ) {
             ACMS_Filter::entryTag($SQL, $this->tags);
@@ -94,26 +105,40 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
         if ( 'on' <> $this->_config['noimage'] ) {
             $SQL->addWhereOpr('entry_primary_image', null, '<>');
         }
-        $Amount = new SQL_Select($SQL);
-        $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'count');
-        if(!$this->_itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'))){
+
+        //-------------------------
+        // filter (blog, category) 
+        if ( $BlogSub ) {
+            $SQL->addWhereIn('entry_blog_id', $DB->subQuery($BlogSub));
+        }
+        if ( $CategorySub ) {
+            $SQL->addWhereIn('entry_category_id', $DB->subQuery($CategorySub));
+        } else if ( empty($this->cid) and null !== $this->cid ) {
+            $SQL->addWhereOpr('entry_category_id', null);
+        }
+        
+        $limit  = $this->_config['limit'];
+        $offset = intval($this->_config['offset']);
+        if ( 1 > $limit ) return '';
+
+        $sortFd = ACMS_Filter::entryOrder($SQL, $this->_config['order'], $this->uid, $this->cid);
+        $SQL->setLimit($limit, $offset);
+
+        if ( !empty($sortFd) ) {
+            $SQL->setGroup($sortFd);
+        }
+        $SQL->addGroup('entry_id');
+
+        $q  = $SQL->get(dsn());
+
+        $all    = $DB->query($q, 'all');
+        if ( empty($all) ) {
             if ( 'on' == $this->_config['notfound'] ) {
                 $Tpl->add('notFound');
-                return false;
-            } else {
-                return false;
             }
+            return false;
         }
-        ACMS_Filter::entryOrder($SQL, $this->_config['order'], $this->uid, $this->cid);
-        
-        $limit  = (($this->_config['limit']) > $this->_itemsAmount) ? $this->_itemsAmount : $this->_config['limit'];
-        if ( 1 > $limit ) return '';
-        $this->_endGluePoint = $limit;
-        
-        $offset = intval($this->_config['offset']);
-        $SQL->setLimit($limit, $offset);
-        $SQL->setGroup('entry_id');
-        $q  = $SQL->get(dsn());
+        $this->_endGluePoint = count($all);
         
         return $q;
     }

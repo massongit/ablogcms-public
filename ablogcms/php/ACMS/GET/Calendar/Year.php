@@ -22,7 +22,7 @@ class ACMS_GET_Calendar_Year extends ACMS_GET
 
     function buildMonth( & $Tpl, $ym, $block=array() )
     {
-        if ( '1000-01' == $ym ) $ym = date('Y-m', REQUEST_TIME);
+        if ( '1000-01' == $ym ) $ym = date('Y-m', requestTime());
         list($y, $m)    = explode('-', $ym);
 
         $DB     = DB::singleton(dsn());
@@ -117,7 +117,7 @@ class ACMS_GET_Calendar_Year extends ACMS_GET
         $DB     = DB::singleton(dsn());
 
         $ym     = substr($this->start, 0, 7);
-        if ( '1000-01' == $ym ) $ym = date('Y-m', REQUEST_TIME);
+        if ( '1000-01' == $ym ) $ym = date('Y-m', requestTime());
         list($y, $m)    = explode('-', $ym);
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
@@ -162,15 +162,15 @@ class ACMS_GET_Calendar_Year extends ACMS_GET
         $Recently   = clone $SQL;
         $Recently->addOrder('entry_datetime', 'DESC');
         $recentryValue = $DB->query($Recently->get(dsn()), 'one');
-        if ( intval($recentryValue) < intval(date('Y', REQUEST_TIME)) ) {
-            $recentryValue = intval(date('Y', REQUEST_TIME));
+        if ( intval($recentryValue) < intval(date('Y', requestTime())) ) {
+            $recentryValue = intval(date('Y', requestTime()));
         }
 
         $Past       = clone $SQL;
         $Past->addOrder('entry_datetime', 'ASC');
         $pastValue  = $DB->query($Past->get(dsn()), 'one');
         if ( !$pastValue ) {
-            $pastValue = date('Y', REQUEST_TIME);
+            $pastValue = date('Y', requestTime());
         }
 
         //-----------

@@ -33,10 +33,10 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         if(!is_numeric($pager_count) || intval($pager_count) == 0){
             $pager_count = 7;
         }
-        $start_date = REQUEST_TIME;
-        $end_date = REQUEST_TIME;
-        $entry_start_date = REQUEST_TIME;
-        $entry_end_date = REQUEST_TIME;
+        $start_date = requestTime();
+        $end_date = requestTime();
+        $entry_start_date = requestTime();
+        $entry_end_date = requestTime();
         $first_day = '';
         $last_day = '';
         $loop_count = '';
@@ -47,10 +47,10 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         switch($view_mode){
         case "month" :
             if('1000-01-01' === $ymd ){
-                $ym = date('Y-m', REQUEST_TIME);
+                $ym = date('Y-m', requestTime());
                 $start_date = $ym.'-01 00:00:00';
                 $end_date =  $ym.'-31 23:59:59';
-                $ymd = date('Y-m-d', REQUEST_TIME);
+                $ymd = date('Y-m-d', requestTime());
             }else{
                 $ym = substr($ymd, 0, 7);
                 $start_date = $ym.'-01 00:00:00';
@@ -79,7 +79,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             break;
             
         case "week" :
-            if('1000-01-01' === $ymd ) $ymd = date('Y-m-d', REQUEST_TIME);
+            if('1000-01-01' === $ymd ) $ymd = date('Y-m-d', requestTime());
             $f_week = intval(date('w', strtotime($ymd)));
             $config_week = intval(config('entry_calendar_begin_week'));
             $prev_num = ($f_week >= $config_week) ? $f_week - $config_week : 7 - ($config_week - $f_week);
@@ -100,7 +100,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
             break;
             
         case "days" :
-            if('1000-01-01' === $ymd ) $ymd = date('Y-m-d', REQUEST_TIME);
+            if('1000-01-01' === $ymd ) $ymd = date('Y-m-d', requestTime());
             $add_day = $this->computeDate((int)substr($ymd, 0, 4), (int)substr($ymd, 5, 2), (int)substr($ymd, 8, 2), 6);
             $start_date = $ymd.' 00:00:00';
             $end_date =  $add_day.' 23:59:59';
@@ -269,7 +269,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                 'w'     => $curW,
                 'day'   => $day_t
             );
-            if(date('Y-m-d', REQUEST_TIME) === $date){
+            if(date('Y-m-d', requestTime()) === $date){
                 $calendar_vars += array(
                     'today' => config('entry_calendar_today')
                 );

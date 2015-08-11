@@ -15,17 +15,29 @@ class ACMS_GET_Tag_Cloud extends ACMS_GET
 
     function get()
     {
+        $DB     = DB::singleton(dsn());
+
         $SQL    = SQL::newSelect('tag');
         $SQL->addSelect('tag_name');
         $SQL->addSelect('tag_name', 'tag_amount', null, 'count');
+
         $SQL->addLeftJoin('blog', 'blog_id', 'tag_blog_id');
-        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
-        ACMS_Filter::blogStatus($SQL);
-        $SQL->addLeftJoin('entry', 'entry_id', 'tag_entry_id');
-        ACMS_Filter::entrySession($SQL);
-        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
-        if ( !empty($this->Field) ) { ACMS_Filter::entryField($SQL, $this->Field); }
-        if ( !empty($this->eid) ) { $SQL->addWhereOpr('entry_id', $this->eid); }
+
+        $EntrySub = SQL::newSelect('entry');
+        $EntrySub->setSelect('entry_id');
+        ACMS_Filter::entrySession($EntrySub);
+        ACMS_Filter::entrySpan($EntrySub, $this->start, $this->end);
+        if ( !empty($this->Field) ) { ACMS_Filter::entryField($EntrySub, $this->Field); }
+        if ( !empty($this->eid) ) { $EntrySub->addWhereOpr('entry_id', $this->eid); }
+
+        $BlogSub    = SQL::newSelect('blog');
+        $BlogSub->setSelect('blog_id');
+        ACMS_Filter::blogTree($BlogSub, $this->bid, $this->blogAxis());
+        ACMS_Filter::blogStatus($EntrySub);
+
+        $SQL->addWhereIn('tag_entry_id', $EntrySub);
+        $SQL->addWhereIn('tag_blog_id', $DB->subQuery($BlogSub));
+
         $SQL->addGroup('tag_name');
         if ( 1 < ($tagThreshold = idval(config('tag_cloud_threshold'))) ) {
             $SQL->addHaving('tag_amount >= '.$tagThreshold);
@@ -34,7 +46,6 @@ class ACMS_GET_Tag_Cloud extends ACMS_GET
         ACMS_Filter::tagOrder($SQL, config('tag_cloud_order'));
         $q  = $SQL->get(dsn());
 
-        $DB     = DB::singleton(dsn());
         $all    = $DB->query($q, 'all');
         if ( !$cnt = count($all) ) {
             return false;

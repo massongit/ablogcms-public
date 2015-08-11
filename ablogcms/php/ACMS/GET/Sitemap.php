@@ -99,7 +99,6 @@ class ACMS_GET_Sitemap extends ACMS_GET
             if ( !empty($categoryField) ) {
                 ACMS_Filter::categoryField($SQL, $categoryField);
             }
-
             $Where  = SQL::newWhere();
             $Where->addWhereOpr('category_blog_id', $bid, '=', 'OR');
             $Where->addWhereOpr('category_scope', 'global', '=', 'OR');

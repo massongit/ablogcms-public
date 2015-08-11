@@ -30,6 +30,7 @@ class ACMS_GET_Entry_List extends ACMS_GET_Entry_Summary
             'pagerDelta'       => config('entry_list_pager_delta'),
             'pagerCurAttr'     => config('entry_list_pager_cur_attr'),
             'hiddenCurrentEntry'    => config('entry_list_hidden_current_entry'),
+            'loop_class'            => config('entry_list_loop_class'),
         );
     }
 }
