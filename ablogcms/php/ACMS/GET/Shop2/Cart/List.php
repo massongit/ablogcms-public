@@ -19,15 +19,11 @@ class ACMS_GET_Shop2_Cart_List extends ACMS_GET_Shop2
     }
 
     function get()
-    {	
+    {   
         $this->initVars();
-
         $this->initPrivateVars();
-
-        $TEMP = $this->openCart();
-		
-        $Tpl = $this->buildList($TEMP);
-
+        $TEMP   = $this->openCart();
+        $Tpl    = $this->buildList($TEMP);
         $this->closeCart($TEMP);
 
         return $Tpl;
@@ -58,20 +54,26 @@ class ACMS_GET_Shop2_Cart_List extends ACMS_GET_Shop2
 
         // 通常の表示をするパターン
         foreach ( $TEMP as $hash => $row ) {
+            if ( 0
+                or !isset($row[$this->item_price])
+                or !isset($row[$this->item_qty])
+            ) {
+                continue;
+            }
             $price  = $row[$this->item_price];
             $qty    = $row[$this->item_qty];
-			
+            
             $tax    = $row[$this->item_price.'#tax'];
             $sum    = $row[$this->item_price.'#sum'];
 
-			$entryField = loadEntryField( intval( $row[$this->item_id] ) );
-			$row[$this->item_sku] = intval( $entryField->get($this->item_sku) );
-			if( $row[$this->item_sku] >= $qty ){
-				$row[$this->item_sku.'after'] = intval($row[$this->item_sku]) - intval($qty);
-			}else {
-				
-			}
-			
+            $entryField = loadEntryField( intval( $row[$this->item_id] ) );
+            $row[$this->item_sku] = intval( $entryField->get($this->item_sku) );
+            if( $row[$this->item_sku] >= $qty ){
+                $row[$this->item_sku.'after'] = intval($row[$this->item_sku]) - intval($qty);
+            }else {
+                
+            }
+            
             // 合算系をカウント
             @$amount['amount']   += $qty;
             @$amount['subtotal'] += $sum;
@@ -101,7 +103,7 @@ class ACMS_GET_Shop2_Cart_List extends ACMS_GET_Shop2
                 );
                 $Tpl->add(array('noimage', 'item:loop', 'contents'));
             }
-			
+            
             // 配列からFieldに変換する
             $Field = new Field();
             $row['hash'] = $hash;
@@ -109,15 +111,15 @@ class ACMS_GET_Shop2_Cart_List extends ACMS_GET_Shop2
                 $Field->set($key, $val);
             }
             $vars = $this->buildField($Field, $Tpl, array('item:loop', 'contents'));
-			
-			// 在庫チェック
-			$EntryField = loadEntryField( intval( $row[$this->item_id] ) );
-			$item_stock = $EntryField->get( $this->item_sku );
-			if( isset( $item_stock ) && ( $item_stock > 0 ) ){
-				if( intval( $item_stock ) < intval( $row[ $this->item_qty ] ) ){
-					$Tpl->add(array($this->item_qty.':validator','item:loop', 'contents'));
-				}
-			}
+            
+            // 在庫チェック
+            $EntryField = loadEntryField( intval( $row[$this->item_id] ) );
+            $item_stock = $EntryField->get( $this->item_sku );
+            if( isset( $item_stock ) && ( $item_stock > 0 ) ){
+                if( intval( $item_stock ) < intval( $row[ $this->item_qty ] ) ){
+                    $Tpl->add(array($this->item_qty.':validator','item:loop', 'contents'));
+                }
+            }
 
             $Tpl->add(array('item:loop', 'contents'), $vars);
         }
