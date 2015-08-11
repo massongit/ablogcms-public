@@ -416,7 +416,10 @@ class ACMS_GET
                     $sfx    = '['.$i.']';
                     if ( $v !== '' ) { $vars[$key.$sfx]    = $v; }
                     if ( !empty($Tpl) ) {
-                        if ( !empty($i) ) $Tpl->add(array_merge(array('glue', $key.':loop'), $block));
+                        if ( !empty($i) ) {
+                            $Tpl->add(array_merge(array('glue', $key.':loop'), $block));
+                            $Tpl->add(array_merge(array($key.':glue', $key.':loop'), $block));
+                        }
                         $Tpl->add(array_merge(array($key.':loop'), $block)
                             , !empty($v) ? array($key => $v) : array());
                     }
