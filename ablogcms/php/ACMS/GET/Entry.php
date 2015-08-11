@@ -17,11 +17,12 @@ class ACMS_GET_Entry extends ACMS_GET
         $columnAmount   = count($Column) - 1;
         $currentGroup   = null;
         $squareImgSize  = config('image_size_square');
-        $showInvisible  = (sessionWithContribution()
-                          and 'on' == config('entry_edit_inplace_enable')
-                          and 'on' == config('entry_edit_inplace')
-                          and ( !enableApproval() || sessionWithApprovalAdministrator() )
-                          and $entry['entry_approval'] !== 'pre_approval'
+        $showInvisible  = ( 1
+            and roleEntryAuthorization(BID, $entry, false)
+            and 'on' == config('entry_edit_inplace_enable')
+            and 'on' == config('entry_edit_inplace')
+            and ( !enableApproval() || sessionWithApprovalAdministrator() )
+            and $entry['entry_approval'] !== 'pre_approval'
         );
         $unitGroupEnable= (config('unit_group') === 'on');
 
@@ -661,7 +662,7 @@ class ACMS_GET_Entry extends ACMS_GET
                 and $entry['entry_approval'] !== 'pre_approval'
                 and !ADMIN
                 and ( 0
-                    or sessionWithCompilation()
+                    or roleEntryAuthorization(BID, $entry, false)
                     or ( 1
                         and sessionWithContribution()
                         and SUID == ACMS_RAM::entryUser($eid)

@@ -209,9 +209,9 @@ class Services_Twitter extends OAuth_Consumer
      *
      * @return array|bool
      */
-    public function getAcsToken($verifier=array())
+    public function getAcsToken()
     {
-        return parent::getAcsToken($verifier);
+        return parent::getAcsToken();
     }
 
     /**

@@ -461,8 +461,10 @@ class ACMS_Filter
             $SQL->addWhereOpr('entry_status', 'trash', '<>', 'AND', $scp);
         }
         
-        if ( !sessionWithCompilation() && !approvalAvailableUser(SUID) ) {
-            
+        if ( 1
+            && !sessionWithCompilation()
+            && !approvalAvailableUser(SUID)
+        ) {
             $SQLWhereSession    = SQL::newWhere();
 
             //------------
@@ -476,7 +478,13 @@ class ACMS_Filter
             $SQLWhereSession->addWhereOpr('entry_status', 'open', '=', 'AND', $scp);
             $SQLWhereSession->addWhereOpr('entry_approval', 'pre_approval', '<>', 'AND', $scp);
             
-            if ( sessionWithContribution() ) {
+            if ( 1
+                && roleAvailableUser()
+                && roleAuthorization('entry_edit', BID)
+                && roleAuthorization('entry_edit_all', BID)
+            ) {
+                return true;
+            } else if ( sessionWithContribution() ) {
                 $SQLWhereStatus = SQL::newWhere();
                 if ( 1
                     && !approvalAvailableUser(SUID)
