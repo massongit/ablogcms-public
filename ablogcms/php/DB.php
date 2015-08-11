@@ -109,6 +109,21 @@ class DB
     }
 
     /**
+     * バージョンによって、サブクエリを使用するか分離するかを判断
+     *
+     * @static
+     * @param SQL $Query
+     * @return String | SQL
+     */
+    function subQuery($Query=null)
+    {
+        if ( version_compare(mysql_get_server_info($this->_connection), '5.6.0', '>=') ) {
+            return $Query;
+        }
+        return $this->query($Query->get(dsn()), 'list');
+    }
+
+    /**
      * SQL文を指定してmodeに応じたDB操作結果を返す<br>
      * 'row'    => 最初の行の連想配列を返す(array)<br>
      * 'all'    => すべての行を連想配列で返す(array)<br>
@@ -141,8 +156,17 @@ class DB
         $stime  = time() + microtime();
         $res    = mysql_query($sql, $this->_connection);
         $qtime  = (time() + microtime()) - $stime;
-        DB::time($sql, $qtime);
 
+        if ( !empty($this->_dsn['debug']) ) {
+            if ( isBench() && $qtime > DB_SLOW_QUERY_TIME ) {
+                global $bench_slow_query;
+                $bench_slow_query[] = array(
+                    'time'  => $qtime,
+                    'query' => nl2br($sql),
+                );
+            }
+            DB::time($sql, $qtime);
+        }
         if ( empty($res) ) {
             if ( !empty($this->_dsn['debug']) ) {
                 var_dump(mysql_error());
@@ -182,6 +206,21 @@ class DB
             }
             mysql_free_result($res);
             return $all;
+        } else if ( 'list' == $mode ) {
+            $list   = array();
+            while ( $row = mysql_fetch_assoc($res) ) {
+                $one = array_shift($row);
+                if ( !is_null($one) ) {
+                    $_one   = mb_convert_encoding($one, 'UTF-8', $this->charset());
+                    if ( $one === mb_convert_encoding($_one, $this->charset(), 'UTF-8') ) {
+                        $one    = $_one;
+                    }
+                }
+                $list[] = $one;
+            }
+            mysql_free_result($res);
+
+            return $list;
         } else if ( 'one' == $mode ) {
             if ( !$row = mysql_fetch_assoc($res) ) return false;
             $one    = array_shift($row);

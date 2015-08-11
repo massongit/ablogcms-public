@@ -618,19 +618,21 @@ class SQL_Select extends SQL_Where
     var $_orders    = array();
     var $_where     = null;
     var $_union     = array();
+    var $_straightJoin = false;
 
-    function addTable($tb, $als=null)
+    function addTable($tb, $als=null, $straight_join=false)
     {
+        $this->_straightJoin = $straight_join;
         $this->_tables[] = array(
             'table' => $tb,
             'alias' => $als,
         );
         return true;
     }
-    function setTable($tb=null, $als=null)
+    function setTable($tb=null, $als=null, $straight_join=false)
     {
         $this->_tables  = array();
-        if ( !empty($tb) ) $this->addTable($tb, $als);
+        if ( !empty($tb) ) $this->addTable($tb, $als, $straight_join);
         return true;
     }
 
@@ -646,7 +648,7 @@ class SQL_Select extends SQL_Where
      * @param string $bScp
      * @return bool
      */
-    function addLeftJoin($tb, $a, $b, $aScp=null, $bScp=null)
+    function addLeftJoin($tb, $a, $b, $aScp=null, $bScp=null, $where=null)
     {
         $A  = SQL::isClass($a, 'SQL_Field') ? $a : SQL::newField($a, $aScp);
         $B  = SQL::isClass($b, 'SQL_Field') ? $b : SQL::newField($b, $bScp);
@@ -654,11 +656,12 @@ class SQL_Select extends SQL_Where
             'table'     => $tb,
             'a'         => $A,
             'b'         => $B,
+            'where'     => $where,
         );
         return true;
     }
 
-    function setLeftJoin($tb=null, $a=null, $b=null, $aScp=null, $bScp=null)
+    function setLeftJoin($tb=null, $a=null, $b=null, $aScp=null, $bScp=null, $where=null)
     {
         $this->_leftJoins   = array();
         if ( !empty($tb) and !empty($a) and !empty($b) ) {
@@ -679,7 +682,7 @@ class SQL_Select extends SQL_Where
      * @param string $scp
      * @return bool
      */
-    function addInnerJoin($tb, $a, $b, $als=null, $scp=null)
+    function addInnerJoin($tb, $a, $b, $als=null, $scp=null, $where=null)
     {
         //$A  = SQL::isClass($a, 'SQL_Field') ? $a : SQL::newField($a, $aScp);
         //$B  = SQL::isClass($b, 'SQL_Field') ? $b : SQL::newField($b, $bScp);
@@ -689,6 +692,7 @@ class SQL_Select extends SQL_Where
             'b'         => $b,
             'als'       => $als,
             'scp'       => $scp,
+            'where'     => $where,
         );
         return true;
     }
@@ -847,6 +851,9 @@ class SQL_Select extends SQL_Where
         //--------
         // select
         $q  = 'SELECT';
+        if ( $this->_straightJoin ) {
+            $q  .= ' STRAIGHT_JOIN ';
+        }
         $_q = ' *';
         if ( !empty($this->_selects) ) {
             $_q = '';
@@ -881,6 +888,7 @@ class SQL_Select extends SQL_Where
             foreach ( $this->_leftJoins as $i => $lj ) {
                 $A  = $lj['a'];
                 $B  = $lj['b'];
+                $W  = $lj['where'];
                 $q .= "\n LEFT JOIN";
                 if ( SQL::isClass($lj['table'], 'SQL_Select') ) {
                     $q  .= " (\n";
@@ -893,7 +901,8 @@ class SQL_Select extends SQL_Where
                 if ( $scp = $A->getScope() ) {
                     $q  .= ' AS '.$scp;
                 }
-                $q  .= ' ON '.$A->get($dsn).' = '.$B->get($dsn);
+                $where = is_null($W) ? '' : ' AND '.$W->get($dsn);
+                $q  .= ' ON '.$A->get($dsn).' = '.$B->get($dsn).$where;
             }
         }
 
@@ -913,10 +922,12 @@ class SQL_Select extends SQL_Where
                 if ( !empty($data['als']) ) {
                     $q  .= ' AS '.$data['als'];
                 }
+                $where = is_null($data['where']) ? '' : ' AND '.$data['where']->get($dsn);
                 $q  .= ' ON '
                     .(!empty($data['als']) ? $data['als'].'.' : '').$data['a']
                     .' = '
                     .(!empty($data['scp']) ? $data['scp'].'.' : '').$data['b']
+                    .$where;
                 ;
             }
         }
@@ -1689,10 +1700,10 @@ class SQL
      * @param string|null $als
      * @return SQL_Select
      */
-    public static function newSelect($tb=null, $als=null)
+    public static function newSelect($tb=null, $als=null, $straight_join=false)
     {
         $Obj    = new SQL_Select();
-        if ( !empty($tb) ) $Obj->setTable($tb, $als);
+        if ( !empty($tb) ) $Obj->setTable($tb, $als, $straight_join);
         return $Obj;
     }
 

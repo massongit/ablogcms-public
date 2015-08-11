@@ -73,7 +73,7 @@ class ACMS_GET_Feed_ExList extends ACMS_GET
         //----------
         // slice
         foreach ( array_slice($feeds['items'], $this->offset, $limit) as $row ) {
-            if ( REQUEST_TIME <= @strtotime($row['datetime']) + $this->newtime ) {
+            if ( requestTime() <= @strtotime($row['datetime']) + $this->newtime ) {
                 $Tpl->add('new');
             }
             $row += $this->buildDate(@$row['datetime'], $Tpl, 'item:loop');

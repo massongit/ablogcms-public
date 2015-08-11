@@ -231,6 +231,7 @@ class ACMS_GET_Category_List extends ACMS_GET
                         'singleAmount'  => $All['category_entry_amount'][$cid],
                         'level'     => $depth,
                         'url'       => $url,
+                        'category:loop.class' => config('category_list_loop_class'),
                     );
                     if ( 'on' <> config('category_list_amount') ) unset($vars['amount']);
                     if ( CID == $cid ) {

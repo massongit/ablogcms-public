@@ -102,6 +102,7 @@ class ACMS_GET_User_Search extends ACMS_GET
         $entry_list_enable      = config('user_search_entry_list_enable') === 'on';
         $this->entry_list_order = config('user_search_entry_list_order');
         $this->entry_list_limit = config('user_search_entry_list_limit');
+        $loop_class             = config('user_search_loop_class');
 
         //-----------
         // user:loop
@@ -126,7 +127,7 @@ class ACMS_GET_User_Search extends ACMS_GET
             if ( $entry_list_enable ) {
                 $this->loadUserEntry($Tpl, $id, array('user:loop'));
             }
-
+            $vars['user:loop.class'] = $loop_class;
             $Tpl->add('user:loop', $vars);
         }
 

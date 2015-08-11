@@ -605,7 +605,10 @@ class ACMS_GET
         }
 
         if ( empty($pathAry) ) {
-            $Tpl->add('noimage');
+            $Tpl->add('noimage', array(
+                'noImgX'  => $config['imageX'],
+                'noImgY'  => $config['imageY'],
+            ));
             
             return array();
         }
@@ -743,7 +746,10 @@ class ACMS_GET
                 }
 
             } else {
-                $Tpl->add('noimage');
+                $Tpl->add('noimage', array(
+                    'noImgX'  => $config['imageX'],
+                    'noImgY'  => $config['imageY'],
+                ));
             }
             $vars   += array(
                 'x'.$fx => $config['imageX'],
@@ -829,19 +835,20 @@ class ACMS_GET
             }
             
             $vars   = array(
-                'permalink' => $permalink,
-                'title'     => $title,
-                'eid'       => $eid,
-                'ecd'       => $ecd,
-                'uid'       => $uid,
-                'bid'       => $bid,
-                'sort'      => $sort,
-                'csort'     => $csort,
-                'usort'     => $usort,
-                'iNum'      => $count,
-                'sNum'      => (($this->page - 1) * $config['limit']) + $count,
-                'oddOrEven' => $oddOrEven,
-                'status'    => $status,
+                'permalink'     => $permalink,
+                'title'         => $title,
+                'eid'           => $eid,
+                'ecd'           => $ecd,
+                'uid'           => $uid,
+                'bid'           => $bid,
+                'sort'          => $sort,
+                'csort'         => $csort,
+                'usort'         => $usort,
+                'iNum'          => $count,
+                'sNum'          => (($this->page - 1) * $config['limit']) + $count,
+                'oddOrEven'     => $oddOrEven,
+                'status'        => $status,
+                'entry:loop.class' => isset($config['loop_class']) ? $config['loop_class'] : '',
             );
             
             if ( $link != '#' ) {
@@ -890,7 +897,7 @@ class ACMS_GET
 
             //-----
             // new
-            if ( REQUEST_TIME <= strtotime($row['entry_datetime']) + $config['newtime'] ) {
+            if ( requestTime() <= strtotime($row['entry_datetime']) + $config['newtime'] ) {
                 $Tpl->add('new');
             }
 
@@ -903,7 +910,16 @@ class ACMS_GET
             //----------
             // fulltext
             if(!isset($config['fullTextOn']) or $config['fullTextOn'] === 'on'){
-                $this->buildSummaryFulltext($vars, $eid);
+                $this->buildSummaryFulltext($vars, $eid); 
+                if ( 1
+                    && isset($vars['summary'])
+                    && isset($config['fulltextWidth'])
+                    && !empty($config['fulltextWidth'])
+                ) {
+                    $width  = intval($config['fulltextWidth']);
+                    $marker = isset($config['fulltextMarker']) ? $config['fulltextMarker'] : '';
+                    $vars['summary']    = mb_strimwidth($vars['summary'], 0, $width, $marker, 'UTF-8');
+                }
             }
 
             //------

@@ -35,6 +35,8 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('umfs', ini_get('upload_max_filesize'));
         jsModule('pms',  ini_get('post_max_size'));
         jsModule('mfu',  ini_get('max_file_uploads'));
+        jsModule('lgImg', config('image_size_large_criterion').':'.preg_replace('/[^0-9]/', '', config('image_size_large')));
+        jsModule('jpegQuality', config('image_jpeg_quality', 95));
 
         $Session->delete('webStorageDeleteKey');
 

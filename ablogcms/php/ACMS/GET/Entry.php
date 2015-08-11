@@ -682,7 +682,7 @@ class ACMS_GET_Entry extends ACMS_GET
             //-------------
             // close group
             if ( $k === $columnAmount && $currentGroup !== null ) {
-                $Tpl->add(array_merge(array('unitGroup#last', 'unit:loop'), $rootBlock));
+                $Tpl->add(array_merge(array('unitGroup#last'), $rootBlock));
             }
 
             $Tpl->add($rootBlock);
@@ -691,7 +691,7 @@ class ACMS_GET_Entry extends ACMS_GET
         // ユニットグループでかつ最後の要素が非表示だった場合
         $lastUnit = array_pop($Column);
         if ( !$showInvisible && $lastUnit['align'] == 'hidden' && $currentGroup !== null ) {
-            $Tpl->add(array_merge(array('unitGroup#last', 'unit:loop'), $rootBlock));
+            $Tpl->add(array_merge(array('unitGroup#last'), $rootBlock));
             $Tpl->add($rootBlock);
         }
         return true;

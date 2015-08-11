@@ -42,6 +42,7 @@ class ACMS_GET_Entry_Headline extends ACMS_GET_Entry_Summary
             'pagerDelta'       => config('entry_headline_pager_delta'),
             'pagerCurAttr'     => config('entry_headline_pager_cur_attr'),
             'hiddenCurrentEntry'    => config('entry_headline_hidden_current_entry'),
+            'loop_class'            => config('entry_headline_loop_class'),
         );
     }
 }

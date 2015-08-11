@@ -36,6 +36,9 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
             'offset'           => config('entry_tag-relational_offset'),
             'unit'             => config('entry_tag-relational_unit'),
             'newtime'          => config('entry_tag-relational_newtime'),
+            'loop_class'       => config('entry_tag-relational_loop_class'),
+            'fulltextWidth'    => config('entry_tag-relational_fulltext_width'),
+            'fulltextMarker'   => config('entry_tag-relational_fulltext_marker'),
         );
     }
 

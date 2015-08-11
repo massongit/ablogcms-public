@@ -25,8 +25,8 @@ class ACMS_GET_Entry_Field extends ACMS_GET
         if ( 'open' !== $status && !sessionWithCompilation() ) {
             // 公開期間に該当している or 投稿者かつ自分のエントリー
             if ( 1
-                and REQUEST_TIME >= strtotime(ACMS_RAM::entryStartDatetime($this->eid))
-                and REQUEST_TIME <= strtotime(ACMS_RAM::entryEndDatetime($this->eid))
+                and requestTime() >= strtotime(ACMS_RAM::entryStartDatetime($this->eid))
+                and requestTime() <= strtotime(ACMS_RAM::entryEndDatetime($this->eid))
             ) {
                 $allow = true;
             }

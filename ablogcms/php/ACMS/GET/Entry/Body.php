@@ -65,6 +65,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $this->user_info_on         = config('entry_body_user_info_on');
         $this->category_info_on     = config('entry_body_category_info_on');
         $this->blog_info_on         = config('entry_body_blog_info_on');
+        $this->loop_class           = config('entry_body_loop_class');
     }
 
     function buildCategory(& $Tpl, $cid, $bid)
@@ -306,6 +307,14 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         // build summary
         if ( $this->summary_on === 'on' ) {
             $this->buildSummaryFulltext($vars, $eid);
+            if ( 1
+                && isset($vars['summary'])
+                && intval(config('entry_body_fulltext_width')) > 0
+            ) {
+                $width  = intval(config('entry_body_fulltext_width'));
+                $marker = config('entry_body_fulltext_marker');
+                $vars['summary']    = mb_strimwidth($vars['summary'], 0, $width, $marker, 'UTF-8');
+            }
         }
 
         //-------
@@ -384,6 +393,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             'entry:loop.ucd'    => ACMS_RAM::userCode($uid),
             'entry:loop.ccd'    => ACMS_RAM::categoryCode($cid),
             'entry:loop.ecd'    => ACMS_RAM::entryCode($eid),
+            'entry:loop.class'  => $this->loop_class,
         );
         if ( !empty($link) ) {
             $vars   += array(
@@ -403,7 +413,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
 
         //-----------
         // build new
-        if ( strtotime($row['entry_datetime']) + $this->newtime > REQUEST_TIME ) {
+        if ( strtotime($row['entry_datetime']) + $this->newtime > requestTime() ) {
             $Tpl->add(array('new:touch', 'entry:loop'));    // 後方互換
             $Tpl->add(array('new', 'entry:loop'));
         }
@@ -512,6 +522,8 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                     }
                 }
                 $this->buildColumn($Column, $Tpl, $eid);
+            } else {
+                $Tpl->add('unit:loop');
             }
 
             $this->buildBodyField($Tpl, $vars, $row);
@@ -683,23 +695,29 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $limit  = idval($this->limit);
             $from   = ($this->page - 1) * $limit;
             $SQL    = SQL::newSelect('entry');
+            
+            $multiId        = false;
+            $BlogSub        = null;
+            $CategorySub    = null;
+
             $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
             $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
-            
-            $multiId = false;
-            
+
             if ( !empty($this->cid) ) {
+                $CategorySub = SQL::newSelect('category');
+                $CategorySub->setSelect('category_id');
                 if ( is_int($this->cid) ) {
-                    ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
+                    ACMS_Filter::categoryTree($CategorySub, $this->cid, $this->categoryAxis());
                 } else if ( strpos($this->cid, ',') !== false ) {
-                    $SQL->addWhereIn('category_id', explode(',', $this->cid));
+                    $CategorySub->addWhereIn('category_id', explode(',', $this->cid));
                     $multiId = true;
                 }
+                ACMS_Filter::categoryStatus($CategorySub);
             }
-            ACMS_Filter::categoryStatus($SQL);
 
-            ACMS_Filter::entrySession($SQL);
             ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+            ACMS_Filter::entrySession($SQL);
+
             if ( !empty($this->tags) ) {
                 ACMS_Filter::entryTag($SQL, $this->tags);
             }
@@ -709,6 +727,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             if ( !empty($this->Field) ) {
                 ACMS_Filter::entryField($SQL, $this->Field);
             }
+
             if ( 'on' === $this->indexing ) {
                 $SQL->addWhereOpr('entry_indexing', 'on');
             }
@@ -726,43 +745,56 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             }
 
             if ( !empty($this->bid) ) {
+                $BlogSub = SQL::newSelect('blog');
+                $BlogSub->setSelect('blog_id');
                 if ( is_int($this->bid) ) {
                     if ( $multiId ) {
-                        ACMS_Filter::blogTree($SQL, $this->bid, 'descendant-or-self');
+                        ACMS_Filter::blogTree($BlogSub, $this->bid, 'descendant-or-self');
                     } else {
-                        ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
+                        ACMS_Filter::blogTree($BlogSub, $this->bid, $this->blogAxis());
                     }
                 } else if ( strpos($this->bid, ',') !== false ) {
-                    $SQL->addWhereIn('blog_id', explode(',', $this->bid));
+                    $BlogSub->addWhereIn('blog_id', explode(',', $this->bid));
                 }
+                ACMS_Filter::blogStatus($BlogSub);
             }
-            ACMS_Filter::blogStatus($SQL);
+
+            //-------------------------
+            // filter (blog, category) 
+            if ( $BlogSub ) {
+                $SQL->addWhereIn('entry_blog_id', $DB->subQuery($BlogSub));
+            }
+            if ( $CategorySub ) {
+                $SQL->addWhereIn('entry_category_id', $DB->subQuery($CategorySub));
+            }
 
             $Amount = new SQL_Select($SQL);
-
             $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
-            if ( !$itemsAmount = intval($DB->query($Amount->get(dsn()), 'one')) ) {
-                return $this->resultsNotFound($Tpl);
-            }
 
             $offset = intval($this->offset);
-            $_limit = ($from + $limit > $itemsAmount) ? ($itemsAmount - $from) : $limit;
-            if ( 1 > $_limit ) {
+            $_limit = $limit;
+
+            $sortFd = ACMS_Filter::entryOrder($SQL, $entryOrder, $this->uid, $this->cid);
+            $SQL->setLimit($_limit, $from + $offset);
+
+            if ( !empty($sortFd) ) {
+                $SQL->setGroup($sortFd);
+            }
+            $SQL->addGroup('entry_id');
+
+            $q      = $SQL->get(dsn());
+            $all    = $DB->query($q, 'all');
+
+            //------------------
+            // not Found
+            if ( empty($all) ) {
                 return $this->resultsNotFound($Tpl);
             }
 
-            $SQL->setLimit($_limit, $from + $offset);
-
-            ACMS_Filter::entryOrder($SQL, $entryOrder, $this->uid, $this->cid);
-
-            $SQL->setGroup('entry_id');
-
-            $q  = $SQL->get(dsn());
-            $DB->query($q, 'fetch');
-
-            $serial = 0;
-            while ( $row = $DB->fetch($q) ) {
-                $serial++;
+            //------------------
+            // build summary tpl
+            foreach ( $all as $i => $row ) {
+                $serial = ++$i;
                 if ( !IS_LICENSED ) $row['entry_title'] = '[test]'.$row['entry_title'];
                 
                 $eid    = $row['entry_id'];
@@ -807,6 +839,8 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             }
 
             if ( 'random' <> strtolower($entryOrder) and ($this->pager_on === 'on')) {
+                $itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'));
+
                 $vars       = array();
                 $delta      = intval($this->pager_delta);
                 $curAttr    = $this->pager_cur_attr;
@@ -815,6 +849,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             }
             $Tpl->add(null, $vars);
         }
+
         return $Tpl->get();
     }
 
