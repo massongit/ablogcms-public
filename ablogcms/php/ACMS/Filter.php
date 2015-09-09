@@ -266,8 +266,6 @@ class ACMS_Filter
             $Where->addWhereOpr('category_status', null, '=', 'OR', $scope);
             $Where->addWhereOpr('category_status', 'open', '=', 'OR', $scope);
             $SQL->addWhere($Where, 'AND');
-        } else {
-            $SQL->addWhereOpr('category_status', null, '<>');
         }
     }
 

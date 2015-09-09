@@ -235,9 +235,10 @@ class ACMS_Corrector
             if ( false !== strpos($optionL, '[') and false !== strpos($optionR, ']') ) {
                 $attr   .= ' nowrap="nowrap"';
             }
-
-            $tag    = (false !== strpos($optionL, '#')) ? 'th' : 'td';
-            $html   .= '<'.$tag.$attr.'>'.nl2br(str_replace('""', '"', $cell)).'</'.$tag.'>';
+            $optionL    = '_'.$optionL.'_';
+            $tag        = (preg_match('/^_[^#]{0,}?#[^#]{0,}?_/', $optionL)) ? 'th' : 'td';
+            $cell       = preg_match('/^_[#]{2}?_/', $optionL) ? '#'.$cell : $cell;
+            $html       .= '<'.$tag.$attr.'>'.nl2br(str_replace('""', '"', $cell)).'</'.$tag.'>';
         }
         $html   .= "</tr>";
 
@@ -249,16 +250,15 @@ class ACMS_Corrector
         if ( $lis = preg_split('@( |　|\t)*\r?\n@', $txt, -1, PREG_SPLIT_NO_EMPTY) ) {
             $txt = "\n";
             foreach ( $lis as $dval ) {
-                if ( false !== strpos($dval, '#')  ) {
+                if ( preg_match('/^#[^#]/', $dval) ) {
                     $txt .= "<dt>".preg_replace('@^#( |　|\t)*@', '', $dval)."</dt>\n";
                 } else {
-                    $txt .= "<dd>".$dval."</dd>\n";
+                    $txt .= "<dd>".preg_replace('/##/', '#', $dval)."</dd>\n";
                 }
             }
         }
         return $txt;
     }
-
 
     function acms_corrector_list($txt)
     {
@@ -339,6 +339,22 @@ class ACMS_Corrector
     function convert($txt, $args=array())
     {
         return !empty($args[0]) ? mb_convert_kana($txt, strval($args[0])) : $txt ;
+    }
+
+    function camelcase_to_hyphen($txt)
+    {
+        return preg_replace("/([^_])([A-Z])/", "$1-$2", $txt);
+    }
+
+    function symbolfont_path($txt)
+    {
+        if ( in_array($txt, array(
+            'Blog_Field', 'Category_Field', 'Entry_Field', 'User_Field'
+        )) ) {
+            return 'entry_body';
+        }
+
+        return $this->lowercase($this->camelcase_to_hyphen($txt));
     }
 
     function wareki($txt, $args=array())
