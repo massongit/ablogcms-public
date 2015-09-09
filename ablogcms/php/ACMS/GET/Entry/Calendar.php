@@ -136,6 +136,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
         $SQL->addSelect('entry_category_id');
         $SQL->addSelect('entry_blog_id');
         $SQL->addSelect('entry_link');
+        $SQL->addSelect('entry_datetime');
         $SQL->addSelect('entry_status');
         $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
         ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
@@ -172,6 +173,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                 'eid'       => $row['entry_id'],
                 'cid'       => $row['entry_category_id'],
                 'bid'       => $row['entry_blog_id'],
+                'datetime'  => $row['entry_datetime'],
                 'date'      => $row['entry_date'],
                 'title'     => $title,
                 'link'      => $row['entry_link'],
@@ -214,6 +216,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'title'     => $list['title'],
                                     'link'      => $list['link'],
                                     'status'    => $list['status'],
+                                    'date'      => $list['datetime'],
                                 );
                                 if ( count($current_entry_list) == $max_entry_count ) {
                                     break;
@@ -234,6 +237,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'bid'       => $entry['bid'],
                                     'status'    => $entry['status'],
                                 );
+
+                                //------
+                                // date
+                                $entry_vars     += $this->buildDate($entry['date'], $Tpl, 'rearEntry:loop');
+
                                 if ( $link != '#' ) {
                                     $Tpl->add(array('url#rear', 'foreEntry:loop'));
                                     $entry_vars['url']  = $link;
@@ -284,6 +292,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         'title'     => $list['title'],
                         'link'      => $list['link'],
                         'status'    => $list['status'],
+                        'date'      => $list['datetime'],
                     );
                     if ( count($current_entry_list) == $max_entry_count ) {
                         break;
@@ -304,6 +313,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         'bid'       => $entry['bid'],
                         'status'    => $entry['status'],
                     );
+
+                    //------
+                    // date
+                    $entry_vars     += $this->buildDate($entry['date'], $Tpl, 'rearEntry:loop');
+
                     if ( $link != '#' ) {
                         $Tpl->add(array('url#rear', 'entry:loop'));
                         $entry_vars['url']  = $link;
@@ -347,6 +361,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'title'     => $list['title'],
                                     'link'      => $list['link'],
                                     'status'    => $list['status'],
+                                    'date'      => $list['datetime'],
                                 );
                                 if ( count($current_entry_list) == $max_entry_count ) {
                                     break;
@@ -367,6 +382,11 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'bid'       => $entry['bid'],
                                     'status'    => $entry['status'],
                                 );
+
+                                //------
+                                // date
+                                $entry_vars     += $this->buildDate($entry['date'], $Tpl, 'rearEntry:loop');
+
                                 if ( $link != '#' ) {
                                     $Tpl->add(array('url#rear', 'rearEntry:loop'));
                                     $entry_vars['url']  = $link;
