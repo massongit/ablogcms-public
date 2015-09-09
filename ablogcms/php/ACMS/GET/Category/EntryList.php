@@ -112,7 +112,9 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                     }
 
                     if ( empty($aryCount[$pid]) ) {
-                        $Tpl->add('categoryUl#front');
+                        if ( empty($aryHidden[$pid]) ) {
+                            $Tpl->add('categoryUl#front');
+                        }
                         $aryCount[$pid] = 0;
                     }
                     $aryCount[$pid]++;
