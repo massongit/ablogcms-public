@@ -290,6 +290,29 @@ class Mail
     function setHeader ( $field=null, $values=null, $params=null )
     {
         $flag   = true;
+        $cr     = "/(\xe2\x80[\xa8-\xa9]|\xc2\x85|\r\n|\r|\n|%0a)/";
+        $attack = false;
+
+        if ( is_array($values) ) {
+            foreach ( $values as $val ) {
+                if ( preg_match($cr, $val) ) $attack = true;
+            }
+        } else if ( is_string($values) ) {
+            if ( preg_match($cr, $values) ) $attack = true;
+        }
+
+        if ( is_array($params) ) {
+            foreach ( $params as $val ) {
+                if ( preg_match($cr, $val) ) $attack = true;
+            }
+        } else if ( is_string($params) ) {
+            if ( preg_match($cr, $params) ) $attack = true;
+        }
+
+        if ( $attack ) {
+            userErrorLog('ACMS Worning: Illegal Mail Header.');
+            die503('Illegal Mail Header.');
+        }
 
         if ( is_null($field) ) {
             $this->_headers = array();

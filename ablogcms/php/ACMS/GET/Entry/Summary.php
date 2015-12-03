@@ -247,7 +247,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         if ( 'random' <> $config['order'] ) {
             //-------
             // pager
-            if ( isset($config['pagerOn']) and $config['pagerOn'] === 'on' ) {
+            if ( (isset($config['pagerOn']) && $config['pagerOn'] === 'on') ) {
                 $itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'));
 
                 $itemsAmount -= $config['offset'];

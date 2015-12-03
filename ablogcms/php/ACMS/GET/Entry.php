@@ -18,6 +18,7 @@ class ACMS_GET_Entry extends ACMS_GET
         $currentGroup   = null;
         $squareImgSize  = config('image_size_square');
         $showInvisible  = ( 1
+            and sessionWithContribution(BID)
             and roleEntryAuthorization(BID, $entry, false)
             and 'on' == config('entry_edit_inplace_enable')
             and 'on' == config('entry_edit_inplace')

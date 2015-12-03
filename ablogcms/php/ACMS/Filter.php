@@ -533,6 +533,7 @@ class ACMS_Filter
         if ( !is_array($tags) and empty($tags) ) return false;
 
         $tag    = array_shift($tags);
+        $tag    = addcslashes($tag, '%_');
         $SQL->addLeftJoin('tag', 'tag_entry_id', 'entry_id', 'tag0');
         $SQL->addWhereOpr('tag_name', $tag, '=', 'AND', 'tag0');
         $i  = 1;
@@ -723,7 +724,7 @@ class ACMS_Filter
     {
         $unionAry   = array();
         $emptyAry   = array();
-
+        $sort       = false;
 
         foreach ( $Field->listFields() as $j => $fd ) {
             $Where          = SQL::newWhere();
@@ -731,6 +732,7 @@ class ACMS_Filter
 
             foreach ( $aryOperator as $i => $operator ) {
                 $value  = $Field->get($fd, '', $i);
+                $value  = addcslashes($value, '%_');
                 if ( 1
                     and ''    === $value
                     and 'em'  <>  $operator
@@ -802,8 +804,14 @@ class ACMS_Filter
             ) {
                 $SUB    = SQL::newSelect('field');
                 $SUB->addSelect($fieldKey);
-                $SUB->addSelect('field_value', 'field_sort');
-                $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
+                if ( !$sort ) {
+                    $sort = true;
+                    $SUB->addSelect('field_value', 'field_sort');
+                    $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
+                } else {
+                    $SUB->addSelect('field_value', 'field_sort_sub');
+                    $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort_sub');
+                }
                 $SUB->addWhereOpr('field_key', $fd);
                 $SUB->addWhere($Where);
 
@@ -817,9 +825,6 @@ class ACMS_Filter
                         $uniouCount = count($unionAry);
                         if ( $uniouCount > 1 ) {
                             $UNION = SQL::newSelect($unionAry[0], 'field_union'.$j);
-                            $UNION->setSelect($fieldKey);
-                            $UNION->addSelect('field_sort');
-                            $UNION->addSelect('intfield_sort');
                         }
                         for ( $i=1; $i<$uniouCount; $i++ ) {
                             $UNION->addUnion($unionAry[$i]);
@@ -842,9 +847,6 @@ class ACMS_Filter
         $uniouCount = count($unionAry);
         if ( $uniouCount > 1 ) {
             $UNION = SQL::newSelect($unionAry[0], 'field_union_end');
-            $UNION->setSelect($fieldKey);
-            $UNION->addSelect('field_sort');
-            $UNION->addSelect('intfield_sort');
         }
         for ( $i=1; $i<$uniouCount; $i++ ) {
             $UNION->addUnion($unionAry[$i]);
@@ -880,6 +882,8 @@ class ACMS_Filter
     private static function _keyword(& $SQL, $keyword, $fulltextKey, $tableKey)
     {
         if ( empty($keyword) ) return false;
+
+        $keyword = addcslashes($keyword, '%_');
         if ( !$aryWord = preg_split('@(　|\s)+@', $keyword, -1, PREG_SPLIT_NO_EMPTY) ) return false;
 
         //----------------------

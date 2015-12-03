@@ -39,10 +39,14 @@ class ACMS_GET_Entry_Headline extends ACMS_GET_Entry_Summary
             'imageTrim'        => config('entry_headline_image_trim'),
             'imageZoom'        => config('entry_headline_image_zoom'),
             'imageCenter'      => config('entry_headline_image_center'),
-            'pagerDelta'       => config('entry_headline_pager_delta'),
-            'pagerCurAttr'     => config('entry_headline_pager_cur_attr'),
+            
             'hiddenCurrentEntry'    => config('entry_headline_hidden_current_entry'),
             'loop_class'            => config('entry_headline_loop_class'),
+
+            'pagerOn'          => config('entry_headline_pager_on'),
+            'simplePagerOn'    => config('entry_headline_pager_on'),
+            'pagerDelta'       => config('entry_headline_pager_delta'),
+            'pagerCurAttr'     => config('entry_headline_pager_cur_attr'),
         );
     }
 }
