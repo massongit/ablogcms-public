@@ -66,14 +66,15 @@ class ACMS_GET_Form extends ACMS_GET
         // CSRF対策
         // リファラチェックとトークン埋め込みでCSRF対策を行っている
         if ( $step == 'confirm' && config('form_csrf_enable', 'on') !== 'off' ) {
-            if ( !isset($_SESSION) ) session_start();
+            $Session = ACMS_Session::singleton();
 
             $tpl    = $Tpl->get();
-            if ( isset($_SESSION['formToken']) ) {
-                $token                  = $_SESSION['formToken'];
+            if ( $Session->get('formToken') ) {
+                $token  = $Session->get('formToken');
             } else {
-                $token                  = sha1(uniqueString().'acms'.session_id());
-                $_SESSION['formToken']  = $token;
+                $token  = sha1(uniqueString().'acms'.session_id());
+                $Session->set('formToken', $token);
+                $Session->save();
             }
             // token の埋め込み
             $tpl    = preg_replace('@(?=<\s*/\s*form[^\w]*>)@i', '<input type="hidden" name="formToken" value="'.$token.'" />'."\n", $tpl);

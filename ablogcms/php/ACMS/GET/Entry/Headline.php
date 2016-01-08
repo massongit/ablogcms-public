@@ -44,7 +44,7 @@ class ACMS_GET_Entry_Headline extends ACMS_GET_Entry_Summary
             'loop_class'            => config('entry_headline_loop_class'),
 
             'pagerOn'          => config('entry_headline_pager_on'),
-            'simplePagerOn'    => config('entry_headline_pager_on'),
+            'simplePagerOn'    => config('entry_headline_simple_pager_on'),
             'pagerDelta'       => config('entry_headline_pager_delta'),
             'pagerCurAttr'     => config('entry_headline_pager_cur_attr'),
         );

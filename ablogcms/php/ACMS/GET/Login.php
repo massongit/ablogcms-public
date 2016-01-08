@@ -41,20 +41,6 @@ class ACMS_GET_Login extends ACMS_GET
             if ( 'subscribe' == ALT ) $block = 'auth';
         }
 
-        //-----------
-        // blog index
-        if ( $Login->get('loginIndex') == 'yes' ) {
-            $block  = 'select';
-            $bidAry = $Login->getArray('bid');
-            foreach ( $bidAry as $bid ) {
-                $Tpl->add(array('selectBlog:loop', $block), array(
-                    'bid'   => $bid,
-                    'name'  => ACMS_RAM::blogName($bid),
-                    'url'   => acmsLink(array('bid'=>$bid, '_protocol'=>'http'), false),
-                ));
-            }
-        }
-
         $vars   = array();
 
         if ( $this->Post->isNull() ) {

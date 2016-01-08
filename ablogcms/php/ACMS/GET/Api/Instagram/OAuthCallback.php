@@ -30,7 +30,7 @@ class ACMS_GET_Api_Instagram_OAuthCallback extends ACMS_GET_Api_Instagram
 
             include_once 'HTTP/Request.php';
 
-            $req  =& new HTTP_Request($acsUrl);
+            $req  = new HTTP_Request($acsUrl);
             $req->setMethod('POST');
 
             $data = $req->_url->querystring;

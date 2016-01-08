@@ -214,6 +214,9 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
                     $vars = $this->buildField($DATA['field'][$day['id']], $Tpl, $dayBlock, null);
                     $day  = array_merge($day, $vars);
                 }
+                if ( isset($day['timestamp']) ) {
+                    $day    += $this->buildDate($day['timestamp'], $Tpl, 'day:loop');
+                }
 
                 $Tpl->add($dayBlock, $day);
                 if ( !empty($this->listmode) ) { //リストモードであればここでweek

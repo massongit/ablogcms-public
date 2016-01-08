@@ -232,6 +232,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'eid' => $entry['eid'],
                                 ));
                                 $entry_vars = array(
+                                    'eid'       => $entry['eid'],
                                     'title'     => $entry['title'],
                                     'cid'       => $entry['cid'],
                                     'bid'       => $entry['bid'],
@@ -308,6 +309,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                         'eid' => $entry['eid'],
                     ));
                     $entry_vars = array(
+                        'eid'       => $entry['eid'],
                         'title'     => $entry['title'],
                         'cid'       => $entry['cid'],
                         'bid'       => $entry['bid'],
@@ -377,6 +379,7 @@ class ACMS_GET_Entry_Calendar extends ACMS_GET
                                     'eid' => $entry['eid'],
                                 ));
                                 $entry_vars = array(
+                                    'eid'       => $entry['eid'],
                                     'title'     => $entry['title'],
                                     'cid'       => $entry['cid'],
                                     'bid'       => $entry['bid'],

@@ -196,7 +196,7 @@ class ACMS_Filter
         } else {
             if ( 'field' == $fd ) {
                 if ( false !== strpos($SQL->get(), 'field_sort') ) {
-                    $fd = 'field_sort';
+                    $fd = 'strfield_sort';
                 } else {
                     $fd = 'user_id';
                 }
@@ -387,6 +387,9 @@ class ACMS_Filter
         list($field, $order) = explode('-', $order);
         if ( 'amount' == $field ) $field = 'entry_'.$field;
         if ( 'sort' == $field ) $field = 'left';
+        if ( $field === 'left' ) {
+            $SQL->addOrder('category_blog_id', config('global_category_sort', 'DESC'));
+        }
         $SQL->addOrder('category_'.$field, $order, $scope);
     }
 
@@ -633,8 +636,8 @@ class ACMS_Filter
                     $sortFd = 'entry_'.$fd;
                     break;
                 case 'field':
-                    if ( false !== strpos($SQL->get(), 'field_sort') ) {
-                        $SQL->addOrder('field_sort', $seq);
+                    if ( false !== strpos($SQL->get(), 'strfield_sort') ) {
+                        $SQL->addOrder('strfield_sort', $seq);
                     }
                     break;
                 case 'intfield':
@@ -711,6 +714,80 @@ class ACMS_Filter
     //--------
     // common
 
+    private static function _field_where(& $Where, $Field, $fd, $aryOperator, & $emptyAry )
+    {
+        $res = true;
+
+        foreach ( $aryOperator as $i => $operator ) {
+            $value  = $Field->get($fd, '', $i);
+            if ( 1
+                and ''    === $value
+                and 'em'  <>  $operator
+                and 'nem' <>  $operator
+            ) {
+                continue;
+            }
+
+            switch ( $operator ) {
+                case 'eq':
+                    $operator   = '=';
+                    break;
+                case 'neq':
+                    $operator   = '<>';
+                    break;
+                case 'lt':
+                    $operator   = '<';
+                    $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                    break;
+                case 'lte':
+                    $operator   = '<=';
+                    $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                    break;
+                case 'gt':
+                    $operator   = '>';
+                    $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                    break;
+                case 'gte':
+                    $operator   = '>=';
+                    $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
+                    break;
+                case 'lk':
+                    $operator   = 'LIKE';
+                    break;
+                case 'nlk':
+                    $operator   = 'NOT LIKE';
+                    break;
+                case 're':
+                    $operator   = 'REGEXP';
+                    break;
+                case 'nre':
+                    $operator   = 'NOT REGEXP';
+                    break;
+                case 'nem':
+                    $operator   = '<>';
+                    $value      = '';
+                    break;
+                case 'em':
+                    $emptyAry[] = $fd;
+                    $res        = false;
+                    continue 2;
+                    break;
+                default:    // exception
+                    continue 2;
+            }
+            
+            if ( $operator === 'LIKE' and !preg_match('@^%|%$@', $value) ) {
+                $value = '%'.$value.'%';
+            }
+            
+            $Where->addWhereOpr('field_value', $value, $operator,
+                ('OR' == strtoupper($Field->getConnector($fd, $i))) ? 
+                'OR' : 'AND');
+        }
+
+        return $res;
+    }
+
     /**
      * field
      *
@@ -722,6 +799,11 @@ class ACMS_Filter
      */
     private static function _field(& $SQL, $Field, $fieldKey = null, $tableKey = null)
     {
+        if ( config('advanced_search_field') === 'on' ) {
+            ACMS_Filter::_field_index($SQL, $Field, $fieldKey, $tableKey);
+            return true;
+        }
+
         $unionAry   = array();
         $emptyAry   = array();
         $sort       = false;
@@ -729,72 +811,8 @@ class ACMS_Filter
         foreach ( $Field->listFields() as $j => $fd ) {
             $Where          = SQL::newWhere();
             $aryOperator    = $Field->getOperator($fd, null);
-
-            foreach ( $aryOperator as $i => $operator ) {
-                $value  = $Field->get($fd, '', $i);
-                $value  = addcslashes($value, '%_');
-                if ( 1
-                    and ''    === $value
-                    and 'em'  <>  $operator
-                    and 'nem' <>  $operator
-                ) {
-                    continue;
-                }
-
-                switch ( $operator ) {
-                    case 'eq':
-                        $operator   = '=';
-                        break;
-                    case 'neq':
-                        $operator   = '<>';
-                        break;
-                    case 'lt':
-                        $operator   = '<';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
-                        break;
-                    case 'lte':
-                        $operator   = '<=';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
-                        break;
-                    case 'gt':
-                        $operator   = '>';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
-                        break;
-                    case 'gte':
-                        $operator   = '>=';
-                        $value      = is_numeric($value) ? ( ( $value == intval($value) ) ? intval($value) : floatval($value) ) : $value;
-                        break;
-                    case 'lk':
-                        $operator   = 'LIKE';
-                        break;
-                    case 'nlk':
-                        $operator   = 'NOT LIKE';
-                        break;
-                    case 're':
-                        $operator   = 'REGEXP';
-                        break;
-                    case 'nre':
-                        $operator   = 'NOT REGEXP';
-                        break;
-                    case 'nem':
-                        $operator   = '<>';
-                        $value      = '';
-                        break;
-                    case 'em':
-                        $emptyAry[] = $fd;
-                        continue 3;
-                        break;
-                    default:    // exception
-                        continue 2;
-                }
-                
-                if ( $operator === 'LIKE' and !preg_match('@^%|%$@', $value) ) {
-                    $value = '%'.$value.'%';
-                }
-                
-                $Where->addWhereOpr('field_value', $value, $operator,
-                    ('OR' == strtoupper($Field->getConnector($fd, $i))) ? 
-                    'OR' : 'AND');
+            if ( !ACMS_Filter::_field_where($Where, $Field, $fd, $aryOperator, $emptyAry) ) {
+                continue;
             }
 
             if ( 1
@@ -806,7 +824,7 @@ class ACMS_Filter
                 $SUB->addSelect($fieldKey);
                 if ( !$sort ) {
                     $sort = true;
-                    $SUB->addSelect('field_value', 'field_sort');
+                    $SUB->addSelect('field_value', 'strfield_sort');
                     $SUB->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
                 } else {
                     $SUB->addSelect('field_value', 'field_sort_sub');
@@ -867,6 +885,69 @@ class ACMS_Filter
             $Right  = SQL::newField($tableKey);
             $EXISTS->addWhere(SQL::newOpr($Left, $Right));
             $SQL->addWhereNotExists($EXISTS);
+        }
+    }
+
+    /**
+     * use index field search
+     *
+     * @param SQL_Select|SQL_Update|SQL_Delete $SQL
+     * @param Field $Field
+     * @param string $fieldKey
+     * @param string $tableKey
+     * @return void
+     */
+    private static function _field_index(& $SQL, $Field, $fieldKey = null, $tableKey = null)
+    {
+        $DB         = DB::singleton(dsn());
+        $emptyAry   = array();
+        $SubQuery   = array();
+        $sortKey    = false;
+
+        foreach ( $Field->listFields() as $j => $fd ) {
+            $SUB        = SQL::newSelect('field');
+            $SUB->setSelect($fieldKey, null, null, 'DISTINCT');
+            if ( !$sortKey ) $sortKey = $fd;
+
+            $Where          = SQL::newWhere();
+            $Where2         = SQL::newWhere();
+            $aryOperator    = $Field->getOperator($fd, null);
+            $separator      = $Field->getSeparator($fd);
+
+            ACMS_Filter::_field_where($Where, $Field, $fd, $aryOperator, $emptyAry);
+
+            if ( !in_array($fd, $emptyAry) ) {
+                $Where2->addWhereOpr('field_key', $fd);
+                $Where2->addWhere($Where);
+
+                if ( strtoupper($separator) === 'OR' ) {
+                    $SUB->addWhere($Where2, 'OR');
+                } else {
+                    $SUB->addWhere($Where2, 'OR');
+                    $SQL->addWhereIn($tableKey, $DB->subQuery($SUB, true));
+                }
+            }
+        }
+
+        //-------
+        // empty
+        if ( !empty($emptyAry) ) {
+            $EXISTS = SQL::newSelect('field');
+            $EXISTS->addWhereIn('field_key', $emptyAry);
+            $EXISTS->addWhereOpr('field_value', '', '<>');
+            $Left   = SQL::newField($fieldKey);
+            $Right  = SQL::newField($tableKey);
+            $EXISTS->addWhere(SQL::newOpr($Left, $Right));
+            $SQL->addWhereNotExists($EXISTS);
+        }
+
+        if ( $fieldKey && $tableKey && $sortKey ) {
+            $SQL->addLeftJoin('field', $fieldKey, $tableKey);
+            $SQL->addSelect('*');
+            $SQL->addSelect('field_value', 'field_sort');
+            $SQL->addSelect('field_sort', 'field_key_sort');
+            $SQL->addSelect(SQL::newOpr('field_value', 0, '+'), 'intfield_sort');
+            $SQL->addWhereOpr('field_key', $sortKey);
         }
     }
 
@@ -975,8 +1056,8 @@ class ACMS_Filter
                     $SQL->addOrder('formbuild_'.$fd, $seq);
                     break;
                 case 'field':
-                    if ( false !== strpos($SQL->get(), 'field_sort') ) {
-                        $SQL->addOrder('field_sort', $seq);
+                    if ( false !== strpos($SQL->get(), 'strfield_sort') ) {
+                        $SQL->addOrder('strfield_sort', $seq);
                     }
                     break;
                 case 'intfield':

@@ -46,6 +46,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $this->comment_on           = config('entry_body_comment_on');
         $this->trackback_on         = config('entry_body_trackback_on');
         $this->serial_navi_on       = config('entry_body_serial_navi_on');
+        $this->simple_pager_on      = config('entry_body_simple_pager_on');
         $this->category_order       = config('entry_body_category_order');
         $this->notfoundStatus404    = config('entry_body_notfound_status_404');
         // micropage
@@ -267,8 +268,15 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $cid    = $row['entry_category_id'];
         $eid    = $row['entry_id'];
         $inheritUrl = acmsLink(array(
-                'eid'       => $eid,
+            'bid'   => $bid,
+            'eid'   => $eid,
         ));
+        $permalink  = acmsLink(array(
+            'bid'   => $bid,
+            'cid'   => $cid,
+            'eid'   => $eid,
+            'sid'   => null,
+        ), false);
         
         if ( $serial != 0 ) {
             if ( $serial % 2 == 0 ) {
@@ -376,7 +384,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
         $link   = ( config('entry_body_link_url') === 'on' ) ? $row['entry_link'] : '';
         $vars   += array(
             'status'    => $row['entry_status'],
-            'titleUrl'  => !empty($link) ? $link : $inheritUrl,
+            'titleUrl'  => !empty($link) ? $link : $permalink,
             'title'     => addPrefixEntryTitle($row['entry_title']
                 , $row['entry_status']
                 , $row['entry_start_datetime']
@@ -384,6 +392,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 , $row['entry_approval']
             ),
             'inheritUrl'        => $inheritUrl,
+            'permalink'         => $permalink,
             'posterName'        => ACMS_RAM::userName($uid),
             'entry:loop.bid'    => $bid,
             'entry:loop.uid'    => $uid,
@@ -418,11 +427,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Tpl->add(array('new', 'entry:loop'));
         }
         
-        $vars['permalink']  = acmsLink(array(
-            'bid'   => $bid,
-            'eid'   => $eid,
-        ));
-        
         return true;
     }
 
@@ -438,7 +442,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $vars   = array();
             $step   = $this->Post->get('step', 'apply');
             $action = !EID ? 'insert' : 'update';
-            $backend = $this->Post->get('backend');
+
             switch ( $step ) {
                 case 'confirm':
                 case 'result':
@@ -466,10 +470,6 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             }
             $Tpl->add('adminEntryEdit');
             $Tpl->add('entry:loop', $vars);
-
-            if ( !empty($backend) && $this->Post->isValidAll() ) {
-                $Tpl->add(null, array('notice_mess' => 'show'));
-            }
 
         } else if ( 'form2-edit' == ADMIN ) {
             $Tpl->add('adminFormEdit');
@@ -713,6 +713,8 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                     $multiId = true;
                 }
                 ACMS_Filter::categoryStatus($CategorySub);
+            } else {
+                ACMS_Filter::categoryStatus($SQL);
             }
 
             ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
@@ -757,6 +759,8 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                     $BlogSub->addWhereIn('blog_id', explode(',', $this->bid));
                 }
                 ACMS_Filter::blogStatus($BlogSub);
+            } else {
+                ACMS_Filter::blogStatus($SQL);
             }
 
             //-------------------------
@@ -772,7 +776,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
 
             $offset = intval($this->offset);
-            $_limit = $limit;
+            $_limit = $limit + 1;
 
             $sortFd = ACMS_Filter::entryOrder($SQL, $entryOrder, $this->uid, $this->cid);
             $SQL->setLimit($_limit, $from + $offset);
@@ -785,10 +789,43 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $q      = $SQL->get(dsn());
             $all    = $DB->query($q, 'all');
 
+            $nextPage   = false;
+            if ( count($all) > $limit ) {
+                array_pop($all);
+                $nextPage   = true;
+            }
+
             //------------------
             // not Found
             if ( empty($all) ) {
                 return $this->resultsNotFound($Tpl);
+            }
+
+            //---------------
+            // simple pager
+            if ( $this->simple_pager_on === 'on' ) {
+
+                // prev page
+                if ( $this->page > 1 ) {
+                    $Tpl->add('prevPage', array(
+                       'url'    => acmsLink(array(
+                            'page' => $this->page - 1,
+                        ), true),
+                    ));
+                } else {
+                    $Tpl->add('prevPageNotFound');
+                }
+
+                // next page
+                if ( $nextPage ) {
+                    $Tpl->add('nextPage', array(
+                       'url'    => acmsLink(array(
+                            'page' => $this->page + 1,
+                        ), true),
+                    ));
+                } else {
+                    $Tpl->add('nextPageNotFound');
+                }
             }
 
             //------------------

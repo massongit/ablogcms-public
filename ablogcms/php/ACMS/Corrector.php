@@ -134,7 +134,20 @@ class ACMS_Corrector
         if ( !isset($args[0]) ) return $txt;
         $width  = intval($args[0]);
         $marker = isset($args[1]) ? $args[1] : '';
-        return mb_strimwidth($txt, 0, $width, $marker, 'UTF-8');
+
+        return mb_strimwidth($txt, 0, $width, $marker);
+    }
+
+    function mb_trim($txt, $args=array())
+    {
+        if ( !isset($args[0]) ) return $txt;
+        $width  = intval($args[0]);
+        $marker = isset($args[1]) ? $args[1] : '';
+
+        if ( $width < mb_strlen($txt) ) {
+            return mb_substr($txt, 0, $width).$marker;
+        }
+        return $txt;
     }
 
     function trim4ext($txt, $args=array())
@@ -211,12 +224,12 @@ class ACMS_Corrector
             // align
             if ( false !== strpos($optionL, '|') ) {
                 if ( false !== strpos($optionR, '|') ) {
-                    $attr   .= ' align="center"';
+                    $attr   .= ' style="text-align:center"';
                 } else {
-                    $attr   .= ' align="left"';
+                    $attr   .= ' style="text-align:left"';
                 }
             } else if ( false !== strpos($optionR, '|') ) {
-                $attr   .= ' align="right"';
+                $attr   .= ' style="text-align:right"';
             }
             
             //-------
@@ -403,12 +416,224 @@ class ACMS_Corrector
     {
         if ( !isset($args[0]) ) return $txt;
         $dt  = ( false !== ($dt = strtotime($this->fixChars($txt))) )? $dt : $txt;
-		if( $dt === '0000-00-00 00:00:00'){
-			return '';
-		}
+        if( $dt === '0000-00-00 00:00:00'){
+            return '';
+        }
         $txt = date($args[0], $dt);
         if ( $txt === date($args[0],strtotime(null)) && isset($args[1]) ) $txt = $args[1];
         return $txt;
+    }
+
+    function resizeImg($src, $args=array())
+    {
+        if ( !isset($args[0]) ) return $src;
+
+        $width      = empty($args[0]) ? 0 : intval($args[0]);
+        $height     = (isset($args[1]) && !empty($args[1])) ? intval($args[1]) : 0;
+        $color      = isset($args[2]) ? strtolower($args[2]) : 'ffffff';
+        $color_r = $color_g = $color_b = 0;
+
+        $pfx        = '';
+        if ( !empty($width) ) {
+            $pfx    .= 'w'.$width;
+        }
+        if ( !empty($height) ) {
+            if ( !empty($pfx) ) $pfx .= '_';
+            $pfx    .= 'h'.$height;
+        }
+        if ( $color !== 'ffffff' ) {
+            $pfx    .= '_'.$color;
+        }
+
+        $srcPath        = '';
+        $destPath       = '';
+        $destPathVars   = '';
+
+        foreach ( array('', REQUEST_URL, ARCHIVES_DIR, REVISON_ARCHIVES_DIR) as $archive_dir ) {
+            $tmpPath        = $archive_dir.normalSizeImagePath($src);
+            $destPath       = trim(dirname($tmpPath), '/').'/'.$pfx.'-'.basename($tmpPath);
+            $destPathVars   = trim(dirname($src), '/').'/'.$pfx.'-'.basename($tmpPath);
+            $largePath      = otherSizeImagePath($tmpPath, 'large'); // large path
+
+            if ( is_readable($destPath) ) {
+                return $destPathVars;
+            }
+            if ( is_readable($largePath) ) {
+                $srcPath = $largePath;
+                break;
+            }
+            if ( is_readable($tmpPath) ) {
+                $srcPath = $tmpPath;
+                break;
+            }
+        }
+        if ( empty($srcPath) ) {
+            return $src;
+        }
+
+        if ( !$xy = @getimagesize($srcPath) ) {
+            return $src;
+        }
+        if ( preg_match('/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/', $color, $matches) ) {
+            $color_r    = hexdec($matches[1]);
+            $color_g    = hexdec($matches[2]);
+            $color_b    = hexdec($matches[3]);
+        }
+        if ( 0
+            || $color_r > 255 || $color_r < 0
+            || $color_g > 255 || $color_g < 0
+            || $color_b > 255 || $color_b < 0
+        ) {
+            return $src;
+        }
+
+        $mime   = $xy['mime'];
+        $exts   = array(
+            'image/gif'         => 'gif',
+            'image/png'         => 'png',
+            'image/vnd.wap.wbmp'=> 'bmp',
+            'image/xbm'         => 'xbm',
+            'image/jpeg'        => 'jpg',
+        );
+        $ext    = isset($exts[$mime]) ? $exts[$mime] : 'jpg';
+        if ( 'gif' == $ext ) {
+            $srcImg     = imagecreatefromgif($srcPath);
+        } else if ( 'png' == $ext ) {
+            $srcImg     = imagecreatefrompng($srcPath);
+        } else if ( 'bmp' == $ext ) {
+            $srcImg     = imagecreatefromwbmp($srcPath);
+        } else if ( 'xbm' == $ext ) {
+            $srcImg     = imagecreatefromxbm($srcPath);
+        } else {
+            $srcImg     = imagecreatefromjpeg($srcPath);
+        }
+
+        //--------------
+        // resize image
+        $srcW       = imagesx($srcImg);
+        $srcH       = imagesy($srcImg);
+        $srcX = $srcY = $destW = $destH = $destX = $destY = $canvasW = $canvasH = 0;
+
+        if ( !empty($width) && !empty($height) ) {
+            $canvasW    = $width;
+            $canvasH    = $height;
+
+            $srcRatio   = $srcW / $srcH;
+            $destRatio  = $canvasW / $canvasH;
+
+            // アスペクト比が縦に伸びる
+            if ( $srcRatio > $destRatio ) {
+                if ( $height < $srcH ) {
+                    $destH  = $height;
+                    $ratio  = $height / $srcH;
+                    $tmpW   = ceil($srcW * $ratio);
+                    if ( $width < $tmpW ) {
+                        $destW  = $width;
+                        $srcX   = ceil(($tmpW - $width) / 2 / $ratio);
+                        $srcW   = ceil($srcW - ($srcX * 2));
+                    } else {
+                        $destW  = $tmpW;
+                        $destX  = ceil(($width - $tmpW) / 2);
+                    }
+                } else {
+                    $destH  = $srcH;
+                    $destY  = ceil(($height - $srcH) / 2);
+                    if ( $width < $srcW ) {
+                        $destW  = $width;
+                        $srcX   = ceil(($srcW - $width) / 2);
+                        $srcW   = ceil($srcW - ($srcX * 2));
+                    } else {
+                        $destW  = $srcW;
+                        $destX  = ceil(($width - $srcW) / 2);
+                    }
+                }
+            // アスペクト比が横に伸びる
+            } else {
+                if ( $width < $srcW ) {
+                    $destW  = $width;
+                    $ratio  = $width / $srcW;
+                    $tmpH   = ceil($srcH * $ratio);
+                    if ( $height < $tmpH ) {
+                        $destH  = $height;
+                        $srcY   = ceil(($tmpH - $height) / 2 / $ratio);
+                        $srcH   = ceil($srcH - ($srcY * 2));
+                    } else {
+                        $destH  = $tmpH;
+                    }
+                } else {
+                    $destW  = $srcW;
+                    $destX  = ceil(($width - $srcW) / 2);
+                    if ( $height < $srcH ) {
+                        $destH  = $height;
+                        $srcY   = ceil(($srcH - $height) / 2);
+                        $srcH   = ceil($srcH - ($srcY * 2));
+                    } else {
+                        $destH  = $srcH;
+                        $destY  = ceil(($height - $srcH) / 2);
+                    }
+                }
+            }
+
+        } else if ( !empty($width) ) {
+            $canvasW    = $width;
+            $ratio      = $width / $srcW;
+
+            if ( $width < $srcW ) {
+                $destW      = $width;
+                $destH      = ceil($srcH * $ratio);
+                $canvasH    = $destH;
+            } else {
+                $destW      = $srcW;
+                $destH      = $srcH;
+                $canvasH    = $srcH;
+                $destX      = ceil(($width - $srcW) / 2);
+            }
+        } else if ( !empty($height) ) {
+            $canvasH    = $height;
+            $ratio      = $height / $srcH;
+
+            if ( $height < $srcH ) {
+                $destH      = $height;
+                $destW      = ceil($srcW * $ratio);
+                $canvasW    = $destW;
+            } else {
+                $destW      = $srcW;
+                $destH      = $srcH;
+                $canvasW    = $srcW;
+                $destY      = ceil(($height - $srcH) / 2);
+            }
+        } else {
+            return $src;
+        }
+
+        $destImg    = imagecreatetruecolor($canvasW, $canvasH);
+
+        if ( 0 <= ($idx = imagecolortransparent($srcImg)) ) {
+            @imagetruecolortopalette($destImg, true, 256);
+            $rgb    = @imagecolorsforindex($srcImg, $idx);
+            $idx    = imagecolorallocate($destImg, $rgb['red'], $rgb['green'], $rgb['blue']);
+            imagefill($destImg, 0, 0, $idx);
+            imagecolortransparent($destImg, $idx);
+        } else {
+            imagealphablending($destImg, false);
+            imagefill($destImg, 0, 0, imagecolorallocatealpha($destImg, $color_r, $color_g, $color_b, 127));
+            imagesavealpha($destImg, true);
+        }
+
+        imagecopyresampled($destImg, $srcImg, $destX, $destY, $srcX, $srcY, $destW, $destH, $srcW, $srcH);
+        if ( 'gif' == $ext ) {
+            imagegif($destImg, $destPath);
+        } else if ( 'png' == $ext ) {
+            imagepng($destImg, $destPath);
+        } else if ( 'bmp' == $ext ) {
+            imagewbmp($destImg, $destPath);
+        } else if ( 'xbm' == $ext ) {
+            imagexbm($destImg, $destPath);
+        } else {
+            imagejpeg($destImg, $destPath, intval(config('image_jpeg_quality')));
+        }
+
+        return $destPathVars;
     }
 
     function fixChars($txt)

@@ -10,7 +10,6 @@
 class ACMS_GET_Layout extends ACMS_GET
 {
     private static $onlyLayout  = false;
-
     var $aryTypeLabel           = array();
 
     function build($Doc='', $parentID=0, $parentHash='', $colNum=1)
@@ -148,7 +147,8 @@ class ACMS_GET_Layout extends ACMS_GET
         if ( !empty($moduleTpl) ) {
             $tpl = 'include/module/template/'.$moduleName.'/'.$moduleTpl;
         } else {
-            $def = 'include/module/template/'.$moduleName.'/'.$moduleID.'.html';
+            $modShort = preg_replace('/'.config('module_identifier_duplicate_suffix').'.*/', '', $moduleID);
+            $def = 'include/module/template/'.$moduleName.'/'.$modShort.'.html';
             if ( findTemplate($def) ) {
                 $tpl = $def;
             }
@@ -168,11 +168,16 @@ class ACMS_GET_Layout extends ACMS_GET
                 } else {
                     self::formatBlock($mTpl, 'display');
 
-                    if ( self::$onlyLayout ) {
-                        $mTpl   = preg_replace(
-                            '/<!--[\t 　]*[BEGIN_MODULE]{11,13}+[\t 　]+([^\t 　]+)([^>]*?)[\t 　]*-->/',
-                            '<!-- BEGIN_MODULE $1'.$opt.' -->', $mTpl);
-
+                    if ( get_class($this) === 'ACMS_GET_Layout' && self::$onlyLayout ) {
+                        if ( $moduleName === 'Entry_Body' ) {
+                            $mTpl   = preg_replace('/<!--[\t 　]*BEGIN_MODULE[\t 　]+Entry_Body[^>]*?-->/', '<!-- BEGIN_MODULE Entry_Body'.$opt.' -->', $mTpl);
+                            $mTpl   = build($mTpl, Field_Validation::singleton('post'));
+                        } else {
+                            $mTpl   = preg_replace(
+                                '/<!--[\t 　]*(BEGIN|END)_MODULE+[\t 　]+([^\t 　]+)([^>]*?)[\t 　]*-->/', 
+                                '', $mTpl);
+                            $mTpl   = '<!-- BEGIN_MODULE '.$moduleName.$opt.' -->'.$mTpl.'<!-- END_MODULE '.$moduleName.' -->';
+                        }
                     } else if ( $moduleName === 'Entry_Body' ) {
                         $mTpl   = preg_replace('/<!--[\t 　]*BEGIN_MODULE[\t 　]+Entry_Body[^>]*?-->/', '<!-- BEGIN_MODULE Entry_Body'.$opt.' -->', $mTpl);
                         $mTpl   = build($mTpl, Field_Validation::singleton('post'));
@@ -183,11 +188,32 @@ class ACMS_GET_Layout extends ACMS_GET
                         $mTpl   = boot($moduleName, $mTpl, $opt, Field_Validation::singleton('post'), Field::singleton('config'));
                     }
                 }
-                $mTpl = includeCommentBegin($path).$mTpl.includeCommentEnd($path);
+                if ( DEBUG_MODE ) {
+                    $mTpl = includeCommentBegin($path).$mTpl.includeCommentEnd($path);
+                }
                 return $mTpl;
             }
         }
         return '';
+    }
+
+    function srcUrl()
+    {
+        $Get    = $this->Get;
+        $query  = '';
+        $url    = HTTP_REQUEST_URL;
+
+        if ( !$Get->isNull() ) {
+            foreach ( $Get->listFields() as $fd ) {
+                if ( $fd === 'layout' || !$aryVal = $Get->get($fd) ) continue;
+                $query  .= ($fd.'='.$aryVal);
+            }
+        }
+        if ( !empty($query) ) {
+            $url .= ('?'.$query);
+        }
+        
+        return $url;
     }
 
     function get()
@@ -218,14 +244,19 @@ class ACMS_GET_Layout extends ACMS_GET
                     'tpl'   => 'ajax/layout/preview.html',
                     'query' => array(
                         'preview'   => 'enable',
-                        'url'       => preg_replace('/\?.*$/', '', REQUEST_URL),
+                        'url'       => $this->srcUrl(),
                     ),
                 ), true), $response);
+                $response = str_replace('{url}', $this->srcUrl(), $response);
             }
         } else {
             if ( preg_match('/<!-- BEGIN display -->(.*)<!-- END display -->/s', $this->tpl, $matches) ) {
                 $this->tpl  = $matches[1];
                 $response   = $this->build();
+
+                //--------------
+                // build module
+                $response   = build($response, Field_Validation::singleton('post'));
             }
         }
 

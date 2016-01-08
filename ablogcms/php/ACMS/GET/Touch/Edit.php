@@ -13,7 +13,6 @@ class ACMS_GET_Touch_Edit extends ACMS_GET
     {
         return ( 1
             and !!ADMIN
-            and !RVID
             and ( 0
                 or 'entry-edit' == ADMIN
                 or 'entry_editor' == ADMIN

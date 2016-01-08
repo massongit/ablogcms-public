@@ -501,6 +501,9 @@ class SQL_Where extends SQL
      */
     function addWhereIn($fd, $vals, $gl='AND', $scp=null, $func=null)
     {
+        if ( empty($vals) ) {
+            $vals = array(-100);
+        }
         $this->_wheres[]    = $this->getWhereIn($fd, $vals, $gl, $scp, $func);
         return true;
     }
@@ -616,6 +619,7 @@ class SQL_Select extends SQL_Where
     var $_groups    = array();
     var $_limit     = null;
     var $_orders    = array();
+    var $_fdOrders  = null;
     var $_where     = null;
     var $_union     = array();
     var $_straightJoin = false;
@@ -843,6 +847,14 @@ class SQL_Select extends SQL_Where
         return true;
     }
 
+    function setFieldOrder($fd=null, $values=array(), $scp=null)
+    {
+        $this->_fdOrders    = array(
+            'fd'        => SQL::isClass($fd, 'SQL_Field') ? $fd : SQL::newField($fd, $scp),
+            'values'    => $values,
+        );
+    }
+
     function get($dsn=null)
     {
         if ( empty($this->_tables) ) return false;
@@ -858,9 +870,13 @@ class SQL_Select extends SQL_Where
         if ( !empty($this->_selects) ) {
             $_q = '';
             foreach ( $this->_selects as $i => $s ) {
-                $_q .= (!empty($i) ? ', ' : ' ').$s['field']->get($dsn)
-                    .(!empty($s['alias']) ? ' AS '.$s['alias'] : '')
-                ;
+                $col = $s['field']->get($dsn);
+                if ( $col === '*' ) {
+                    $_q = '*'.(!empty($i) ? ', ' : ' ').$_q;
+                } else {
+                    $_q .= (!empty($i) ? ', ' : ' ').$col
+                        .(!empty($s['alias']) ? ' AS '.$s['alias'] : '');
+                }
             }
         }
         $q  .= $_q;
@@ -985,6 +1001,11 @@ class SQL_Select extends SQL_Where
                 $F      = $order['field'];
                 $q  .= (!empty($i) ? ', ' : ' ').$F->get($dsn).' '.$ord;
             }
+        } else if ( !empty($this->_fdOrders) ) {
+            $q  .= "\n ORDER BY FIELD(";
+            $q  .= $this->_fdOrders['fd']->get($dsn).', ';
+            $q  .= implode(', ', $this->_fdOrders['values']);
+            $q  .= "\n )";
         }
 
         //-------

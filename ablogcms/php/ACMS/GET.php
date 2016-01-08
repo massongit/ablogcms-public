@@ -793,6 +793,57 @@ class ACMS_GET
         return true;
     }
 
+    function buildRelatedEntries(& $Tpl, $eids=array(), $block=array())
+    {
+        $block      = !empty($block) ? (is_array($block) ? $block : array($block)) : array();
+        $loopblock  = array_merge(array('related:loop'), $block);
+
+        $DB     = DB::singleton(dsn());
+        $SQL    = SQL::newSelect('entry');
+        $SQL->addWhereIn('entry_id', $eids);
+        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+        ACMS_Filter::entrySession($SQL);
+        $SQL->setFieldOrder('entry_id', $eids);
+        $all    = $DB->query($SQL->get(dsn()), 'all');
+
+        foreach ( $all as $row ) {
+            $bid    = intval($row['entry_blog_id']);
+            $cid    = intval($row['entry_category_id']);
+            $eid    = intval($row['entry_id']);
+            $clid   = $row['entry_primary_image'];
+            $vars   = array(
+                'related.eid'           => $eid,
+                'related.bid'           => $bid,
+                'related.cid'           => $cid,
+                'related.categoryName'  => ACMS_RAM::categoryName($cid),
+                'related.permalink' => acmsLink(array(
+                    'bid'   => $bid,
+                    'cid'   => $cid,
+                    'eid'   => $eid,
+                ), false),
+            );
+            $title  = IS_LICENSED ? $row['entry_title'] : '[test]'.$row['entry_title'];
+            $title  = addPrefixEntryTitle($row['entry_title']
+                , $row['entry_status']
+                , $row['entry_start_datetime']
+                , $row['entry_end_datetime']
+                , $row['entry_approval']
+            );
+            $vars['related.title']  = $title;
+            $link   = $row['entry_link'];
+            $url    = acmsLink(array(
+                'bid'   => $bid,
+                'cid'   => $cid,
+                'eid'   => $eid,
+            ));
+            if ( $link != '#' ) {
+                $vars['related.url']  = !empty($link) ? $link : $url;
+            }
+
+            $Tpl->add($loopblock, $vars);
+        }
+    }
+
     function buildSummary(&$Tpl, $row, $count, $gluePoint, $config, $extraVars = array())
     {
         $this->squareSize = config('image_size_square');

@@ -15,6 +15,7 @@ class ACMS_GET_Js extends ACMS_GET
         $delStorage = $Session->get('webStorageDeleteKey');
 
         $jquery = '';
+        jsModule('domains', HTTP_HOST);
         jsModule('offset', DIR_OFFSET);
         jsModule('jsDir', JS_DIR);
         jsModule('themesDir', '/'.DIR_OFFSET.THEMES_DIR);
@@ -60,7 +61,6 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('ecd', ACMS_RAM::entryCode(EID));
         jsModule('session', SID ? SESSION_NAME : null);
         jsModule('keyword', htmlspecialchars(str_replace('　', ' ', KEYWORD), ENT_QUOTES));
-        jsModule('domains', !($domains = jsModule('domains')) ? '' : (is_array($domains) ? join(',', array_unique($domains)) : $domains));
         jsModule('scriptRoot', '/'.DIR_OFFSET.(REWRITE_ENABLE ? '' : SCRIPT_FILENAME.'/'));
         $jsModules  = array();
         foreach ( jsModule() as $key => $value ) {
