@@ -29,9 +29,24 @@ class ACMS_GET_Approval_History extends ACMS_GET
         }
 
         $SQL    = SQL::newSelect('approval');
+        $SQL->addSelect('approval_id', 'count', null, 'COUNT');
+        $SQL->addSelect('approval_id');
+        $SQL->addSelect('approval_type');
+        $SQL->addSelect('approval_method');
+        $SQL->addSelect('approval_datetime');
+        $SQL->addSelect('approval_deadline_datetime');
+        $SQL->addSelect('approval_comment');
+        $SQL->addSelect('approval_request_usergroup_id');
+        $SQL->addSelect('approval_receive_usergroup_id');
+        $SQL->addSelect('approval_request_user_id');
+        $SQL->addSelect('approval_receive_user_id');
+        $SQL->addSelect('approval_revision_id');
+        $SQL->addSelect('approval_entry_id');
+        $SQL->addSelect('approval_blog_id');
         $SQL->addWhereOpr('approval_revision_id', RVID);
         $SQL->addWhereOpr('approval_entry_id', EID);
         $SQL->addWhereOpr('approval_blog_id', BID);
+        $SQL->setGroup('approval_id');
         $SQL->setOrder('approval_datetime', 'DESC');
         if ( !($all = $DB->query($SQL->get(dsn()), 'all')) ) return '';
 
@@ -55,6 +70,9 @@ class ACMS_GET_Approval_History extends ACMS_GET
                     $SQL->addWhereOpr('usergroup_id', $row['approval_receive_usergroup_id']);
                     $groupName = $DB->query($SQL->get(dsn()), 'one');
                     $receive['userOrGroupp'] = $groupName;
+                }
+                if ( intval($row['count']) > 1 ) {
+                    $receive['userOrGroupp'] = '次グループ全体';
                 }
                 $Tpl->add(array('receiveUser', 'approval:loop'), $receive);
             }

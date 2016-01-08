@@ -310,7 +310,7 @@ class Mail
         }
 
         if ( $attack ) {
-            userErrorLog('ACMS Worning: Illegal Mail Header.');
+            userErrorLog('ACMS Warning: Illegal Mail Header.');
             die503('Illegal Mail Header.');
         }
 
@@ -525,27 +525,38 @@ class Mail
                 }
 
                 if ( !empty($aryTo) ) {
-                    $Smtp   = &new Net_SMTP($this->_smtpHost, $this->_smtpPort, $this->_localhost);
+                    $Smtp = new Net_SMTP($this->_smtpHost, $this->_smtpPort, $this->_localhost);
 
-                    if ( 1
-                        and true === $Smtp->connect($this->_smtpTimeout)
-                        and ( 0
-                            or !$this->_smtpUser
-                            or ( true === $Smtp->auth($this->_smtpUser, $this->_smtpPass, $this->_smtpAuthMethod) )
-                        )
-                        and true === $Smtp->mailFrom($this->_mailFrom)
-                    ) {
+                    do {
+                        if ( true !== ( $res = $Smtp->connect($this->_smtpTimeout) ) ) {
+                            userErrorLog('ACMS Warning: SMTP - '.$res->message);
+                            break;
+                        }
+                        if ( !$this->_smtpUser ) {
+                            userErrorLog('ACMS Warning: SMTP - Failed Connect.');
+                            break;
+                        }
+                        if ( true !== ( $res = $Smtp->auth($this->_smtpUser, $this->_smtpPass, $this->_smtpAuthMethod) ) ) {
+                            userErrorLog('ACMS Warning: SMTP Auth - '.$res->message);
+                            break;
+                        }
+                        if ( true !== ( $res = $Smtp->mailFrom($this->_mailFrom) ) ) {
+                            userErrorLog('ACMS Warning: SMTP Mail - '.$res->message);
+                            break;
+                        }
                         $flag   = true;
 
                         foreach ( $aryTo as $to ) { 
-                            if ( true !== $Smtp->rcptTo($to) ) {
+                            $rcpt = $Smtp->rcptTo($to);
+                            if ( true !== $rcpt ) {
                                 $flag   = false;
+                                userErrorLog('ACMS Warning: SMTP RCPT - '.$rcpt->code.' '.$rcpt->message);
                                 break;
                             }
                         }
 
                         if ( $flag ) { $send = (true === $Smtp->data($this->get())); }
-                    }
+                    } while ( false );
 
                     $Smtp->disconnect();
                 }

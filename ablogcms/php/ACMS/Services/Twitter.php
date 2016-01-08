@@ -12,7 +12,7 @@ require_once LIB_DIR.'OAuth.php';
 /**
  * トークン類を制御して，OAuthリクエストできる
  */
-class ACMS_Services_Twitter extends ACMS_Services
+class ACMS_Services_Twitter extends ACMS_Services implements ACMS_Services_Interface
 {
     /**
      * アクセストークンでAPIの初期化を試みる
@@ -234,7 +234,7 @@ class Services_Twitter extends OAuth_Consumer
 
         // ここを書き換えれば，使用するHTTPリクエスト用のライブラリは変更できる
         // 旧仕様に合わせるために，HTTP_Reuqestにbodyとerrorプロパティを独自拡張
-        $req  =& new HTTP_Request($request, array(
+        $req  = new HTTP_Request($request, array(
             // TODO issue: タイムアウトをconfigで設定可能にする
             'timeout'     => 3,
             'readTimeout' => array(5, 0),

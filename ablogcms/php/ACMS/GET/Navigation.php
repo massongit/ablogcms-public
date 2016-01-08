@@ -134,7 +134,7 @@ class ACMS_GET_Navigation extends ACMS_GET
 
                     include_once 'HTTP/Request.php';
 
-                    $req  =& new HTTP_Request($location);
+                    $req = new HTTP_Request($location);
                     $req->setMethod(HTTP_REQUEST_METHOD_GET);
                     $req->addHeader('User-Agent', 'ablogcms/'.VERSION);
                     $req->addHeader('Accept-Language', HTTP_ACCEPT_LANGUAGE);

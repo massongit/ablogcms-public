@@ -39,7 +39,7 @@ class ACMS_User_Hook
      *
      * @param ACMS_POST $thisModule
      */
-    public function beforePostFire(&$thisModule)
+    public function beforePostFire($thisModule)
     {
 
     }
@@ -50,7 +50,7 @@ class ACMS_User_Hook
      *
      * @param ACMS_POST $thisModule
      */
-    public function afterPostFire(&$thisModule)
+    public function afterPostFire($thisModule)
     {
 
     }

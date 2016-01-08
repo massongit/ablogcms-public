@@ -79,11 +79,13 @@ class ACMS_GET_Banner extends ACMS_GET
                     'attr2' => config('banner_attr2', '', $i),
                     'target'=> config('banner_target', '', $i),
                     'nth'   => $i,
+                    'banner:loop.class' => $loopClass,
                 ));
             } else {
                 $Tpl->add('banner#src', array(
                     'src'   => config('banner_src', '', $i),
                     'nth'   => $i,
+                    'banner:loop.class' => $loopClass,
                 ));
             }
             $Tpl->add('banner:loop', array(

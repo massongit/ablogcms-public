@@ -757,7 +757,7 @@ class Field_Validation extends Field
         return true;
     }
 
-    function dig($scp='field')
+    function &dig($scp='field')
     {
         $Field  =& $this->getChild($scp);
 

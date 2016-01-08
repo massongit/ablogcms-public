@@ -115,10 +115,21 @@ class DB
      * @param SQL $Query
      * @return String | SQL
      */
-    function subQuery($Query=null)
+    function subQuery($Query=null, $subquery=false)
     {
         if ( version_compare(mysql_get_server_info($this->_connection), '5.6.0', '>=') ) {
             return $Query;
+        }
+        if ( $subquery ) {
+            $DB     = DB::singleton(dsn());
+            $Amount = new SQL_Select($Query);
+            $Amount->setSelect('*', 'amount', null, 'COUNT');
+            $q      = $Amount->get(dsn());
+            $amount = intval($DB->query($q, 'one'));
+
+            if ( $amount > 300 ) {
+                return $Query;
+            }
         }
         return $this->query($Query->get(dsn()), 'list');
     }

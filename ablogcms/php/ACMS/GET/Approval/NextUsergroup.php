@@ -36,15 +36,8 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
 
             //-------------------------------------------
             // ワークフローの逆承認順序でユーザグループを列挙
-            $SQL    = SQL::newSelect('workflow');
-            $SQL->addLeftJoin('usergroup', 'usergroup_id', 'workflow_last_group');
-            $SQL->addSelect('workflow_last_group');
-            $SQL->addSelect('usergroup_name');
-            $SQL->addWhereOpr('workflow_blog_id', BID);
-            $lastGroupRow   = $DB->query($SQL->get(dsn()), 'row');
-            $lastGroup      = $lastGroupRow['workflow_last_group'];
-            $lastGroupName  = $lastGroupRow['usergroup_name'];
-            $userGroup[]    = $lastGroup;
+            $Config     = loadBlogConfig(BID);
+            $lastGroup  = $Config->getArray('workflow_last_group');
 
             $SQL    = SQL::newSelect('workflow_usergroup');
             $SQL->addSelect('usergroup_id');
@@ -57,12 +50,7 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
                 }
             }
 
-            $SQL    = SQL::newSelect('workflow');
-            $SQL->addSelect('workflow_start_group');
-            $SQL->addWhereOpr('workflow_blog_id', BID);
-            $userGroup[] = $DB->query($SQL->get(dsn()), 'one');
-
-            $nextGroup = null;
+            $nextGroup = array();
             foreach ( $userGroup as $ugid ) {
                 $SQL = SQL::newSelect('usergroup_user');
                 $SQL->addSelect('usergroup_id');
@@ -70,34 +58,59 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
                 $SQL->addWhereOpr('user_id', SUID);
                 if ( $group = $DB->query($SQL->get(dsn()), 'one') ) {
                     $currentGroup = $group;
-                    if ( $nextGroup === null ) $nextGroup = 'last';
                     break;
                 }
-                $nextGroup = $ugid;
+                $nextGroup = array($ugid);
+            }
+
+            if ( empty($nextGroup) ) {
+                $nextGroup = $lastGroup;
+            }
+            if ( empty($currentGroup) ) {
+                $startGroup  = $Config->getArray('workflow_start_group');
+                foreach ( $startGroup as $ugid ) {
+                    $SQL = SQL::newSelect('usergroup_user');
+                    $SQL->addSelect('usergroup_id');
+                    $SQL->addWhereOpr('usergroup_id', $ugid);
+                    $SQL->addWhereOpr('user_id', SUID);
+                    if ( $group = $DB->query($SQL->get(dsn()), 'one') ) {
+                        $currentGroup = $group;
+                        break;
+                    }
+                }
             }
             $vars['currentGroup'] = $currentGroup;
-            $SQL    = SQL::newSelect('usergroup');
-            $SQL->addSelect('usergroup_name');
-            $SQL->addWhereOpr('usergroup_id', $nextGroup);
-            $nextGroupName  = $DB->query($SQL->get(dsn()), 'one');
 
-            // 最終承認グループ
-            if ( $nextGroup === 'last' ) {
-                $vars['nextGroup']      = $lastGroup;
-                $vars['nextGroupName']  = $lastGroupName;
-            // Next承認グループ
-            } else if ( !empty($nextGroup) ) {
-                $vars['nextGroup']      = $nextGroup;
-                $vars['nextGroupName']  = $nextGroupName;
+            if ( !empty($nextGroup) ) {
+                $SQL = SQL::newSelect('usergroup');
+                $SQL->addWhereIn('usergroup_id', $nextGroup);
+                $all = $DB->query($SQL->get(dsn()), 'all');
+
+                if ( count($all) > 1 ) {
+                    $nameAry = array();
+                    foreach ( $all as $row ) {
+                        $nameAry[] = $row['usergroup_name'];
+                    }
+                    $Tpl->add('group:loop', array(
+                        'nextGroup'     => 0,
+                        'nextGroupName' => implode(', ', $nameAry),
+                    ));
+                }
+                foreach ( $all as $row ) {
+                    $Tpl->add('group:loop', array(
+                        'nextGroup'     => $row['usergroup_id'],
+                        'nextGroupName' => $row['usergroup_name'],
+                    ));
+                }
 
                 $SQL = SQL::newSelect('usergroup_user', 't_usergroup_user');
                 $SQL->addLeftJoin('user', 'user_id', 'user_id', 't_user', 't_usergroup_user');
-                $SQL->addWhereOpr('usergroup_id', $nextGroup);
+                $SQL->addWhereIn('usergroup_id', $nextGroup);
                 $all = $DB->query($SQL->get(dsn()), 'all');
 
                 foreach ( $all as $user ) {
                     $user['icon']       = loadUserIcon($user['user_id']);
-                    $user['nextGroup']  = $nextGroup;
+                    $user['nextGroup']  = $user['usergroup_id'];
                     $Tpl->add('user:loop', $user);
                 }
             }
@@ -115,9 +128,12 @@ class ACMS_GET_Approval_NextUsergroup extends ACMS_GET
 
             $all = $DB->query($SQL->get(dsn()), 'all');
 
-            $vars['nextGroup']      = 0;
             $vars['currentGroup']   = 0;
-            $vars['nextGroupName']  = '編集者, 管理者';
+
+            $Tpl->add('group:loop', array(
+                'nextGroup'     => 0,
+                'nextGroupName' => '編集者, 管理者',
+            ));
             
             foreach ( $all as $user ) {
                 $user['icon']       = loadUserIcon($user['user_id']);

@@ -7,10 +7,13 @@
  *
  * (c) appleple inc. <info@appleple.com>
  */
+interface ACMS_Services_Interface
+{
+    static public function establish($bid);
+}
+
 abstract class ACMS_Services
 {
-    abstract static public function establish($bid);
-
     static public function loadOAuthToken($bid, $type = 'all', $service)
     {
         $DB     = DB::singleton(dsn());

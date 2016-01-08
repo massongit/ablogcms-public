@@ -18,7 +18,7 @@
  */
 class ACMS_RAM
 {
-    private static $cacheAttached   = false;
+    private static $cacheAttached   = array();
     private static $funcCache       = array();
 
     /**
@@ -37,18 +37,21 @@ class ACMS_RAM
             return self::$funcCache[$key];
         }
 
-        self::$cacheAttached = true;
+        self::$cacheAttached[$method] = true;
         $ret = call_user_func_array($method, $args);
-        self::$cacheAttached = false;
+        self::$cacheAttached[$method] = false;
 
         self::$funcCache[$key] = $ret;
 
         return $ret;
     }
 
-    public static function cacheAttached()
+    public static function cacheAttached($method)
     {
-        return self::$cacheAttached;
+        if ( isset(self::$cacheAttached[$method]) ) {
+            return self::$cacheAttached[$method];
+        }
+        return false;
     }
 
     public static function cacheDelete()
@@ -999,7 +1002,7 @@ class ACMS_RAM
      */
     public static function unitField1($utid)
     {
-        return ACMS_RAM::_mapping('column_field1', $utid);
+        return ACMS_RAM::_mapping('column_field_1', $utid);
     }
 
     /**
@@ -1011,7 +1014,7 @@ class ACMS_RAM
      */
     public static function unitField2($utid)
     {
-        return intval(ACMS_RAM::_mapping('column_field2', $utid));
+        return intval(ACMS_RAM::_mapping('column_field_2', $utid));
     }
 
     /**
@@ -1023,7 +1026,7 @@ class ACMS_RAM
      */
     public static function unitField3($utid)
     {
-        return intval(ACMS_RAM::_mapping('column_field3', $utid));
+        return intval(ACMS_RAM::_mapping('column_field_3', $utid));
     }
 
     /**
@@ -1035,7 +1038,7 @@ class ACMS_RAM
      */
     public static function unitField4($utid)
     {
-        return intval(ACMS_RAM::_mapping('column_field4', $utid));
+        return intval(ACMS_RAM::_mapping('column_field_4', $utid));
     }
 
     /**
@@ -1047,7 +1050,7 @@ class ACMS_RAM
      */
     public static function unitField5($utid)
     {
-        return intval(ACMS_RAM::_mapping('column_field5', $utid));
+        return intval(ACMS_RAM::_mapping('column_field_5', $utid));
     }
 
     /**

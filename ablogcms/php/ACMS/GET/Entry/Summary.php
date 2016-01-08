@@ -44,6 +44,7 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             'blogInfoOn'            => config('entry_summary_blog_on'),
             'blogFieldOn'           => config('entry_summary_blog_field_on'),
             'pagerOn'               => config('entry_summary_pager_on'),
+            'simplePagerOn'         => config('entry_summary_simple_pager_on'),
             'mainImageOn'           => config('entry_summary_image_on'),
             'detailDateOn'          => config('entry_summary_date'),
             'fullTextOn'            => config('entry_summary_fulltext'),
@@ -52,32 +53,21 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             'tagOn'                 => config('entry_summary_tag'),
             'hiddenCurrentEntry'    => config('entry_summary_hidden_current_entry'),
             'loop_class'            => config('entry_summary_loop_class'),
+            'relational'            => config('entry_summary_relational'),
+            'loop_class'            => config('entry_summary_loop_class'), 
         );
     }
 
-    function get()
+    function filter(& $SQL, $config)
     {
-        $config = $this->initVars();
+        if ( isset($config['relational']) && $config['relational'] === 'on' ) {
+            $SQL->addWhereIn('entry_id', $this->eids);
+        }
 
-        $order  = $config['order'];
-        $this->initVars();
-        if ( !empty($order) ) { $config['order'] = $order; }
-
-        $DB     = DB::singleton(dsn());
-        $Tpl    = new Template($this->tpl, new ACMS_Corrector());
-        $this->buildModuleField($Tpl);
-
-        $SQL    = SQL::newSelect('entry');
-
+        $DB             = DB::singleton(dsn());
         $BlogSub        = null;
         $CategorySub    = null;
 
-        $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
-        $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
-
-        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
-        ACMS_Filter::entrySession($SQL);
-        
         $multiId = false;
         if ( !empty($this->cid) ) {
             $CategorySub = SQL::newSelect('category');
@@ -89,6 +79,8 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
                 $multiId = true;
             }
             ACMS_Filter::categoryStatus($CategorySub);
+        } else {
+            ACMS_Filter::categoryStatus($SQL);
         }
 
         if ( !empty($this->uid) ) {
@@ -126,6 +118,8 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             } else {
                 ACMS_Filter::blogStatus($BlogSub);
             }
+        } else {
+            ACMS_Filter::blogStatus($SQL);
         }
 
         if ( !empty($this->tags) ) {
@@ -136,16 +130,6 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         }
         if ( !$this->Field->isNull() ) {
             ACMS_Filter::entryField($SQL, $this->Field);
-        }
-
-        if ( 'on' === $config['indexing'] ) {
-            $SQL->addWhereOpr('entry_indexing', 'on');
-        }
-        if ( 'on' <> $config['noimage'] ) {
-            $SQL->addWhereOpr('entry_primary_image', null, '<>');
-        }
-        if ( !!EID && 'on' === $config['hiddenCurrentEntry'] ) {
-            $SQL->addWhereOpr('entry_id', EID, '<>');
         }
 
         //-------------------------
@@ -159,11 +143,31 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             $SQL->addWhereOpr('entry_category_id', null);
         }
 
-        $Amount = new SQL_Select($SQL);
-        $Amount->setSelect('*', 'entry_amount', null, 'count');
+        if ( 'on' === $config['indexing'] ) {
+            $SQL->addWhereOpr('entry_indexing', 'on');
+        }
+        if ( 'on' <> $config['noimage'] ) {
+            $SQL->addWhereOpr('entry_primary_image', null, '<>');
+        }
+        if ( !!EID && 'on' === $config['hiddenCurrentEntry'] ) {
+            $SQL->addWhereOpr('entry_id', EID, '<>');
+        }
+        return true;
+    }
+
+    function order(& $SQL, $config)
+    {
+        if ( 1
+            and isset($config['relational']) && $config['relational'] === 'on'
+            and count($this->eids) > 0
+        ) {
+            $SQL->setFieldOrder('entry_id', $this->eids);
+            
+            return true;
+        }
 
         $from   = ($this->page - 1) * $config['limit'] + $config['offset'];
-        $limit  = $config['limit'];
+        $limit  = $config['limit'] + 1;
 
         $sortFd = ACMS_Filter::entryOrder($SQL, $config['order'], $this->uid, $this->cid);
         $SQL->setLimit($limit, $from);
@@ -173,8 +177,79 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         }
         $SQL->addGroup('entry_id');
 
+        return true;
+    }
+
+    function get()
+    {
+        $config = $this->initVars();
+        if ( $config === false ) {
+            return false;
+        }
+
+        if ( isset($config['relational']) && $config['relational'] === 'on' ) {
+            if ( !EID ) return false; 
+            $this->eids = loadRelatedEntries(EID);
+        }
+
+        $order  = $config['order'];
+        $this->initVars();
+        if ( !empty($order) ) { $config['order'] = $order; }
+
+        $DB     = DB::singleton(dsn());
+        $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $this->buildModuleField($Tpl);
+
+        $SQL    = SQL::newSelect('entry');
+
+        $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
+        $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
+
+        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+        ACMS_Filter::entrySession($SQL);
+        
+        $this->filter($SQL, $config);
+
+        $Amount = new SQL_Select($SQL);
+        $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
+
+        $this->order($SQL, $config);
+
         $q      = $SQL->get(dsn());
         $all    = $DB->query($q, 'all');
+
+        $nextPage   = false;
+        if ( count($all) > $config['limit'] ) {
+            array_pop($all);
+            $nextPage   = true;
+        }
+
+        //---------------
+        // simple pager
+        if ( isset($config['simplePagerOn']) && $config['simplePagerOn'] === 'on' ) {
+
+            // prev page
+            if ( $this->page > 1 ) {
+                $Tpl->add('prevPage', array(
+                   'url'    => acmsLink(array(
+                        'page' => $this->page - 1,
+                    ), true),
+                ));
+            } else {
+                $Tpl->add('prevPageNotFound');
+            }
+
+            // next page
+            if ( $nextPage ) {
+                $Tpl->add('nextPage', array(
+                   'url'    => acmsLink(array(
+                        'page' => $this->page + 1,
+                    ), true),
+                ));
+            } else {
+                $Tpl->add('nextPageNotFound');
+            }
+        }
 
         //------------------
         // build summary tpl
