@@ -4,7 +4,7 @@
 
 ##公開中のファイル
 
-現在のソースコードは Ver. 2.6.0 時点で、以下のファイルが公開されています。
+現在のソースコードは Ver. 2.6.0.1 時点で、以下のファイルが公開されています。
 
 ###基本ライブラリ
 
@@ -17,7 +17,7 @@
 ###a-blog cms 依存ライブラリ
 
 + php/ACMS/User以下
-+ php/ACMS/GET以下（AdminとShopを除く）
++ php/ACMS/GET以下（Shopを除く）
 + php/ACMS/Services以下
 + php/ACMS/Services.php
 + php/ACMS/Corrector.php

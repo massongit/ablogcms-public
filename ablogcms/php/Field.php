@@ -86,6 +86,7 @@ class Field
     function serialize()
     {
         $res    = '';
+
         foreach ( $this->listFields() as $fd ) {
             if ( $vals = $this->getArray($fd) ) {
                 $res    .= '/and/'.$fd.'/'.join('/', $vals);
@@ -573,12 +574,9 @@ class Field_Search extends Field
                 foreach ( $buf as $token ) {
                     $aryTmp[] = $token;
                 }
+
                 $buf    = array();
-                if ( $separator === 'or' ) {
-                    $aryQuery = array_merge($aryQuery, $aryTmp);
-                } else {
-                    $aryQuery = array_merge($aryTmp, $aryQuery);
-                }
+                $aryQuery = array_merge($aryQuery, $aryTmp);
             }
         }
         if ( !empty($aryQuery) and in_array($aryQuery[0], array('_or_', '_and_', 'and')) ) {
