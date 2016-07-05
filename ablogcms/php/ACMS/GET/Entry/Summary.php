@@ -9,11 +9,24 @@
  */
 class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
 {
+    protected $config;
+    protected $entries;
+    protected $amount;
+    protected $eids;
+
+    protected $blogSubQuery;
+    protected $categorySubQuery;
+
     var $_axis = array(
         'bid'   => 'self',
         'cid'   => 'self',
     );
 
+    /**
+     * コンフィグの取得
+     *
+     * @return array
+     */
     function initVars()
     {
         return array(
@@ -54,249 +67,431 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
             'hiddenCurrentEntry'    => config('entry_summary_hidden_current_entry'),
             'loop_class'            => config('entry_summary_loop_class'),
             'relational'            => config('entry_summary_relational'),
-            'loop_class'            => config('entry_summary_loop_class'), 
         );
     }
 
-    function filter(& $SQL, $config)
+    /**
+     * 起動
+     *
+     * @return string
+     */
+    function get()
     {
-        if ( isset($config['relational']) && $config['relational'] === 'on' ) {
-            $SQL->addWhereIn('entry_id', $this->eids);
-        }
+        if ( !$this->setConfig() ) return '';
 
-        $DB             = DB::singleton(dsn());
-        $BlogSub        = null;
-        $CategorySub    = null;
+        $DB = DB::singleton(dsn());
+        $Tpl = new Template($this->tpl, new ACMS_Corrector());
 
-        $multiId = false;
-        if ( !empty($this->cid) ) {
-            $CategorySub = SQL::newSelect('category');
-            $CategorySub->setSelect('category_id');
-            if ( is_int($this->cid) ) {
-                ACMS_Filter::categoryTree($CategorySub, $this->cid, $this->categoryAxis());
-            } else if ( strpos($this->cid, ',') !== false ) {
-                $CategorySub->addWhereIn('category_id', explode(',', $this->cid));
-                $multiId = true;
-            }
-            ACMS_Filter::categoryStatus($CategorySub);
-        } else {
-            ACMS_Filter::categoryStatus($SQL);
-        }
+        $this->setRelational();
+        $this->buildModuleField($Tpl);
 
-        if ( !empty($this->uid) ) {
-            if ( is_int($this->uid) ) {
-                $SQL->addWhereOpr('entry_user_id', $this->uid);
-            } else if ( strpos($this->uid, ',') !== false ) {
-                $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
-                $multiId = true;
-            }
-        }
+        $SQL = $this->buildQuery();
+        $this->entries = $DB->query($SQL->get(dsn()), 'all');
 
-         if ( !empty($this->eid) ) {
-            if ( is_int($this->eid) ) {
-                $SQL->addWhereOpr('entry_id', $this->eid);
-            } else if ( strpos($this->eid, ',') !== false ) {
-                $SQL->addWhereIn('entry_id', explode(',', $this->eid));
-                $multiId = true;
-            }
+        $this->buildSimplePager($Tpl);
+        $this->buildEntries($Tpl);
+        if ( $this->buildNotFound($Tpl) ) {
+            return $Tpl->get();
         }
+        if ( empty($this->entries) ) {
+            return '';
+        }
+        $vars = $this->getRootVars();
+        $vars += $this->buildFullspecPager($Tpl);
+        $Tpl->add(null, $vars);
 
-        if ( !empty($this->bid) ) {
-            $BlogSub = SQL::newSelect('blog');
-            $BlogSub->setSelect('blog_id');
-            if ( is_int($this->bid) ) {
-                if ( $multiId ) {
-                    ACMS_Filter::blogTree($BlogSub, $this->bid, 'descendant-or-self');
-                } else {
-                    ACMS_Filter::blogTree($BlogSub, $this->bid, $this->blogAxis());
-                }
-            } else if ( strpos($this->bid, ',') !== false ) {
-                $BlogSub->addWhereIn('blog_id', explode(',', $this->bid));
-            }
-            if ( 'on' === $config['secret'] ) {
-                ACMS_Filter::blogDisclosureSecretStatus($BlogSub);
-            } else {
-                ACMS_Filter::blogStatus($BlogSub);
-            }
-        } else {
-            ACMS_Filter::blogStatus($SQL);
-        }
-
-        if ( !empty($this->tags) ) {
-            ACMS_Filter::entryTag($SQL, $this->tags);
-        }
-        if ( !empty($this->keyword) ) {
-            ACMS_Filter::entryKeyword($SQL, $this->keyword);
-        }
-        if ( !$this->Field->isNull() ) {
-            ACMS_Filter::entryField($SQL, $this->Field);
-        }
-
-        //-------------------------
-        // filter (blog, category) 
-        if ( $BlogSub ) {
-            $SQL->addWhereIn('entry_blog_id', $DB->subQuery($BlogSub));
-        }
-        if ( $CategorySub ) {
-            $SQL->addWhereIn('entry_category_id', $DB->subQuery($CategorySub));
-        } else if ( empty($this->cid) and null !== $this->cid ) {
-            $SQL->addWhereOpr('entry_category_id', null);
-        }
-
-        if ( 'on' === $config['indexing'] ) {
-            $SQL->addWhereOpr('entry_indexing', 'on');
-        }
-        if ( 'on' <> $config['noimage'] ) {
-            $SQL->addWhereOpr('entry_primary_image', null, '<>');
-        }
-        if ( !!EID && 'on' === $config['hiddenCurrentEntry'] ) {
-            $SQL->addWhereOpr('entry_id', EID, '<>');
-        }
-        return true;
+        return $Tpl->get();
     }
 
-    function order(& $SQL, $config)
+    /**
+     * sqlの組み立て
+     *
+     * @return SQL_Select
+     */
+    function buildQuery()
+    {
+        $SQL = SQL::newSelect('entry');
+
+        $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
+        $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
+
+        $this->filterQuery($SQL);
+        $this->setAmount($SQL); // limitする前のクエリから全件取得のクエリを準備しておく
+        $this->orderQuery($SQL);
+        $this->limitQuery($SQL);
+
+        return $SQL;
+    }
+
+    /**
+     * orderクエリ組み立て
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function orderQuery(& $SQL)
     {
         if ( 1
             and isset($config['relational']) && $config['relational'] === 'on'
             and count($this->eids) > 0
         ) {
             $SQL->setFieldOrder('entry_id', $this->eids);
-            
-            return true;
+            return;
         }
-
-        $from   = ($this->page - 1) * $config['limit'] + $config['offset'];
-        $limit  = $config['limit'] + 1;
-
-        $sortFd = ACMS_Filter::entryOrder($SQL, $config['order'], $this->uid, $this->cid);
-        $SQL->setLimit($limit, $from);
-
-        if ( !empty($sortFd) ) {
+        if ( $sortFd = ACMS_Filter::entryOrder($SQL, $this->config['order'], $this->uid, $this->cid) ) {
             $SQL->setGroup($sortFd);
         }
         $SQL->addGroup('entry_id');
+    }
 
+    /**
+     * エントリー数取得sqlの準備
+     *
+     * @param SQL_Select $SQL
+     * @return void
+     */
+    function setAmount($SQL)
+    {
+        $this->amount = new SQL_Select($SQL);
+        $this->amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
+    }
+
+    /**
+     * limitクエリ組み立て
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function limitQuery(& $SQL)
+    {
+        $from   = ($this->page - 1) * $this->config['limit'] + $this->config['offset'];
+        $limit  = $this->config['limit'] + 1;
+
+        $SQL->setLimit($limit, $from);
+    }
+
+    /**
+     * 絞り込みクエリ組み立て
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function filterQuery(& $SQL)
+    {
+        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
+        ACMS_Filter::entrySession($SQL);
+
+        $this->relationalFilterQuery($SQL);
+
+        $multi = false;
+        $multi = $multi || $this->categoryFilterQuery($SQL);
+        $multi = $multi || $this->userFilterQuery($SQL);
+        $multi = $multi || $this->entryFilterQuery($SQL);
+        $this->blogFilterQuery($SQL, $multi);
+
+        $this->tagFilterQuery($SQL);
+        $this->keywordFilterQuery($SQL);
+        $this->fieldFilterQuery($SQL);
+
+        $this->filterSubQuery($SQL);
+        $this->otherFilterQuery($SQL);
+    }
+
+    /**
+     * 関連エントリーの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function relationalFilterQuery(& $SQL)
+    {
+        if ( isset($this->config['relational']) && $this->config['relational'] === 'on' ) {
+            $SQL->addWhereIn('entry_id', $this->eids);
+        }
+    }
+
+    /**
+     * カテゴリーの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return bool
+     */
+    function categoryFilterQuery(& $SQL)
+    {
+        $multi = false;
+        if ( !empty($this->cid) ) {
+            $this->categorySubQuery = SQL::newSelect('category');
+            $this->categorySubQuery->setSelect('category_id');
+            if ( is_int($this->cid) ) {
+                ACMS_Filter::categoryTree($this->categorySubQuery, $this->cid, $this->categoryAxis());
+            } else if ( strpos($this->cid, ',') !== false ) {
+                $this->categorySubQuery->addWhereIn('category_id', explode(',', $this->cid));
+                $multi = true;
+            }
+            ACMS_Filter::categoryStatus($this->categorySubQuery);
+        } else {
+            ACMS_Filter::categoryStatus($SQL);
+        }
+        return $multi;
+    }
+
+    /**
+     * ユーザーの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return bool
+     */
+    function userFilterQuery(& $SQL)
+    {
+        $multi = false;
+        if ( !empty($this->uid) ) {
+            if ( is_int($this->uid) ) {
+                $SQL->addWhereOpr('entry_user_id', $this->uid);
+            } else if ( strpos($this->uid, ',') !== false ) {
+                $SQL->addWhereIn('entry_user_id', explode(',', $this->uid));
+                $multi = true;
+            }
+        }
+        return $multi;
+    }
+
+    /**
+     * エントリーの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return bool
+     */
+    function entryFilterQuery(& $SQL)
+    {
+        $multi = false;
+        if ( !empty($this->eid) ) {
+            if ( is_int($this->eid) ) {
+                $SQL->addWhereOpr('entry_id', $this->eid);
+            } else if ( strpos($this->eid, ',') !== false ) {
+                $SQL->addWhereIn('entry_id', explode(',', $this->eid));
+                $multi = true;
+            }
+        }
+        return $multi;
+    }
+
+    /**
+     * ブログの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @param bool $multi
+     * @return void
+     */
+    function blogFilterQuery(& $SQL, $multi)
+    {
+        if ( !empty($this->bid) ) {
+            $this->blogSubQuery = SQL::newSelect('blog');
+            $this->blogSubQuery->setSelect('blog_id');
+            if ( is_int($this->bid) ) {
+                if ( $multi ) {
+                    ACMS_Filter::blogTree($this->blogSubQuery, $this->bid, 'descendant-or-self');
+                } else {
+                    ACMS_Filter::blogTree($this->blogSubQuery, $this->bid, $this->blogAxis());
+                }
+            } else if ( strpos($this->bid, ',') !== false ) {
+                $this->blogSubQuery->addWhereIn('blog_id', explode(',', $this->bid));
+            }
+            if ( 'on' === $this->config['secret'] ) {
+                ACMS_Filter::blogDisclosureSecretStatus($this->blogSubQuery);
+            } else {
+                ACMS_Filter::blogStatus($this->blogSubQuery);
+            }
+        } else {
+            ACMS_Filter::blogStatus($SQL);
+        }
+    }
+
+    /**
+     * タグの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function tagFilterQuery(& $SQL)
+    {
+        if ( !empty($this->tags) ) {
+            ACMS_Filter::entryTag($SQL, $this->tags);
+        }
+    }
+
+    /**
+     * キーワードの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function keywordFilterQuery(& $SQL)
+    {
+        if ( !empty($this->keyword) ) {
+            ACMS_Filter::entryKeyword($SQL, $this->keyword);
+        }
+    }
+
+    /**
+     * フィールドの絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function fieldFilterQuery(& $SQL)
+    {
+        if ( !$this->Field->isNull() ) {
+            ACMS_Filter::entryField($SQL, $this->Field);
+        }
+    }
+
+    /**
+     * サブクエリの組み立て
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function filterSubQuery(& $SQL)
+    {
+        $DB = DB::singleton(dsn());
+        if ( $this->blogSubQuery ) {
+            $SQL->addWhereIn('entry_blog_id', $DB->subQuery($this->blogSubQuery));
+        }
+        if ( $this->categorySubQuery ) {
+            $SQL->addWhereIn('entry_category_id', $DB->subQuery($this->categorySubQuery));
+        } else if ( empty($this->cid) and null !== $this->cid ) {
+            $SQL->addWhereOpr('entry_category_id', null);
+        }
+    }
+
+    /**
+     * その他の絞り込み
+     *
+     * @param SQL_Select & $SQL
+     * @return void
+     */
+    function otherFilterQuery(& $SQL)
+    {
+        if ( 'on' === $this->config['indexing'] ) {
+            $SQL->addWhereOpr('entry_indexing', 'on');
+        }
+        if ( 'on' <> $this->config['noimage'] ) {
+            $SQL->addWhereOpr('entry_primary_image', null, '<>');
+        }
+        if ( !!$this->eid && 'on' === $this->config['hiddenCurrentEntry'] ) {
+            $SQL->addWhereOpr('entry_id', $this->eid, '<>');
+        }
+    }
+
+    /**
+     * 関連エントリーの取得
+     *
+     * @return bool
+     */
+    function setRelational()
+    {
+        if ( isset($this->config['relational']) && $this->config['relational'] === 'on' ) {
+            if ( !EID ) return false;
+            $this->eids = loadRelatedEntries(EID);
+        }
         return true;
     }
 
-    function get()
+    /**
+     * シンプルページャーの組み立て
+     *
+     * @param Template & $Tpl
+     * @return void
+     */
+    function buildSimplePager(& $Tpl)
     {
-        $config = $this->initVars();
-        if ( $config === false ) {
+        $next_page = false;
+        if ( count($this->entries) > $this->config['limit'] ) {
+            array_pop($this->entries);
+            $next_page = true;
+        }
+        if ( !isset($this->config['simplePagerOn']) || $this->config['simplePagerOn'] !== 'on' ) {
+            return;
+        }
+        // prev page
+        if ( $this->page > 1 ) {
+            $Tpl->add('prevPage', array(
+                'url'    => acmsLink(array(
+                    'page' => $this->page - 1,
+                ), true),
+            ));
+        } else {
+            $Tpl->add('prevPageNotFound');
+        }
+        // next page
+        if ( $next_page ) {
+            $Tpl->add('nextPage', array(
+                'url'    => acmsLink(array(
+                    'page' => $this->page + 1,
+                ), true),
+            ));
+        } else {
+            $Tpl->add('nextPageNotFound');
+        }
+    }
+
+    /**
+     * コンフィグのセット
+     *
+     * @return bool
+     */
+    function setConfig()
+    {
+        $this->config = $this->initVars();
+        if ( $this->config === false ) {
             return false;
         }
+        return true;
+    }
 
-        if ( isset($config['relational']) && $config['relational'] === 'on' ) {
-            if ( !EID ) return false; 
-            $this->eids = loadRelatedEntries(EID);
-        }
-
-        $order  = $config['order'];
-        $this->initVars();
-        if ( !empty($order) ) { $config['order'] = $order; }
-
-        $DB     = DB::singleton(dsn());
-        $Tpl    = new Template($this->tpl, new ACMS_Corrector());
-        $this->buildModuleField($Tpl);
-
-        $SQL    = SQL::newSelect('entry');
-
-        $SQL->addLeftJoin('blog', 'blog_id', 'entry_blog_id');
-        $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
-
-        ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
-        ACMS_Filter::entrySession($SQL);
-        
-        $this->filter($SQL, $config);
-
-        $Amount = new SQL_Select($SQL);
-        $Amount->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'COUNT');
-
-        $this->order($SQL, $config);
-
-        $q      = $SQL->get(dsn());
-        $all    = $DB->query($q, 'all');
-
-        $nextPage   = false;
-        if ( count($all) > $config['limit'] ) {
-            array_pop($all);
-            $nextPage   = true;
-        }
-
-        //---------------
-        // simple pager
-        if ( isset($config['simplePagerOn']) && $config['simplePagerOn'] === 'on' ) {
-
-            // prev page
-            if ( $this->page > 1 ) {
-                $Tpl->add('prevPage', array(
-                   'url'    => acmsLink(array(
-                        'page' => $this->page - 1,
-                    ), true),
-                ));
-            } else {
-                $Tpl->add('prevPageNotFound');
-            }
-
-            // next page
-            if ( $nextPage ) {
-                $Tpl->add('nextPage', array(
-                   'url'    => acmsLink(array(
-                        'page' => $this->page + 1,
-                    ), true),
-                ));
-            } else {
-                $Tpl->add('nextPageNotFound');
-            }
-        }
-
-        //------------------
-        // build summary tpl
-        $gluePoint = count($all);
-        foreach ( $all as $i => $row ) {
+    /**
+     * フルスペックページャーの組み立て
+     *
+     * @param Template & $Tpl
+     * @return array
+     */
+    function buildEntries(& $Tpl)
+    {
+        $gluePoint = count($this->entries);
+        foreach ( $this->entries as $i => $row ) {
             $i++;
-            $this->buildSummary($Tpl, $row, $i, $gluePoint, $config);
+            $this->buildSummary($Tpl, $row, $i, $gluePoint, $this->config);
         }
+    }
 
-        if ( empty($all) ) {
-            if ( 'on' == $config['notfound'] ) {
-                $Tpl->add('notFound');
-                $blogName   = ACMS_RAM::blogName($this->bid);
-                $vars   = array(
-                    'indexUrl'  => acmsLink(array( 
-                        'bid'   => $this->bid,
-                        'cid'   => $this->cid,
-                    )),
-                    'indexBlogName' => $blogName,
-                    'blogName'      => $blogName,
-                    'blogCode'      => ACMS_RAM::blogCode($this->bid),
-                    'blogUrl'       => acmsLink(array(
-                        'bid'   => $this->bid,
-                    )),
-                );
-                if ( !empty($this->cid) ) {
-                    $categoryName   = ACMS_RAM::categoryName($this->cid);
-                    $vars['indexCategoryName']  = $categoryName;
-                    $vars['categoryName']       = $categoryName;
-                    $vars['categoryCode']       = ACMS_RAM::categoryCode($this->cid);
-                    $vars['categoryUrl']        = acmsLink(array(
-                        'bid'   => $this->bid,
-                        'cid'   => $this->cid,
-                    ));
-                }
-                $Tpl->add(null, $vars);
-                if ( 'on' == $config['notfoundStatus404'] ) {
-                    httpStatusCode('404 Not Found');
-                }
-                return $Tpl->get();
-            } else {
-                return false;
-            }
+    /**
+     * NotFound時のテンプレート組み立て
+     *
+     * @param Template & $Tpl
+     * @return bool
+     */
+    function buildNotFound(& $Tpl)
+    {
+        if ( !empty($this->entries) ) return false;
+        if ( 'on' !== $this->config['notfound'] ) return false;
+
+        $Tpl->add('notFound');
+        $Tpl->add(null, $this->getRootVars());
+        if ( isset($this->config['notfoundStatus404']) && 'on' === $this->config['notfoundStatus404'] ) {
+            httpStatusCode('404 Not Found');
         }
+        return true;
+    }
 
+    /**
+     * ルート変数の取得
+     *
+     * @return array
+     */
+    function getRootVars()
+    {
         $blogName   = ACMS_RAM::blogName($this->bid);
-        $vars   = array(
+        $vars = array(
             'indexUrl'  => acmsLink(array(
                 'bid'   => $this->bid,
                 'cid'   => $this->cid,
@@ -318,20 +513,29 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
                 'cid'   => $this->cid,
             ));
         }
+        return $vars;
+    }
 
-        if ( 'random' <> $config['order'] ) {
-            //-------
-            // pager
-            if ( (isset($config['pagerOn']) && $config['pagerOn'] === 'on') ) {
-                $itemsAmount = intval($DB->query($Amount->get(dsn()), 'one'));
-
-                $itemsAmount -= $config['offset'];
-                $vars += $this->buildPager($this->page, $config['limit'], $itemsAmount, $config['pagerDelta'], $config['pagerCurAttr'], $Tpl);
-            }
+    /**
+     * フルスペックページャーの組み立て
+     *
+     * @param Template & $Tpl
+     * @return array
+     */
+    function buildFullspecPager(& $Tpl)
+    {
+        $vars = array();
+        if ( 'random' === $this->config['order'] ) {
+            return $vars;
         }
+        if ( !isset($this->config['pagerOn']) || $this->config['pagerOn'] !== 'on' ) {
+            return $vars;
+        }
+        $DB = DB::singleton(dsn());
+        $itemsAmount = intval($DB->query($this->amount->get(dsn()), 'one'));
+        $itemsAmount -= $this->config['offset'];
+        $vars += $this->buildPager($this->page, $this->config['limit'], $itemsAmount, $this->config['pagerDelta'], $this->config['pagerCurAttr'], $Tpl);
 
-        $Tpl->add(null, $vars);
-
-        return $Tpl->get();
+        return $vars;
     }
 }

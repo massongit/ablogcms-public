@@ -213,7 +213,7 @@ class ACMS_GET_Admin_Module_Index extends ACMS_GET_Admin_Module
                 ),
             )),
         );
-        if ( !in_array($name, array('Blog_Field', 'Entry_Field', 'Category_Field', 'User_Field')) ) {
+        if ( !in_array($name, array('Blog_Field', 'Entry_Field', 'Category_Field', 'User_Field', 'Module_Field')) ) {
             $linkVars['configUrl'] = acmsLink(array(
                 'bid'   => $bid,
                 'admin' => 'config_'.strtolower(preg_replace('@(?<=[a-zA-Z0-9])([A-Z])@', '-$1', $name)),

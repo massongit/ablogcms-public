@@ -128,6 +128,7 @@ class ACMS_GET_User_Search extends ACMS_GET
                 $this->loadUserEntry($Tpl, $id, array('user:loop'));
             }
             $vars['user:loop.class'] = $loop_class;
+            if ( !empty($i) ) $Tpl->add(array_merge(array('user:glue', 'user:loop')));
             $Tpl->add('user:loop', $vars);
         }
 
@@ -173,6 +174,7 @@ class ACMS_GET_User_Search extends ACMS_GET
                 'eid'   => $entry['entry_id'],
             ));
             if ( !empty($i) ) $Tpl->add(array_merge(array('glue', 'entry:loop')));
+            if ( !empty($i) ) $Tpl->add(array_merge(array('entry:glue', 'entry:loop')));
 
             if ( $link != '#' ) {
                 $vars += array(

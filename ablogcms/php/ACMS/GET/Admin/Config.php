@@ -385,7 +385,7 @@ class ACMS_GET_Admin_Config extends ACMS_GET_Admin
     {
         if ( !is_array($rootBlock) ) $rootBlock = array($rootBlock);
         array_unshift($rootBlock, 'Config_Navigation');
-        $addNum = 3;
+        $addNum = 0;
 
         $Count  = array(0=>$addNum);
         $Parent = array(0=>array());
@@ -521,39 +521,6 @@ class ACMS_GET_Admin_Config extends ACMS_GET_Admin
 
             $Tpl->add(array_merge(array('navigation:loop'), $rootBlock), $vars);
             $seq++;
-        }
-
-        //-----
-        // add
-        for ( $i=0; $i<$addNum; $i++ ) {
-
-            //------
-            // sort
-            for ( $j=1; $j<=$Count[0]; $j++ ) {
-                $vars   = array(
-                    'label' => $j,
-                    'value' => $j,
-                );
-                if ( (($Count[0] - $addNum) + $i + 1) == $j ) $vars['selected'] = $Config->get('attr_selected');
-                $Tpl->add(array_merge(array('sort:loop', 'navigation:loop'), $rootBlock), $vars);
-            }
-
-            //---------------
-            // parent select
-            foreach ( $PSelect as $_id => $_label ) {
-                $vars   = array(
-                    'value' => $_id,
-                    'label' => $_label,
-                );
-                $Tpl->add(array_merge(array('parent:loop', 'navigation:loop'), $rootBlock), $vars);
-            }
-
-            $Tpl->add(array_merge(array('navigation:loop'), $rootBlock), array(
-                'seq'   => $seq + $i,
-                'level' => 0,
-                'pseq'  => 0,
-                'navigation_publish:checked#on' => $Config->get('attr_checked'),
-            ));
         }
 
         return array();

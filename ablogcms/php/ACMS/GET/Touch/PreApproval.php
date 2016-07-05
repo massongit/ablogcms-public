@@ -15,6 +15,6 @@ class ACMS_GET_Touch_PreApproval extends ACMS_GET
 
         $entry = ACMS_RAM::entry(EID);
 
-        return ($entry['pre_approval'] == 'pre_approval') ? $this->tpl : null;
+        return ($entry['entry_approval'] == 'pre_approval') ? $this->tpl : null;
     }
 }

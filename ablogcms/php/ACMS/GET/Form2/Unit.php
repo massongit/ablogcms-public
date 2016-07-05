@@ -52,9 +52,10 @@ class ACMS_GET_Form2_Unit extends ACMS_GET
                     && $values = acmsUnserialize($data['values'])
                 ) {
                     if ( is_array($values) ) {
-                        foreach ( $values as $val ) {
+                        foreach ( $values as $i => $val ) {
                             if ( !empty($val) ) {
                                 $Tpl->add(array($type.'#val:loop', $type, 'column:loop'), array(
+                                    'i'     => ++$i,
                                     'value' => $val,
                                     'utid'  => $utid,
                                 ));

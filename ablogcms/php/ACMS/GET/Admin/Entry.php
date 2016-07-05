@@ -567,7 +567,6 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
             (is_array($rootBlock) ? $rootBlock : array($rootBlock))
         ;
         $id     = $data['id'];
-        $clid   = ite($data, 'clid');
         $type   = $data['type'];
 
         //----------------
@@ -577,8 +576,6 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //-------------------------
         // radio, select, checkbox
         } else if ( in_array($type, array('radio', 'select', 'checkbox')) ) {
-            // values
-            $values = array();
             if ( 1
                 && isset($data['values']) 
                 && $values = acmsUnserialize($data['values'])
@@ -592,8 +589,6 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
                             ));
                         }
                     }
-                } else {
-                    $values = array();
                 }
             }
         } else {

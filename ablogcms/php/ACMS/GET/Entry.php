@@ -208,6 +208,13 @@ class ACMS_GET_Entry extends ACMS_GET
                     $vars['squareY']      = $squareImgSize;
                 }
 
+                $large = otherSizeImagePath($path, 'large');
+                if ( $xy = @getimagesize($large) ) {
+                    $vars['largePath']   = $large;
+                    $vars['largeX']      = $xy[0];
+                    $vars['largeY']      = $xy[1];
+                }
+
                 $vars['utid']       = $utid;
                 $vars['unit_eid']   = $eid;
 
@@ -644,9 +651,26 @@ class ACMS_GET_Entry extends ACMS_GET
                 $vars['unit_eid']   = $eid;
                 $vars['align']      = $data['align'];
 
-                $Field      = acmsUnserialize($data['field']);
-                $block      = array_merge(array('unit#'.$actualType), $rootBlock);
-                $vars       += $this->buildField($Field, $Tpl, $block);
+                $Field = acmsUnserialize($data['field']);
+                foreach ( $Field->listFields() as $fd ) {
+                    if ( 1
+                        and !strpos($fd, '@path')
+                        and !strpos($fd, '@tinyPath')
+                        and !strpos($fd, '@largePath')
+                        and !strpos($fd, '@squarePath')
+                    ) {
+                        continue;
+                    }
+                    foreach ( $Field->getArray($fd, true) as $i => $path ) {
+                        if ( RVID ) {
+                            $path = '../'.REVISON_ARCHIVES_DIR.$path;
+                        }
+                        $Field->set($fd, $path);
+                    }
+                }
+
+                $block = array_merge(array('unit#'.$actualType), $rootBlock);
+                $vars += $this->buildField($Field, $Tpl, $block);
                 $Tpl->add($block, $vars);
 
             } else {

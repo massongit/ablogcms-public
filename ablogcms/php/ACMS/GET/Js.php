@@ -14,8 +14,6 @@ class ACMS_GET_Js extends ACMS_GET
         $Session    =& Field::singleton('session');
         $delStorage = $Session->get('webStorageDeleteKey');
 
-        $jquery = '';
-        jsModule('domains', HTTP_HOST);
         jsModule('offset', DIR_OFFSET);
         jsModule('jsDir', JS_DIR);
         jsModule('themesDir', '/'.DIR_OFFSET.THEMES_DIR);
@@ -32,6 +30,7 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('jQuery', config('jquery_version'));
         jsModule('jQueryMigrate', config('jquery_migrate', 'off'));
         jsModule('delStorage', $delStorage);
+        jsModule('fulltimeSSL', (SSL_ENABLE and FULLTIME_SSL_ENABLE) ? 1 : 0);
 
         jsModule('umfs', ini_get('upload_max_filesize'));
         jsModule('pms',  ini_get('post_max_size'));
@@ -65,14 +64,15 @@ class ACMS_GET_Js extends ACMS_GET
 
         //-------
         // cache
-        if ( config('javascript_cachein') === 'off' ) {
+        if ( config('javascript_nocache') === 'on' ) {
             jsModule('cache', uniqueString());
         }
 
         $jsModules  = array();
         foreach ( jsModule() as $key => $value ) {
             if ( empty($value) ) continue;
-            $jsModules[]    = $key.(!is_bool($value) ? '='.$value : '');
+            if ( $key === 'domains' ) $value = HTTP_HOST;
+            $jsModules[] = $key.(!is_bool($value) ? '='.$value : '');
         }
         $jquery = join('&', $jsModules);
 

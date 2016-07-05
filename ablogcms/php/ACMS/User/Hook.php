@@ -125,9 +125,29 @@ class ACMS_User_Hook
      */
     public function extendsQuoteUnit($url, &$html)
     {
-        // $parsed_url = parse_url($url);
-        // if ( $parsed_url['host'] === 'sampleple.com' ) {
-        //     $html  = '';
+        // $Amazon = new ACMS_Services_Amazon(
+        //     'tracking_id',
+        //     'access_key',
+        //     'secret_access_key'
+        // );
+        // if ( 1
+        //     && $Amazon->isValid()
+        //     && $asin = $Amazon->getAsinFromUrl($url)
+        // ) {
+        //     $xml            = $Amazon->amazonItemLookup($asin);
+
+        //     $url            = $xml->Items->Item->DetailPageURL;
+        //     $image          = $xml->Items->Item->LargeImage->URL;
+        //     $manufacturer   = $xml->Items->Item->ItemAttributes->Manufacturer;
+        //     $title          = $xml->Items->Item->ItemAttributes->Title;
+        //     $price          = $xml->Items->Item->OfferSummary->LowestNewPrice->FormattedPrice;
+
+        //     $html = "<h1><a href=\"$url\">$title</a></h1>"
+        //         ."<img src=\"$image\" width=\"150px\">"
+        //         ."<p>$manufacturer</p>"
+        //         ."<p>$price</p>";
+
+        //     sleep(2);
         // }
     }
 

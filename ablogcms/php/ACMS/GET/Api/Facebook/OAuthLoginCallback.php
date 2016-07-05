@@ -9,269 +9,167 @@
  */
 class ACMS_GET_Api_Facebook_OAuthLoginCallback extends ACMS_GET_Api_Facebook
 {
-    function failed($query='')
-    {
-        if ( !empty($query) ) $query = '?'.$query;
-        die(header('Location: '.BASE_URL.LOGIN_SEGMENT.'/'.$query));
-    }
+    private $user;
+    private $fbid;
 
     function get()
     {
-        $DB             = DB::singleton(dsn());
-        $Session        = ACMS_Session::singleton();
-        $Config         = loadBlogConfig(BID);
+        $this->getAuthSession('fb_request', 'fb_blog_id', 'fb_user_id');
 
-        $state          = $this->Get->get('state');
-        $code           = $this->Get->get('code');
-        $bid            = $Session->get('fb_blog_id');
-        $requestType    = $Session->get('fb_request');
+        $Session    = ACMS_Session::singleton();
+        $Config     = loadBlogConfig(BID);
 
-        //------
+        $state      = $this->Get->get('state');
+        $code       = $this->Get->get('code');
+
         // check
-        if ( 0
-            || empty($state)
-            || empty($code)
-            || empty($bid)
-            || empty($requestType)
-            || !in_array($requestType, array('login', 'signup', 'addition'))
-        ) {
-            $Session->clear();
-            $this->failed('auth=failed');
+        if ( empty($state) || empty($code) ) {
+            $this->loginFailed('login=failed');
+            return false;
         }
 
+        // get account info
         $Fb = new Facebook(array(
             'appId'  => $Config->get('facebook_app_id'),
             'secret' => $Config->get('facebook_app_secret'),
         ));
+        $this->user  = $Fb->api('/me');
+        $this->fbid  = $this->user['id'];
 
-        //--------------
-        // account info
-        $account    = $Fb->api('/me');
-        $fbid       = $account['id'];
-        
-        //----------------
-        // login process
-        if ( $requestType === 'login' ) {
+        // clear session
+        $Session->clear();
 
-            //-------------------
-            // access restricted
-            if ( SUID || !accessRestricted() ) {
-                $this->failed('login=failed');
-            }
+        if ( $this->auth_type === 'login' ) {
+            $url = $this->login();
 
-            //----------------
-            // authentication
-            $SQL    = SQL::newSelect('user');
-            $SQL->addWhereOpr('user_facebook_id', $fbid);
-            $SQL->addWhereOpr('user_status', 'open');
-            $SQL->addWhereOpr('user_login_expire', date('Y-m-d', REQUEST_TIME), '>=');
-            $all    = $DB->query($SQL->get(dsn()), 'all');
+        } else if ( $this->auth_type === 'signup' ) {
+            $url = $this->signup();
 
-            //--------
-            // double
-            if ( empty($all) or 1 < count($all) ) {
-                $this->failed('login=failed');
-            }
-
-            $row    = $all[0];
-            $uid    = intval($row['user_id']);
-            $bid    = intval($row['user_blog_id']);
-            $l      = ACMS_RAM::blogLeft($row['user_blog_id']);
-            $r      = ACMS_RAM::blogRight($row['user_blog_id']);
-
-            //----------------------
-            // terminal restriction
-            if ( 1
-                && $row['user_auth'] !== 'administrator'
-                && isset($row['user_login_terminal_restriction'])
-                && $row['user_login_terminal_restriction'] === 'on'
-            ) {
-                $Cookie =& Field::singleton('cookie');
-                if ( $Cookie->get('acms_config_login_terminal_restriction') !== sha1('permission'.UA) ) {
-                    $this->failed('login=restriction');
-                }
-            }
-
-            //----------------
-            // sns auth check
-            if ( !snsLoginAuth($uid, $bid) ) { 
-                $Session->clear();
-                $this->failed('login=failed');
-            }
-
-            //------------
-            // role check
-            if ( roleAvailableUser($uid) && !roleUserLoginAuth($row) ) {
-                $this->failed('login=failed');
-            }
-
-            //---------------------
-            // generate session id
-            $sid = generateSession($row);
-
-            $loginBid   = BID;
-            if ( 1
-                and ( 'on' == $row['user_login_anywhere'] || roleAvailableUser() )
-                and !isBlogAncestor(BID, $bid, true)
-            ) {
-                $loginBid   = $bid;
-            }
-
-            $url    = acmsLink(array(
-                'protocol'      => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
-                'bid'           => $loginBid,
-                'sid'           => $sid,
-                'query'         => array(),
-            ));
-
-            $Session->clear();
-            ACMS_POST::redirect($url, null, true);
-        //----------------
-        // signup process
-        } else if ( $requestType === 'signup' ) {
-
-            //----------------
-            // sns auth check
-            $BlogConfig = loadBlogConfig($bid);
-            if ( $BlogConfig->get('snslogin') !== 'on' ) { 
-                $Session->clear();
-                $this->failed('auth=failed');
-            }
-
-            //------------
-            // user check
-            $SQL    = SQL::newSelect('user');
-            $SQL->addWhereOpr('user_facebook_id', $fbid);
-            $SQL->addWhereOpr('user_status', 'open');
-            $SQL->addWhereOpr('user_login_expire', date('Y-m-d', REQUEST_TIME), '>=');
-            $all    = $DB->query($SQL->get(dsn()), 'all');
-
-            //--------
-            // double
-            if ( 0 < count($all) ) {
-                $this->failed('auth=double');
-            }
-
-            //---------------
-            // profile image
-            $imgUri = "https://graph.facebook.com/$fbid/picture?type=large";
-            if ( $rsrc = file_get_contents($imgUri) ) {
-                $POST       = new ACMS_POST();
-
-                $extension  = substr(strrchr($imgUri, '.'), 1);
-                $imgPath    = $POST->archivesDir().uniqueString().'.jpg';
-                $POST->setupDir(dirname(ARCHIVES_DIR.$imgPath), intval(config('permission_dir')));
-                @file_put_contents(ARCHIVES_DIR.$imgPath, $rsrc);
-
-                $resizePath = $POST->archivesDir().'square64-'.uniqueString().'.jpg';
-                $POST->copyImage(ARCHIVES_DIR.$imgPath, ARCHIVES_DIR.$resizePath, 64, 64, 64);
-                @unlink(ARCHIVES_DIR.$imgPath);
-                $imgPath = $resizePath;
-            }
-
-            //----------
-            // add user
-            $SQL    = SQL::newSelect('user');
-            $SQL->setSelect('user_sort');
-            $SQL->setOrder('user_sort', 'DESC');
-            $SQL->addWhereOpr('user_blog_id', $bid);
-            $sort   = intval($DB->query($SQL->get(dsn()), 'one')) + 1;
-            $uid    = $DB->query(SQL::nextval('user_id', dsn()), 'seq');
-            $username = isset($account['username']) ? $account['username'] : $account['id'];
-
-            $SQL    = SQL::newInsert('user');
-            $SQL->addInsert('user_id', $uid);
-            $SQL->addInsert('user_sort', $sort);
-            $SQL->addInsert('user_generated_datetime', date('Y-m-d H:i:s', REQUEST_TIME));
-            $SQL->addInsert('user_blog_id', $bid);
-            $SQL->addInsert('user_code', $username);
-            $SQL->addInsert('user_status', 'open');
-            $SQL->addInsert('user_name', $account['name']);
-            $SQL->addInsert('user_pass', ACMS_POST::genPass(8));
-            $SQL->addInsert('user_facebook_id', $fbid);
-            $SQL->addInsert('user_mail', $username.'@example.com');
-            $SQL->addInsert('user_mail_magazine', 'off');
-            $SQL->addInsert('user_mail_mobile_magazine', 'off');
-            $SQL->addInsert('user_icon', $imgPath);
-            $SQL->addInsert('user_auth', config('subscribe_auth', 'subscriber'));
-            $SQL->addInsert('user_indexing', 'on');
-            $SQL->addInsert('user_login_anywhere', 'off');
-            $SQL->addInsert('user_login_expire', '9999-12-31');
-            $SQL->addInsert('user_updated_datetime', date('Y-m-d H:i:s', REQUEST_TIME));
-
-            $DB->query($SQL->get(dsn()), 'exec');
-
-            //---------------------
-            // generate session id
-            $SQL    = SQL::newSelect('user');
-            $SQL->addWhereOpr('user_facebook_id', $fbid);
-            $SQL->addWhereOpr('user_status', 'open');
-            $SQL->addWhereOpr('user_login_expire', date('Y-m-d', REQUEST_TIME), '>=');
-            $all    = $DB->query($SQL->get(dsn()), 'all');
-
-            if ( 1 < count($all) ) {
-                $this->failed('auth=failed');
-            }
-            $sid = generateSession($all[0]);
-
-            $url    = acmsLink(array(
-                'protocol'      => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
-                'bid'           => $bid,
-                'sid'           => $sid,
-                'query'         => array(),
-            ), false);
-
-            $Session->clear();
-
-            ACMS_POST::redirect($url, null, true);
-        } else if ( $requestType === 'addition' ) {
-            $query  = array('edit' => 'update');
-            $bid    = $Session->get('fb_blog_id');
-            $uid    = $Session->get('fb_user_id');
-
-            //-------------------
-            // access restricted
-            if ( !SUID ) {
-                $query['auth'] = 'failed';
-            }
-
-            //----------------
-            // sns auth check
-            if ( !snsLoginAuth($uid, $bid) ) { 
-                $Session->clear();
-                $this->failed('auth=failed');
-            }
-
-            //----------------
-            // authentication
-            $SQL    = SQL::newSelect('user');
-            $SQL->addSelect('user_id');
-            $SQL->addWhereOpr('user_facebook_id', $fbid);
-            $all    = $DB->query($SQL->get(dsn()), 'all');
-
-            //--------
-            // double
-            if ( 0 < count($all) ) {
-                $query['auth'] = 'double';
-            }
-
-            if ( !isset($query['auth']) ) {
-                $SQL    = SQL::newUpdate('user');
-                $SQL->addUpdate('user_facebook_id', $fbid);
-                $SQL->addWhereOpr('user_id', $uid);
-                $DB->query($SQL->get(dsn()), 'exec');
-            }
-
-            $url    = acmsLink(array(
-                'bid'           => $bid,
-                'uid'           => $uid,
-                'admin'         => 'user_edit',
-                'query'         => $query,
-            ), false);
-
-            $Session->clear();
-
-            ACMS_POST::redirect($url);
+        } else if ( $this->auth_type === 'addition' ) {
+            $url = $this->addition();
         }
+
+        ACMS_POST::redirect($url, null, true);
+    }
+
+    /**
+     * google ログイン処理を実行する
+     *
+     */
+    function login()
+    {
+        $user = loginAuthentication($this->fbid, 'user_facebook_id');
+        if ( $user === false ) {
+            $this->loginFailed('login=failed');
+            return false;
+        }
+
+        $sid        = generateSession($user);  // generate session id
+        $bid        = intval($user['user_blog_id']);
+        $login_bid  = BID;
+
+        if ( 1
+            and ( 'on' == $user['user_login_anywhere'] || roleAvailableUser() )
+            and !isBlogAncestor(BID, $bid, true)
+        ) {
+            $login_bid   = $bid;
+        }
+
+        return acmsLink(array(
+            'protocol'      => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
+            'bid'           => $login_bid,
+            'sid'           => $sid,
+            'query'         => array(),
+        ));
+    }
+
+    /**
+     * googleアカウントでサインアップ処理を行う
+     *
+     */
+    function signup()
+    {
+        // sns auth check
+        if ( loadBlogConfig($this->auth_bid)->get('snslogin') !== 'on' ) { 
+            $this->loginFailed('auth=failed');
+            return false;
+        }
+
+        // duplicate check
+        $all = getUser($this->fbid, 'user_facebook_id');
+        if ( 0 < count($all) ) {
+            $this->loginFailed('auth=double');
+            return false;
+        }
+
+        // create account
+        $image_uri = "https://graph.facebook.com/$this->fbid/picture?type=large";
+        $account = $this->extractAccountData($this->user);
+        $account['icon'] = $this->userIconFromUri($image_uri);
+        $this->addUserFromOauth($account);
+
+        // get user data
+        $all = getUser($this->fbid, 'user_facebook_id');
+        if ( empty($all) || 1 < count($all) ) {
+            $this->loginFailed('auth=double');
+            return false;
+        }
+
+        // generate session id
+        $sid = generateSession($all[0]);
+
+        return acmsLink(array(
+            'protocol'      => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
+            'bid'           => $this->auth_bid,
+            'sid'           => $sid,
+            'query'         => array(),
+        ), false);
+    }
+
+    /**
+     * 既存のユーザーにFacebookアカウントを結びつける
+     *
+     */
+    function addition()
+    {
+        $DB     = DB::singleton(dsn());
+        $query  = array('edit' => 'update');
+
+        // access restricted
+        if ( !SUID ) {
+            $query['auth'] = 'failed';
+        }
+
+        // sns auth check
+        if ( !snsLoginAuth($this->auth_uid, $this->auth_bid) ) { 
+            $this->loginFailed('auth=failed');
+            return false;
+        }
+
+        // authentication
+        $SQL    = SQL::newSelect('user');
+        $SQL->addSelect('user_id');
+        $SQL->addWhereOpr('user_facebook_id', $this->fbid);
+        $all    = $DB->query($SQL->get(dsn()), 'all');
+
+        // double
+        if ( 0 < count($all) ) {
+            $query['auth'] = 'double';
+        }
+
+        if ( !isset($query['auth']) ) {
+            $SQL    = SQL::newUpdate('user');
+            $SQL->addUpdate('user_facebook_id', $this->fbid);
+            $SQL->addWhereOpr('user_id', $this->auth_uid);
+            $DB->query($SQL->get(dsn()), 'exec');
+        }
+
+        return acmsLink(array(
+            'protocol'  => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
+            'bid'       => $this->auth_bid,
+            'uid'       => $this->auth_uid,
+            'admin'     => 'user_edit',
+            'query'     => $query,
+        ), false);
     }
 }

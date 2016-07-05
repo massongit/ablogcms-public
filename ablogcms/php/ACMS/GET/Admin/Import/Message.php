@@ -27,6 +27,7 @@ class ACMS_GET_Admin_Import_Message extends ACMS_GET
         if ( !empty($importMess) ) {
             $Tpl->add(null, array(
                 'importMessage' => $importMess,
+                'success'       => $successFlag,
                 'notice_mess'   => 'show',
             ));
         }

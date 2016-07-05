@@ -878,7 +878,7 @@ class ACMS_RAM
      */
     public static function entryIndexing($eid)
     {
-        return intval(ACMS_RAM::_mapping('entry_indexing', $eid));
+        return ACMS_RAM::_mapping('entry_indexing', $eid);
     }
 
     /**

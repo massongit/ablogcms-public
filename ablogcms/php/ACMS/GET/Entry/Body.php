@@ -212,16 +212,18 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             || ( !roleAvailableUser() && ( sessionWithCompilation() || (sessionWithContribution() && $uid == SUID) ) )
             || ( roleAvailableUser() && ( roleAuthorization('entry_edit_all', BID) || (roleAuthorization('entry_edit', BID) && $uid == SUID) ) )
         ) { 
+            $entry  = ACMS_RAM::entry($eid);
+
             $val    = array(
                 'bid'   => $bid,
                 'cid'   => $cid,
                 'eid'   => $eid,
-                'status.title'   => ACMS_RAM::entryTitle($eid),
-                'status.category'=> ACMS_RAM::categoryName($cid),
-                'status.url'     => acmsLink(array('bid'=>$bid, 'cid'=>$cid, 'eid'=>$eid, 'sid'=>null, '_protocol'=>'http')),
+                'status.approval'   => $entry['entry_approval'],
+                'status.title'      => ACMS_RAM::entryTitle($eid),
+                'status.category'   => ACMS_RAM::categoryName($cid),
+                'status.url'        => acmsLink(array('bid'=>$bid, 'cid'=>$cid, 'eid'=>$eid, 'sid'=>null, '_protocol'=>'http')),
             );
 
-            $entry  = ACMS_RAM::entry($eid);
             if ( !(sessionWithApprovalAdministrator() && $entry['entry_approval'] === 'pre_approval') ) {
                 if ( IS_LICENSED ) {
                     $Tpl->add(array_merge(array('edit'), $block), $val);
@@ -244,7 +246,9 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                         $Tpl->add(array_merge(array($statusBlock), $block), $val);
                     }
                 }
-                $Tpl->add(array_merge(array('delete'), $block), $val);
+                if ( sessionWithApprovalAdministrator() || $entry['entry_approval'] === 'pre_approval') {
+                    $Tpl->add(array_merge(array('delete'), $block), $val);
+                }
 
                 if ( 1
                     and 'on' == config('entry_edit_inplace_enable')
@@ -254,6 +258,8 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 ) {
                     $Tpl->add(array_merge(array('adminDetailEdit'), $block), $val);
                 }
+            } else if ( sessionWithApprovalAdministrator() ) {
+                $Tpl->add(array_merge(array('delete'), $block), $val);
             } else {
                 $Tpl->add(array_merge(array('revision'), $block), $val);
             }
@@ -311,7 +317,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             $vars += $this->buildTrackbackAmount($eid);
         }
 
-        //----------------
+        //---------------
         // build summary
         if ( $this->summary_on === 'on' ) {
             $this->buildSummaryFulltext($vars, $eid);
@@ -323,6 +329,20 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 $marker = config('entry_body_fulltext_marker');
                 $vars['summary']    = mb_strimwidth($vars['summary'], 0, $width, $marker, 'UTF-8');
             }
+        }
+
+        //---------------------
+        // build primary image
+        $clid = intval($row['entry_primary_image']);
+        if ( config('entry_body_image_on') === 'on' ) {
+            $config = array(
+                'imageX' => config('entry_body_image_x', 200),
+                'imageY' => config('entry_body_image_y', 200),
+                'imageTrim' => config('entry_body_image_trim', 'off'),
+                'imageCenter' => config('entry_body_image_zoom', 'off'),
+                'imageZoom' => config('entry_body_image_center', 'off'),
+            );
+            $Tpl->add('mainImage', $this->buildImage($Tpl, $clid, $config));
         }
 
         //-------
@@ -543,16 +563,11 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
             // build serialNavi
             if($this->serial_navi_on === 'on'){
                 $SQLCommon  = SQL::newSelect('entry');
-                $SQLCommon->addSelect('entry_id');
-                $SQLCommon->addSelect('entry_title');
-                $SQLCommon->addSelect('entry_status');
-                $SQLCommon->addSelect('entry_approval');
-                $SQLCommon->addSelect('entry_start_datetime');
-                $SQLCommon->addSelect('entry_end_datetime');
+                $SQLCommon->addLeftJoin('category', 'category_id', 'entry_category_id');
                 $SQLCommon->setLimit(1);
                 $SQLCommon->addWhereOpr('entry_blog_id', $this->bid);
                 if ($this->serial_navi_ignore_category_on !== 'on') {
-                    $SQLCommon->addWhereOpr('entry_category_id', $this->cid);
+                    ACMS_Filter::categoryTree($SQLCommon, $this->cid, $this->categoryAxis());
                 }
                 ACMS_Filter::entrySession($SQL);
                 ACMS_Filter::entrySpan($SQLCommon, $this->start, $this->end);
@@ -856,19 +871,23 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                 if ( $this->show_all_index == 'on' ) {
                     $summaryRange = null;
                 }
+
+                $SQL = SQL::newSelect('column');
+                $SQL->addSelect('*', 'column_amount', null, 'COUNT');
+                $SQL->addWhereOpr('column_entry_id', $eid);
+                $amount = $DB->query($SQL->get(dsn()), 'one');
+
                 if ( $Column = loadColumn($eid, $summaryRange, $RVID_) ) {
                     $this->buildColumn($Column, $Tpl, $eid);
                     if ( !empty($summaryRange) ) {
-                        $SQL    = SQL::newSelect('column');
-                        $SQL->addSelect('*', 'column_amount', null, 'COUNT');
-                        $SQL->addWhereOpr('column_entry_id', $eid);
-                        $amount = $DB->query($SQL->get(dsn()), 'one');
-
                         if ( $summaryRange < $amount ) {
                             $vars['continueUrl']    = $inheritUrl;
                             $vars['continueName']   = $continueName;
                         }
                     }
+                } else if ( $amount > 0 ) {
+                    $vars['continueUrl']    = $inheritUrl;
+                    $vars['continueName']   = $continueName;
                 }
 
                 $this->buildBodyField($Tpl, $vars, $row, $serial);

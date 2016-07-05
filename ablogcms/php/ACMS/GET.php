@@ -145,12 +145,14 @@ class ACMS_GET
 
     function blogAxis()
     {
-        return $this->_axis['bid'];
+        $axis = $this->_axis['bid'];
+        return empty($axis) ? 'self' : $axis;
     }
 
     function categoryAxis()
     {
-        return $this->_axis['cid'];
+        $axis = $this->_axis['cid'];
+        return empty($axis) ? 'self' : $axis;
     }
 
     function fire()
@@ -745,6 +747,17 @@ class ACMS_GET
                     );
                 }
 
+                //--------
+                // large
+                $large = ARCHIVES_DIR.preg_replace('@(.*?)([^/]+)$@', '$1large-$2', $filename);
+                if ( $xy = @getimagesize($large) ) {
+                    $vars   += array(
+                        'largePath'.$fx    => $large,
+                        'largeX'.$fx       => $xy[0],
+                        'largeY'.$fx       => $xy[1],
+                    );
+                }
+
             } else {
                 $Tpl->add('noimage', array(
                     'noImgX'  => $config['imageX'],
@@ -1083,7 +1096,7 @@ class ACMS_GET
                         $_text = ACMS_Corrector::table($_text);
                         break;
                 }
-                $text   = preg_replace('@\s+@', ' ', strip_tags($_text));
+                $text   = preg_replace('@\s+@u', ' ', strip_tags($_text));
                 $data   = explodeUnitData($text);
                 foreach ( $data as $i => $txt ) {
                     if ( isset($textData[$i]) ) {

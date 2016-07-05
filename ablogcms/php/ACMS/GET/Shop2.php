@@ -13,6 +13,8 @@
 
 class ACMS_GET_Shop2 extends ACMS_GET
 {
+    protected $session;
+
     function initVars()
     {
         $this->item_id      = config('shop_item_id');
@@ -22,16 +24,14 @@ class ACMS_GET_Shop2 extends ACMS_GET
         $this->item_sku     = config('shop_item_sku');
         $this->item_category= config('shop_item_category');
         $this->item_except  = config('shop_item_exception');
-
-        $this->sname        = config('shop_session');
         $this->cname        = config('shop_cart');
+        $this->sname        = config('shop_session');
 
         $this->addedTpl     = config('shop_tpl_added');
         $this->orderTpl     = config('shop_tpl_order');
         $this->loginTpl     = config('shop_tpl_login');
 
-        session_name($this->sname);
-        @session_start();
+        $this->session = ACMS_Session::singleton();
     }
 
     function sanitize(&$data)
@@ -46,16 +46,18 @@ class ACMS_GET_Shop2 extends ACMS_GET
 
     function openSession()
     {
-        if ( !SID && !empty($_SESSION[$this->sname.BID]) ) {
-            return $_SESSION[$this->sname.BID];
-        } elseif ( !SID && empty($_SESSION[$this->sname.BID]) ) {
+        $sname = $this->sname.BID;
+        $session = $this->session->get($sname);
+
+        if ( !SID && !empty($session) ) {
+            return $session;
+        } else if ( !SID && empty($session) ) {
             return new Field;
-        } elseif ( !!SID && !empty($_SESSION[$this->sname.BID]) ) {
-            $SESSION = Field::singleton('session');
-            $SESSION = $_SESSION[$this->sname.BID];
-            unset($_SESSION[$this->sname.BID]);
-            return $SESSION;
-        } elseif ( !!SID && empty($_SESSION[$this->sname.BID]) ) {
+        } else if ( !!SID && !empty($session) ) {
+            $this->session->delete($sname);
+            $this->session->save();
+            return $session;
+        } else if ( !!SID && empty($session) ) {
             return Field::singleton('session');
         }
     }
@@ -63,7 +65,8 @@ class ACMS_GET_Shop2 extends ACMS_GET
     function closeSession($DATA)
     {
         if ( !SID ) {
-            $_SESSION[$this->sname.BID] = $DATA;
+            $this->session->set($this->sname.BID, $DATA);
+            $this->session->save();
         } elseif ( !!SID ) {
             // script shutdown, when session is auto saving.
         }
@@ -71,11 +74,12 @@ class ACMS_GET_Shop2 extends ACMS_GET
 
     function openCart()
     {
+        $cart = $this->session->get($this->cname.$this->bid);
         if ( !!SID ) {
             $temp = $this->loadCart(SID);
-            return !empty($temp) ? $temp : @$_SESSION[$this->cname.$this->bid];
-        } elseif ( !SID && !empty($_SESSION[$this->cname.$this->bid]) ) {
-            return @$_SESSION[$this->cname.$this->bid];
+            return !empty($temp) ? $temp : $cart;
+        } elseif ( !SID && !empty($cart) ) {
+            return $cart;
         } else {
             return array();
         }
@@ -83,7 +87,8 @@ class ACMS_GET_Shop2 extends ACMS_GET
 
     function closeCart($CART)
     {
-        $_SESSION[$this->cname.$this->bid] = $CART;
+        $this->session->set($this->cname.$this->bid, $CART);
+        $this->session->save();
 
         if ( !!SID ) {
             $CART   = serialize($CART);

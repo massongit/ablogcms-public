@@ -733,20 +733,20 @@ class Field_Validation extends Field
                 if ( $aryFd = $this->getArray($fd) ) {
                     if ( substr($name, 0, 4) == 'all_' ) {
 
-                        $res    = method_exists($V, $name) ? $V->$name($aryFd, $arg, $this) : !!$arg;
+                        $res    = is_callable(array($V, $name)) ? $V->$name($aryFd, $arg, $this) : !!$arg;
                         $this->setValidator($fd, $name, $res, 0);
 
                     } else {
 
                         foreach ( $aryFd as $i => $val ) {
-                            $res    = method_exists($V, $name) ? $V->$name($val, $arg, $this) : !!$arg;
+                            $res    = is_callable(array($V, $name)) ? $V->$name($val, $arg, $this) : !!$arg;
                             $this->setValidator($fd, $name, $res, $i);
                         }
 
                     }
                 } else {
                     //$this->setField($fd);
-                    $res    = method_exists($V, $name) ? $V->$name(null, $arg, $this) : !!$arg;
+                    $res    = is_callable(array($V, $name)) ? $V->$name(null, $arg, $this) : !!$arg;
                     $this->setValidator($fd, $name, $res, 0);
                 }
             }

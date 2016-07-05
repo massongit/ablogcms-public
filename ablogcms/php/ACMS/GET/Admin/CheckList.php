@@ -75,10 +75,6 @@ class ACMS_GET_Admin_CheckList extends ACMS_GET
         $license = array();
         $license['domain']  = LICENSE_DOMAIN;
         $license['version'] = VERSION;
-        if ( DOMAIN != 'localhost' && !is_private_ip(DOMAIN) ) {
-            $license['expire']  = LICENSE_EXPIRE ? date('Y-m-d H:i:s', strtotime(LICENSE_EXPIRE)) : 'なし';
-            $license['period']  = LICENSE_PERIOD ? date('Y-m-d H:i:s', (strtotime(SYSTEM_GENERATED_DATETIME) + intval(LICENSE_PERIOD))) : 'なし';
-        }
         switch ( LICENSE_EDITION ) {
             case 'enterprise':
                 $license['edition'] = 'Enterprise';

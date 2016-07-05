@@ -81,6 +81,9 @@ class ACMS_GET_Layout extends ACMS_GET
             } else {
                 $SQL->addWhereOpr('layout_grid_preview', 0);
             }
+            if ( config('layout_blog_free') !== 'on' ) {
+                $SQL->addWhereOpr('layout_grid_blog_id', BID);
+            }
             $SQL->setOrder('layout_grid_row', 'ASC');
             $all    = $DB->query($SQL->get(dsn()), 'all');
             if ( empty($all) ) {
@@ -278,7 +281,7 @@ class ACMS_GET_Layout extends ACMS_GET
         } else {
             $mTpl    = preg_replace(
                 array(
-                    '/<!--[\t 　]*BEGIN[\t 　]+layout\#dummy^>]*?-->.*<!--[\t 　]*END[\t 　]+layout\#dummy[^>]*?-->/is',
+                    '/<!--[\t 　]*BEGIN[\t 　]+layout\#dummy[^>]*?-->.*<!--[\t 　]*END[\t 　]+layout\#dummy[^>]*?-->/is',
                     '/<!--[\t 　]*(BEGIN|END)[\t 　]+layout\#display[^>]*?-->/is',
                 ),
                 array(

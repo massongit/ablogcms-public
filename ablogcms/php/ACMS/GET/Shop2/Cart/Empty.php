@@ -17,8 +17,10 @@ class ACMS_GET_Shop2_Cart_Empty extends ACMS_GET_Shop2
         $bid    = BID;
 
         if ( $step == 'result' ) {
-            if ( !empty($_SESSION[$this->cname.$bid]) ) {
-                unset($_SESSION[$this->cname.$bid]);
+            $cart = $this->session->get($this->cname.$bid);
+            if ( !empty($cart) ) {
+                $this->session->delete($this->cname.$bid);
+                $this->session->save();
             }
         }
 

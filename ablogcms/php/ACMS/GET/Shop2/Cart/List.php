@@ -44,7 +44,8 @@ class ACMS_GET_Shop2_Cart_List extends ACMS_GET_Shop2
         // 商品を削除するときのパターン
         if ( $this->Get->isExists('delete') ) {
             $delete_target = $this->Get->get('delete');
-            $_SESSION['deleted'] = $TEMP[$delete_target];
+            $this->session->set('delete', $TEMP[$delete_target]);
+            $this->session->save();
             unset($TEMP[$delete_target]);
             $this->closeCart($TEMP);
 

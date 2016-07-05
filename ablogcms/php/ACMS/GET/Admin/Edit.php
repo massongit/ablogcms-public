@@ -14,13 +14,13 @@ class ACMS_GET_Admin_Edit extends ACMS_GET_Admin
         return true;
     }
 
-    function get()
+    function auth()
     {
         if ( 1
             && 'user_edit' <> ADMIN
             && !sessionWithContribution()
         ) {
-            return '';
+            return false;
         }
 
         if ( 1
@@ -31,6 +31,14 @@ class ACMS_GET_Admin_Edit extends ACMS_GET_Admin
             && 'entry_editor' <> ADMIN
             && !sessionWithCompilation()
         ) {
+            return false;
+        }
+        return true;
+    }
+
+    function get()
+    {
+        if ( !$this->auth() ) {
             return '';
         }
 

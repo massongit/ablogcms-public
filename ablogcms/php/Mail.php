@@ -302,7 +302,7 @@ class Mail
                 if ( preg_match($cr, $val) ) $attack = true;
             }
         } else if ( is_string($values) ) {
-            if ( preg_match($cr, $values) ) $attack = true;
+            $values = preg_replace($cr, '', $values);
         }
 
         if ( is_array($params) ) {
@@ -310,7 +310,7 @@ class Mail
                 if ( preg_match($cr, $val) ) $attack = true;
             }
         } else if ( is_string($params) ) {
-            if ( preg_match($cr, $params) ) $attack = true;
+            $values = preg_replace($cr, '', $values);
         }
 
         if ( $attack ) {

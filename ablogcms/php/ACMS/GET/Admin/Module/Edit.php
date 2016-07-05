@@ -9,11 +9,8 @@
  */
 class ACMS_GET_Admin_Module_Edit extends ACMS_GET_Admin_Edit
 {
-    function edit($Tpl)
+    function auth()
     {
-        $mid    = $this->Get->get('mid');
-        $Module = $this->Post->getChild('module');
-
         if ( roleAvailableUser() ) {
             if ( !roleAuthorization('module_edit', BID) ) return false;
         } else {
@@ -22,6 +19,13 @@ class ACMS_GET_Admin_Module_Edit extends ACMS_GET_Admin_Edit
                 return true;
             }
         }
+        return true;
+    }
+
+    function edit($Tpl)
+    {
+        $mid    = $this->Get->get('mid');
+        $Module = $this->Post->getChild('module');
 
         if ( !sessionWithAdministration() && ACMS_POST::checkShortcut('Module_Update', ADMIN, 'mid', $mid) ) {
             $this->Post->set('shortcut', 'yes');

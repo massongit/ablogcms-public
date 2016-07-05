@@ -9,14 +9,18 @@
  */
 class ACMS_GET_Admin_Rule_Edit extends ACMS_GET_Admin_Edit
 {
-    function edit(& $Tpl)
+    function auth()
     {
         if ( roleAvailableUser() ) {
             if ( !roleAuthorization('rule_edit', BID) ) return false;
         } else {
             if ( !sessionWithAdministration() ) return false;
         }
-        
+        return true;
+    }
+
+    function edit(& $Tpl)
+    {
         $Rule   =& $this->Post->getChild('rule');
         if ( $Rule->isNull() and (!!$rid = $this->Get->get('rid')) ) {
             $Rule->overload(loadRule($rid));

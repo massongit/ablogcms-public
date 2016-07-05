@@ -9,6 +9,16 @@
  */
 class ACMS_GET_Admin_Category_Edit extends ACMS_GET_Admin_Edit
 {
+    function auth()
+    {
+        if ( roleAvailableUser() ) {
+            if ( !roleAuthorization('category_edit', BID) ) return false;
+        } else {
+            if ( !sessionWithCompilation() ) return false;
+        }
+        return true;
+    }
+
     function edit()
     {
         $Category   =& $this->Post->getChild('category');

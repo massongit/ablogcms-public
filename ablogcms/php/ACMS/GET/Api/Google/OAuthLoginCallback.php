@@ -1,50 +1,46 @@
 <?php
 /**
- * ACMS_GET_Api_Twitter_OAuthLoginCallback
+ * ACMS_GET_Api_Google_OAuthLoginCallback
  *
  * This file is part of the a-blog cms package.
  * Please see LICENSE. Complete license information is there.
  *
  * (c) appleple inc. <info@appleple.com>
  */
-class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
+class ACMS_GET_Api_Google_OAuthLoginCallback extends ACMS_GET_Api_Google
 {
-    var $api        = null;
-    var $user       = null;
-    var $twid       = null;
+    private $user;
 
     function get()
     {
-        $this->getAuthSession('tw_request', 'tw_blog_id', 'tw_user_id');
+        $this->getAuthSession('google_request', 'google_blog_id', 'google_user_id');
 
         $Session    = ACMS_Session::singleton();
-        $Config     = loadBlogConfig(BID);
-        $code       = $this->Get->get('oauth_verifier');
+        $Client     = $this->getGoogleClient();
+        $code       = $this->Get->get('code');
 
-        // token check
-        if ( 0
-            || $Session->get('tw_token') !== $this->Get->get('oauth_token')
-            || empty($this->auth_type)
-            || !in_array($this->auth_type, array('login', 'signup', 'addition'))
-        ) {
-            $this->loginFailed('login=failed');
+        // get access token
+        if ( !!$code ) {
+            $Client->authenticate($code);
+            $Session->set('access_token', $Client->getAccessToken());
+            $Session->save();
+            header('Location: ' . filter_var($this->redirect_uri, FILTER_SANITIZE_URL));
+            die();
+        }
+
+        // access_token continue
+        if ( $Session->get('access_token') ) {
+            $Client->setAccessToken($Session->get('access_token'));
+        } else {
             return false;
         }
 
-        // get access token
-        $this->api = new Services_Twitter(
-            $Config->get('twitter_sns_login_consumer_key'),
-            $Config->get('twitter_sns_login_consumer_secret'),
-            $Session->get('tw_token'),
-            $Session->get('tw_secret'),
-            'request'
-        );
+        // get user info 
+        $Service = new Google_Service_Oauth2($Client);
+        $this->user = $Service->userinfo->get();
 
         // clear session
         $Session->clear();
-
-        $access_token = $this->api->getAcsToken(array('oauth_verifier' => $code));
-        $this->twid   = $access_token['user_id'];
 
         if ( $this->auth_type === 'login' ) {
             $url = $this->login();
@@ -60,18 +56,18 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
     }
 
     /**
-     * tiwtterアカウントでログイン処理を実行する
+     * google ログイン処理を実行する
      *
      */
     function login()
     {
-        $user = loginAuthentication($this->twid, 'user_twitter_id');
+        $user = loginAuthentication($this->user->id, 'user_google_id');
         if ( $user === false ) {
             $this->loginFailed('login=failed');
             return false;
         }
 
-        $sid        = generateSession($user);   // generate session id
+        $sid        = generateSession($user);  // generate session id
         $bid        = intval($user['user_blog_id']);
         $login_bid  = BID;
 
@@ -91,7 +87,7 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
     }
 
     /**
-     * tiwtterアカウントでサインアップ処理を行う
+     * googleアカウントでサインアップ処理を行う
      *
      */
     function signup()
@@ -102,12 +98,8 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
             return false;
         }
 
-        // account info
-        $this->api->httpRequest('account/verify_credentials.json', array(), 'GET');
-        $this->user = json_decode($this->api->Response->body);
-
         // duplicate check
-        $all = getUser($this->twid, 'user_twitter_id');
+        $all = getUser($this->user->id, 'user_google_id');
         if ( 0 < count($all) ) {
             $this->loginFailed('auth=double');
             return false;
@@ -115,13 +107,11 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
 
         // create account
         $account = $this->extractAccountData($this->user);
-        if ( $icon_uri = $this->user->profile_image_url ) {
-            $account['icon'] = $this->userIconFromUri(preg_replace('/_normal/', '', $icon_uri));
-        }
+        $account['icon'] = $this->userIconFromUri($this->user->picture);
         $this->addUserFromOauth($account);
 
         // get user data
-        $all = getUser($this->twid, 'user_twitter_id');
+        $all = getUser($this->user->id, 'user_google_id');
         if ( empty($all) || 1 < count($all) ) {
             $this->loginFailed('auth=double');
             return false;
@@ -139,7 +129,7 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
     }
 
     /**
-     * 既存のユーザーにtwitterアカウントを結びつける
+     * 既存のユーザーにgoogleアカウントを結びつける
      *
      */
     function addition()
@@ -161,7 +151,7 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
         // authentication
         $SQL    = SQL::newSelect('user');
         $SQL->addSelect('user_id');
-        $SQL->addWhereOpr('user_twitter_id', $this->twid);
+        $SQL->addWhereOpr('user_google_id', $this->user->id);
         $all    = $DB->query($SQL->get(dsn()), 'all');
 
         // double
@@ -171,16 +161,17 @@ class ACMS_GET_Api_Twitter_OAuthLoginCallback extends ACMS_GET_Api_Twitter
 
         if ( !isset($query['auth']) ) {
             $SQL    = SQL::newUpdate('user');
-            $SQL->addUpdate('user_twitter_id', $this->twid);
+            $SQL->addUpdate('user_google_id', $this->user->id);
             $SQL->addWhereOpr('user_id', $this->auth_uid);
             $DB->query($SQL->get(dsn()), 'exec');
         }
 
         return acmsLink(array(
-            'bid'           => $this->auth_bid,
-            'uid'           => $this->auth_uid,
-            'admin'         => 'user_edit',
-            'query'         => $query,
+            'protocol'  => (SSL_ENABLE and ('on' == config('login_ssl'))) ? 'https' : 'http',
+            'bid'       => $this->auth_bid,
+            'uid'       => $this->auth_uid,
+            'admin'     => 'user_edit',
+            'query'     => $query,
         ), false);
     }
 }

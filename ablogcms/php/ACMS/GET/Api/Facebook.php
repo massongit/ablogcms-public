@@ -74,4 +74,25 @@ class ACMS_GET_Api_Facebook extends ACMS_GET_Api
     {
         return base64_decode(strtr($str, '-_', '+/'));
     }
+
+    /**
+     * Facebook認証からユーザー情報を抜き出し
+     *
+     * @param array $account
+     * @return array
+     */
+    function extractAccountData($account)
+    {
+        $username = isset($account['username']) ? $account['username'] : $account['id'];
+
+        return array(
+            'bid'           => $this->auth_bid,
+            'code'          => $username,
+            'name'          => $account['name'],
+            'email'         => $username.'@example.com',
+            'oauth_type'    => 'user_facebook_id',
+            'oauth_id'      => $account['id'],
+            'icon'          => '',
+        );
+    }
 }

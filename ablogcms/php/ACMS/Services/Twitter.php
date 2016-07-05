@@ -207,11 +207,12 @@ class Services_Twitter extends OAuth_Consumer
     /**
      * アクセストークンを取得する
      *
+     * @param array $params クエリ
      * @return array|bool
      */
-    public function getAcsToken()
+    public function getAcsToken($params)
     {
-        return parent::getAcsToken();
+        return parent::getAcsToken($params);
     }
 
     /**
@@ -230,30 +231,24 @@ class Services_Twitter extends OAuth_Consumer
         $request    = $this->OAuth->buildRequest($url, $params, 'HMAC-SHA1', $http_method);
         $method     = strtoupper($http_method);
 
-        include_once 'HTTP/Request.php';
+        $curl = curl_init();
 
-        // ここを書き換えれば，使用するHTTPリクエスト用のライブラリは変更できる
-        // 旧仕様に合わせるために，HTTP_Reuqestにbodyとerrorプロパティを独自拡張
-        $req  = new HTTP_Request($request, array(
-            // TODO issue: タイムアウトをconfigで設定可能にする
-            'timeout'     => 3,
-            'readTimeout' => array(5, 0),
-        ));
-        $req->setMethod($method);
-        $req->addHeader('User-Agent', 'ablogcms/'.VERSION);
-        $req->addHeader('Accept-Language', HTTP_ACCEPT_LANGUAGE);
+        curl_setopt($curl, CURLOPT_URL, $request);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
 
-        $this->Response = $req;
+        $response = curl_exec($curl);
+        $this->Response = new stdClass;
         $this->Response->error = false;
 
-        if ( $this->Response->sendRequest() ) {
-            if ( $this->Response->getResponseCode() != 200 ) {
-                $this->Response->error = true;
-            }
-            $this->Response->body = $this->Response->getResponseBody();
-        } else {
+        if ($response === false) {
             $this->Response->error = true;
         }
+
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $this->Response->body = substr($response, $header_size);
 
         return !($this->Response->error);
     }

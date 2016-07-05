@@ -144,7 +144,7 @@ class ACMS_GET_Admin_Entry_Index extends ACMS_GET_Admin_Entry
         if ( $UID ) $SQL->addWhereOpr('entry_user_id', $UID);
 
         $Pager  = new SQL_Select($SQL);
-        $Pager->setSelect('*', 'entry_amount', null, 'count');
+        $Pager->setSelect('DISTINCT(entry_id)', 'entry_amount', null, 'count');
         if ( !$pageAmount = intval($DB->query($Pager->get(dsn()), 'one')) ) {
             $Tpl->add('index#notFound');
             $vars['notice_mess'] = 'show';
@@ -186,6 +186,7 @@ class ACMS_GET_Admin_Entry_Index extends ACMS_GET_Admin_Entry
 
         $SQL->setLimit($limit, (PAGE - 1) * $limit);
         ACMS_Filter::entryOrder($SQL, $order, $UID, CID);
+        $SQL->addGroup('entry_id');
 
         $q  = $SQL->get(dsn());
         $DB->query($q, 'fetch');

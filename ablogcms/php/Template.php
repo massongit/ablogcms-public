@@ -321,4 +321,52 @@ class Template
         if ( is_null($this->_blockIdTxt[0]) ) $this->add();
         return str_replace(array('<!-- BEGIN\\','<!-- END\\'), array('<!-- BEGIN','<!-- END'), $this->_blockIdTxt[0]);
     }
+
+    /**
+     * テンプレートを組み立て文字列で取得する
+     *
+     * @param mixed $vars
+     * @return string
+     */
+    function render($vars)
+    {
+        if ( is_array($vars) ) {
+            $this->build(json_decode(json_encode($vars)));
+        } else if ( is_object($vars)  ) {
+            $this->build($vars);
+        } else {
+            return false;
+        }
+        return $this->get();
+    }
+
+    /**
+     * オブジェクトからテンプレートを組み立てる
+     *
+     * @param stdClass $obj
+     * @param array $blocks
+     * @return void
+     */
+    function build($obj, $blocks=array())
+    {
+        $strVars = array();
+        if ( !is_object($obj) ) return;
+
+        foreach ( get_object_vars($obj) as $key => $vars ) {
+            if ( is_object($vars) ) {
+                $this->build($vars, array_merge(array($key), $blocks));
+            } else if ( is_array($vars)  ) {
+                foreach ( $vars as $i =>  $loopVars  ) {
+                    if ( is_object($loopVars) ) {
+                        $loopVars->{$key.'.i'} = ++$i;
+                        $this->build($loopVars, array_merge(array($key.':loop'), $blocks));
+                    }
+                }
+            } else {
+                $strVars[$key] = $vars;
+            }
+        }
+        if ( empty($blocks) ) $blocks = null;
+        $this->add($blocks, $strVars);
+    }
 }

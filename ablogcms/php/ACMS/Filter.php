@@ -965,7 +965,7 @@ class ACMS_Filter
         if ( empty($keyword) ) return false;
 
         $keyword = addcslashes($keyword, '%_');
-        if ( !$aryWord = preg_split('@(　|\s)+@', $keyword, -1, PREG_SPLIT_NO_EMPTY) ) return false;
+        if ( !$aryWord = preg_split('/(　|\s)+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY) ) return false;
 
         //----------------------
         // NGRAM & BOOLEAN MODE

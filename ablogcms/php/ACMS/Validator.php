@@ -9,6 +9,23 @@
  */
 class ACMS_Validator
 {
+    private $userValidator;
+
+    public function __construct()
+    {
+        $this->userValidator = class_exists('ACMS_User_Validator');
+    }
+
+    public function __call($method, $argument)
+    {
+        if ( $this->userValidator && is_callable(array('ACMS_User_Validator', $method)) ) {
+            $v = new ACMS_User_Validator;
+
+            return $v->$method($argument[0], $argument[1]);
+        }
+        return !!$argument[1];
+    }
+
     function required($val)
     {
         $tmp = preg_replace('/^[\s　]*(.*?)[\s　]*$/u', '\1', $val);

@@ -38,6 +38,8 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
       //'EN'  => array( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ),
     );
 
+    var $weekStart; // 七曜表の始まり
+
     function get()
     {
         $queryDate = $this->Q->getArray('date');
@@ -66,6 +68,8 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         $this->unit     = config('schedule_unit');
         $this->key      = config('schedule_key');
         //$this->labels   = configArray('schedule_label@'.$this->key);
+
+        $this->weekStart = config('schedule_week_start', 0);
 
         $DB     = DB::singleton(dsn());
         $SQL    = SQL::newSelect('config');
@@ -118,12 +122,19 @@ class ACMS_GET_Plugin_Schedule extends ACMS_GET
         $this->cnt_day  = date('t', mktime(0,0,0,$month,1,$year));
         $cnt_week = null;
 
+        $_n = 0;
+        $_w = 'w';
+        if ( $this->weekStart == 1  ) {
+            $_n = 1;
+            $_w = 'N';
+        }
+
         for ( $n = 1; $n <= $this->cnt_day; $n++ ) {
 
             // IF not listmode add Prefix Days
             if ( $n == 1 && empty($this->listmode) ) {
-                $w = date('w', mktime(0,0,0,$month,$n,$year));
-                for ( $_n = 0; $_n < intval($w); $_n++ ) {
+                $w = date($_w, mktime(0,0,0,$month,$n,$year));
+                for ( ; $_n < intval($w); $_n++ ) {
                     $cnt_week ++;
                     $this->days[$this->getWeekNum($cnt_week)][] = array(); //future: 前月の数値情報?
                 }

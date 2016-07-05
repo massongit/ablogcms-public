@@ -41,9 +41,9 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
             'entryFieldOn'              => config('category_entry_summary_entry_field_on'),
             'categoryFieldOn'           => config('category_entry_summary_category_field_on'),
             'categoryLoopClass'         => config('category_entry_summary_category_loop_class'),
-            'entryLoopClass'            => config('category_entry_summary_entry_loop_class'),
             'fulltextWidth'             => config('category_entry_summary_fulltext_width'),
             'fulltextMarker'            => config('category_entry_summary_fulltext_marker'),
+            'loop_class'                => config('category_entry_summary_entry_loop_class'),
         );
         if(!empty($this->order)){$config['order'] = $this->order;}
         
@@ -133,9 +133,6 @@ class ACMS_GET_Category_EntrySummary extends ACMS_GET_Category_EntryList
 
         $all    = $DB->query($q, 'all');
         if ( empty($all) ) {
-            if ( 'on' == $this->_config['notfound'] ) {
-                $Tpl->add('notFound');
-            }
             return false;
         }
         $this->_endGluePoint = count($all);

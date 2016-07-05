@@ -35,6 +35,7 @@ class ACMS_GET_Topicpath extends ACMS_GET
         $this->buildModuleField($Tpl);
         $DB     = DB::singleton(dsn());
         $cnt    = 0;
+        $loop   = 1;
 
         //------
         // blog
@@ -89,8 +90,10 @@ class ACMS_GET_Topicpath extends ACMS_GET
                     'url'   => acmsLink(array(
                         'bid'   => $bid,
                     )),
+                    'sNum' => $loop,
                 ));
                 $cnt++;
+                $loop++;
             }
         }
 
@@ -148,8 +151,10 @@ class ACMS_GET_Topicpath extends ACMS_GET
                         'bid'   => $this->bid,
                         'cid'   => $cid,
                     )),
+                    'sNum' => $loop,
                 ));
                 $cnt++;
+                $loop++;
             }
         }
 
@@ -175,7 +180,9 @@ class ACMS_GET_Topicpath extends ACMS_GET
                         'bid'   => $this->bid,
                         'eid'   => $eid,
                     )),
+                    'sNum' => $loop,
                 ));
+                $loop++;
             }
         }
 

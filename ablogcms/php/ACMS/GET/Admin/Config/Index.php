@@ -65,6 +65,7 @@ class ACMS_GET_Admin_Config_Index extends ACMS_GET_Admin
             'Plugin_Schedule',
             'Alias_List',
             'Field_ValueList',
+            'Api_GoogleAnalytics_Ranking',
             'Api_Twitter_Statuses_HomeTimeline',
             'Api_Twitter_Statuses_UserTimeline',
             'Api_Twitter_Search',

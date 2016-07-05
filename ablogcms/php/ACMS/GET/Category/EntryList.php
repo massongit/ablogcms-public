@@ -82,6 +82,9 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
                 ) {
                     //-------
                     // entry
+                    if ( $this->_config['notfound'] === 'on' && empty($eRow) ) {
+                        $Tpl->add('notFound');
+                    }
                     if( isset( $this->_config['entryActiveCategory'] ) && 'on' == $this->_config['entryActiveCategory'] && ( $cid != CID || intval(CID) == 0 ) ){
                     }else {
                         $i = 0;

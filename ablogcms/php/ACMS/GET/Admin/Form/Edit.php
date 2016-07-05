@@ -9,6 +9,17 @@
  */
 class ACMS_GET_Admin_Form_Edit extends ACMS_GET_Admin_Edit
 {
+    function auth()
+    {
+        if ( 0
+            || ( !roleAvailableUser() && !sessionWithAdministration() )
+            || ( roleAvailableUser() && !roleAuthorization('form_view', BID) && !roleAuthorization('form_edit', BID) )
+        ) {
+            return false;
+        }
+        return true;
+    }
+
     function edit(& $Tpl)
     {
         $Form   =& $this->Post->getChild('form');

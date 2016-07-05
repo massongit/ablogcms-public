@@ -33,23 +33,6 @@ class ACMS_GET_Admin_ActionMenu extends ACMS_GET
                 $expire = LICENSE_EXPIRE;
             } else {
                 $status = 'trial';
-                $expire = date('Y-m-d H:i:s', strtotime(SYSTEM_GENERATED_DATETIME) + LICENSE_PERIOD);
-            }
-        } else {
-            $status = 'endtrial';
-            switch(WHY_REJECTED) {
-                case LICENSE_REJECT_USERS_OVER:
-                    $status = 'usersover';
-                    break;
-                case LICENSE_REJECT_ILLEGAL_TIME:
-                    $status = 'illegal';
-                    break;
-                case LICENSE_REJECT_ILLEGAL_HASH:
-                    $status = 'illegal';
-                    break;
-                case LICENSE_REJECT_EXPIRED:
-                    $status = 'endtrial';
-                    break;
             }
         }
         $Tpl->add('status#'.$status, array('expire' => $expire));
@@ -59,7 +42,6 @@ class ACMS_GET_Admin_ActionMenu extends ACMS_GET
             'icon'      => loadUserIcon(SUID),
             'logout'    => acmsLink(array('_inherit' => true)),
         );
-
 
         if ( sessionWithContribution() ) {
             if ( IS_LICENSED ) {

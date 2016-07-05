@@ -13,6 +13,16 @@ class ACMS_GET_Admin_Tag_Edit extends ACMS_GET_Admin_Edit
         'tag'   => 'global',
     );
 
+    function auth()
+    {
+        if ( roleAvailableUser() ) {
+            if ( !roleAuthorization('tag_edit', BID) ) return false;
+        } else {
+            if ( !sessionWithCompilation() ) return false;
+        }
+        return true;
+    }
+
     function edit()
     {
         if ( !$this->Post->isExists('tag') ) $this->Post->set('tag', $this->Q->get('tag'));
