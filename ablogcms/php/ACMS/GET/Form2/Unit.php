@@ -47,13 +47,19 @@ class ACMS_GET_Form2_Unit extends ACMS_GET
             //-------------------------
             // radio, select, checkbox
             } else if ( in_array($type, array('radio', 'select', 'checkbox')) ) {
-                $values         = acmsUnserialize($data['values']);
-                foreach ( $values as $val ) {
-                    if ( !empty($val) ) {
-                        $Tpl->add(array($type.'#val:loop', $type, 'column:loop'), array(
-                            'value' => $val,
-                            'utid'  => $utid,
-                        ));
+                if ( 1
+                    && isset($data['values']) 
+                    && $values = acmsUnserialize($data['values'])
+                ) {
+                    if ( is_array($values) ) {
+                        foreach ( $values as $val ) {
+                            if ( !empty($val) ) {
+                                $Tpl->add(array($type.'#val:loop', $type, 'column:loop'), array(
+                                    'value' => $val,
+                                    'utid'  => $utid,
+                                ));
+                            }
+                        }
                     }
                 }
             } else {

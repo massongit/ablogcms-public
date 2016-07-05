@@ -170,7 +170,7 @@ class Mail
         return $set;
     }
 
-    function encode ( $str )
+    function encode ($str, $subject=false)
     {
         $len        = mb_strlen($str, 'UTF-8');
         $encode     = '';
@@ -182,7 +182,11 @@ class Mail
 
             if ( 2 == $byte ) {
                 if ( empty($mbstack) ) {
-                    $encode .= $char;
+                    if ( $subject ) {
+                        $mbstack[] = $char;
+                    } else {
+                        $encode .= $char;
+                    }
                 } else if ( !in_array($char, array(',', '@', '<', '>', '"', '(', ')')) ) {
                     $mbstack[]  = $char;
                 } else {
@@ -372,8 +376,9 @@ class Mail
                 continue;
             }
 
-            $values = $header['values'];
-            $params = $header['params'];
+            $values     = $header['values'];
+            $params     = $header['params'];
+            $subject    = $field === 'Subject';
 
             // field
             $line   .= $field.':';
@@ -381,7 +386,7 @@ class Mail
             // values
             foreach ( $values as $i => $value ) {
                 $line   .= !empty($i) ? ' ,' : ' ';
-                $line   .= $this->encode(strval($value));
+                $line   .= $this->encode(strval($value), $subject);
             }
 
             // params

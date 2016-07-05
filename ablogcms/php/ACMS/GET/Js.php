@@ -62,6 +62,13 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('session', SID ? SESSION_NAME : null);
         jsModule('keyword', htmlspecialchars(str_replace('　', ' ', KEYWORD), ENT_QUOTES));
         jsModule('scriptRoot', '/'.DIR_OFFSET.(REWRITE_ENABLE ? '' : SCRIPT_FILENAME.'/'));
+
+        //-------
+        // cache
+        if ( config('javascript_cachein') === 'off' ) {
+            jsModule('cache', uniqueString());
+        }
+
         $jsModules  = array();
         foreach ( jsModule() as $key => $value ) {
             if ( empty($value) ) continue;

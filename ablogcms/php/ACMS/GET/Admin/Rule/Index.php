@@ -36,6 +36,7 @@ class ACMS_GET_Admin_Rule_Index extends ACMS_GET_Admin
         $SQL->addWhere($Where);
 
         $SQL->setOrder('rule_sort');
+        $SQL->addOrder('rule_blog_id', 'DESC');
 
         if ( !$all = $DB->query($SQL->get(dsn()), 'all') ) {
             $Tpl->add('index#notFound');

@@ -62,12 +62,18 @@ class ACMS_GET_Admin_Config extends ACMS_GET_Admin
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
         $vars   = array();
 
+        $admin  = ADMIN;
+        if ( $mid ) {
+            $module = loadModule($mid);
+            $admin  = 'config_'.strtolower(preg_replace('@(?<=[a-zA-Z0-9])([A-Z])@', '-$1', $module->get('name')));
+        }
+
         $vars['shortcutUrl'] = acmsLink(array(
                 'bid'   => BID,
                 'admin' => 'shortcut_edit',
                 'query' => array(
                     'action' => 'Config',
-                    'admin'  => ADMIN,
+                    'admin'  => $admin,
                     'edit'   => 'add',
                     'step'   => 'reapply',
                     'rid'   => $rid,

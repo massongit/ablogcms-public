@@ -577,15 +577,23 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //-------------------------
         // radio, select, checkbox
         } else if ( in_array($type, array('radio', 'select', 'checkbox')) ) {
-            //--------
-            //values
-            $values         = acmsUnserialize($data['values']);
-            foreach ( $values as $val ) {
-                if ( !empty($val) ) {
-                    $Tpl->add(array_merge(array($type.'_value:loop'), $rootBlock), array(
-                        'value' => $val,
-                        'id'    => $id,
-                    ));
+            // values
+            $values = array();
+            if ( 1
+                && isset($data['values']) 
+                && $values = acmsUnserialize($data['values'])
+            ) {
+                if ( is_array($values) ) {
+                    foreach ( $values as $val ) {
+                        if ( !empty($val) ) {
+                            $Tpl->add(array_merge(array($type.'_value:loop'), $rootBlock), array(
+                                'value' => $val,
+                                'id'    => $id,
+                            ));
+                        }
+                    }
+                } else {
+                    $values = array();
                 }
             }
         } else {

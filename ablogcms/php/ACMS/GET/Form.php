@@ -14,7 +14,7 @@ class ACMS_GET_Form extends ACMS_GET
         $Tpl = new Template($this->tpl, new ACMS_Corrector());
 
         $this->step   = $this->Post->get('error');
-        if ( empty(self::$step) ) {
+        if ( empty($this->step) ) {
             $this->step   = $this->Get->get('step');
         }
         if ( $this->Post->isValidAll() ) {
@@ -43,9 +43,13 @@ class ACMS_GET_Form extends ACMS_GET
     {
         $Session = ACMS_Session::singleton();
 
-        $token  = sha1(uniqueString().'acms'.session_id());
-        $Session->set('formToken', $token);
-        $Session->save();
+        if ( $Session->get('formToken') ) {
+            $token  = $Session->get('formToken');
+        } else {
+            $token  = sha1(uniqueString().'acms'.session_id());
+            $Session->set('formToken', $token);
+            $Session->save();
+        }
 
         // token の埋め込み
         $tpl = preg_replace('@(?=<\s*/\s*form[^\w]*>)@i', '<input type="hidden" name="formToken" value="'.$token.'" />'."\n", $tpl);

@@ -169,7 +169,7 @@ class ACMS_GET
                     'mid'   => $this->mid,
                     'rid'   => RID,
                 ),
-            ));
+            ), false);
 
             $this->tpl = str_replace(array(
                 '{admin_module_bid}',
