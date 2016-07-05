@@ -27,6 +27,7 @@ class ACMS_GET_Js extends ACMS_GET
         jsModule('mid', $this->Get->get('mid', null));
         jsModule('layout', LAYOUT_EDIT);
         jsModule('yahooApiKey', config('yahoo_search_api_key'));
+        jsModule('googleApiKey', config('google_api_key'));
         jsModule('jQuery', config('jquery_version'));
         jsModule('jQueryMigrate', config('jquery_migrate', 'off'));
         jsModule('delStorage', $delStorage);

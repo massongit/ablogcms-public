@@ -246,7 +246,7 @@ class ACMS_GET_Entry_Body extends ACMS_GET_Entry
                         $Tpl->add(array_merge(array($statusBlock), $block), $val);
                     }
                 }
-                if ( sessionWithApprovalAdministrator() || $entry['entry_approval'] === 'pre_approval') {
+                if ( !editionWithProfessional() || sessionWithApprovalAdministrator() || $entry['entry_approval'] === 'pre_approval') {
                     $Tpl->add(array_merge(array('delete'), $block), $val);
                 }
 
