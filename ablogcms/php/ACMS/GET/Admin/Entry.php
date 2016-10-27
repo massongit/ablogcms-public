@@ -201,15 +201,20 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
                     $tinyAry[]  = $tiny;
                 }
 
+                $popup = otherSizeImagePath($data['path'], 'large');
+                if ( !@getimagesize(ARCHIVES_DIR.$popup) ) {
+                    $popup = $data['path'];
+                }
+
                 $vars   += array(
                     'tiny'  => implodeUnitData($tinyAry),
                     'tinyX' => implodeUnitData($tXYAry['x']),
                     'tinyY' => implodeUnitData($tXYAry['y']),
-                    'popup' => $data['path'],
-                    'normalX'   => implodeUnitData($nXYAry['x']),
-                    'normalY'   => implodeUnitData($nXYAry['y']),
-                    'largeX'    => implodeUnitData($lXYAry['x']),
-                    'largeY'    => implodeUnitData($lXYAry['y']),
+                    'popup' => $popup,
+                    'normalX' => implodeUnitData($nXYAry['x']),
+                    'normalY' => implodeUnitData($nXYAry['y']),
+                    'largeX' => implodeUnitData($lXYAry['x']),
+                    'largeY' => implodeUnitData($lXYAry['y']),
                 );
 
                 buildUnitData($vars['tiny'], $vars, 'tiny');

@@ -52,8 +52,10 @@ class ACMS_GET_Admin_Entry_Revision_Index extends ACMS_GET_Admin_Entry
                         'bid'   => BID,
                         'eid'   => EID,
                         'cid'   => CID,
+                        'aid'   => $this->Get->get('aid'),
                         'query' => array(
                             'rvid'  => $rev['entry_rev_id'],
+                            'aid'   => $this->Get->get('aid'),
                         ),
                     )),
                     'dupEditUrl'    => acmsLink(array(

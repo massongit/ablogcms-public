@@ -117,9 +117,6 @@ class ACMS_GET_Admin_CheckList extends ACMS_GET
         if ( LICENSE_BLOG_LIMIT == 1 ) {
              $type[] = 'ライト版ライセンス（フリー）';
         }
-        if ( empty($type) ) {
-            $type[] = 'スタンダードライセンス';
-        }
 
         foreach ( $type as $i => $val ) {
             if ( $i > 0 ) {
@@ -149,6 +146,10 @@ class ACMS_GET_Admin_CheckList extends ACMS_GET
             $Tpl->add(array('option:loop', 'license'), array(
                 'option'  => $val,
             ));
+        }
+
+        if ( !IS_DEVELOPMENT && !!LICENSE_EXPIRE ) {
+            $license['expire'] = date('Y/m/d H:i', strtotime(LICENSE_EXPIRE));
         }
 
         $Tpl->add('license', $license);

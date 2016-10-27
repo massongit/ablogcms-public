@@ -83,6 +83,7 @@ class ACMS_GET_Admin_Entry_Revision_Info extends ACMS_GET_Admin_Entry
                 'url'           => acmsLink(array(
                     'eid'   => EID,
                     'bid'   => BID,
+                    'aid'   => $this->Get->get('aid', null),
                     'query' => array(
                         'rvid'  => RVID,
                         'trash' => 'show',

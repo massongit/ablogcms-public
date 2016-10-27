@@ -48,6 +48,9 @@ class ACMS_RAM
 
     public static function cacheAttached($method)
     {
+        if ( timemachineMode() ) {
+            return true;
+        }
         if ( isset(self::$cacheAttached[$method]) ) {
             return self::$cacheAttached[$method];
         }
