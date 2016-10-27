@@ -50,6 +50,10 @@ class ACMS_GET_Admin_Shortcut_List extends ACMS_GET_Admin
             $auth   = $data['auth'];
             $action = $data['action'];
 
+            if ( $idKey === 'mid' && !empty($id) ) {
+                $admin = 'module_edit';
+            }
+
             //-----
             // url
             $Url    = array(

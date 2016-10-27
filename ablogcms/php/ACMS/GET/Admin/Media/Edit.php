@@ -57,15 +57,16 @@ class ACMS_GET_Admin_Media_Edit extends ACMS_GET_Admin_Edit
         $vars['icon']   = pathIcon($ext);
 
         $size = $Media->get('file_size');
-        foreach ( configArray('column_image_size') as $i => $_size ) {
+        foreach ( configArray('column_media_size_label') as $i => $label ) {
+            $_size = config('column_media_size', '', $i);
             $sizeAry  = array(
                 'value'     => $_size,
-                'label'     => config('column_image_size_label', '', $i),
+                'label'     => $label,
             );
             if ( $size == $_size ) {
                 $sizeAry['selected']  = config('attr_selected');
             }
-            $Tpl->add(array('size:loop'), $sizeAry);
+            $Tpl->add('size:loop', $sizeAry);
         }
 
         $mid    = $this->Get->get('_mid');

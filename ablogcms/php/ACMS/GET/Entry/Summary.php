@@ -378,8 +378,8 @@ class ACMS_GET_Entry_Summary extends ACMS_GET_Entry
         if ( 'on' <> $this->config['noimage'] ) {
             $SQL->addWhereOpr('entry_primary_image', null, '<>');
         }
-        if ( !!$this->eid && 'on' === $this->config['hiddenCurrentEntry'] ) {
-            $SQL->addWhereOpr('entry_id', $this->eid, '<>');
+        if ( EID && 'on' === $this->config['hiddenCurrentEntry'] ) {
+            $SQL->addWhereOpr('entry_id', EID, '<>');
         }
     }
 

@@ -9,6 +9,8 @@
  */
 class ACMS_GET_Admin_Comment_Edit extends ACMS_GET_Admin
 {
+    var $isCSRF = true;
+
     function get()
     {
         if ( !EID ) return '';

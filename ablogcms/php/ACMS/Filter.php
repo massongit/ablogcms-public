@@ -536,7 +536,6 @@ class ACMS_Filter
         if ( !is_array($tags) and empty($tags) ) return false;
 
         $tag    = array_shift($tags);
-        $tag    = addcslashes($tag, '%_');
         $SQL->addLeftJoin('tag', 'tag_entry_id', 'entry_id', 'tag0');
         $SQL->addWhereOpr('tag_name', $tag, '=', 'AND', 'tag0');
         $i  = 1;
@@ -775,6 +774,8 @@ class ACMS_Filter
                 default:    // exception
                     continue 2;
             }
+
+            $value = preg_replace('/\\\(.)/u', '${1}', $value); // エスケープを考慮
             
             if ( $operator === 'LIKE' and !preg_match('@^%|%$@', $value) ) {
                 $value = '%'.$value.'%';

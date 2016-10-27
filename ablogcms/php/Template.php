@@ -156,6 +156,12 @@ class Template
                 }
             }
         }
+
+        // post_max_size を超えたアクセス
+        if ( empty($_POST) && $_SERVER["REQUEST_METHOD"] === "POST" ) {
+            $this->add('post:v#filesize');
+        }
+
         return true;
     }
 

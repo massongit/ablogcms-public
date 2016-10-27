@@ -109,14 +109,14 @@ class ACMS_GET_Admin_Rule_Index extends ACMS_GET_Admin
                 )),
             )),
             'configUrl' => acmsLink(array(
-                'bid'   => $bid,
+                'bid'   => BID,
                 'admin' => 'config_index',
                 'query' => new Field(array(
                     'rid'   => $rid,
                 )),
             )),
             'moduleUrl' => acmsLink(array(
-                'bid'   => $bid,
+                'bid'   => BID,
                 'admin' => 'module_index',
                 'query' => new Field(array(
                     'rid'   => $rid,

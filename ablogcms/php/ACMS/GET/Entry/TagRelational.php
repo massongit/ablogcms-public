@@ -64,8 +64,6 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
         } else {
             ACMS_Filter::blogStatus($SQL);
         }
-        ACMS_Filter::categoryTree($SQL, $this->cid, $this->categoryAxis());
-        ACMS_Filter::categoryStatus($SQL);
 
         ACMS_Filter::entrySession($SQL);
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
@@ -114,6 +112,9 @@ class ACMS_GET_Entry_TagRelational extends ACMS_GET_Entry_Summary
 
         $SQL->addWhereIn('tag_name', $Tag);
         $SQL->addWhereOpr('entry_id', $this->eid, '!=');
+
+        $this->categoryFilterQuery($SQL);
+        $this->filterSubQuery($SQL);
 
         /**
          * Detect Finding Amount

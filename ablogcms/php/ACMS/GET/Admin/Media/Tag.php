@@ -32,10 +32,10 @@ class ACMS_GET_Admin_Media_Tag extends ACMS_GET
 
         $Tpl    = new Template($this->tpl, new ACMS_Corrector());
 
-        foreach ( configArray('column_media_size') as $i => $_size ) {
+        foreach ( configArray('column_media_size_label') as $i => $label ) {
             $sizeAry  = array(
-                'value'     => $_size,
-                'label'     => config('column_media_size_label', '', $i),
+                'value'     => config('column_media_size', '', $i),
+                'label'     => $label,
             );
             $Tpl->add('size:loop', $sizeAry);
         }

@@ -153,6 +153,7 @@ class ACMS_GET_Category_EntryList extends ACMS_GET
     function buildQuery($cid, &$Tpl)
     {
         $SQL = SQL::newSelect('entry');
+        $SQL->addLeftJoin('category', 'category_id', 'entry_category_id');
         
         ACMS_Filter::entrySpan($SQL, $this->start, $this->end);
         ACMS_Filter::entrySession($SQL);

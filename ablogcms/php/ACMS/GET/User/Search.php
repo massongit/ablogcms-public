@@ -21,6 +21,7 @@ class ACMS_GET_User_Search extends ACMS_GET
         $SQL    = SQL::newSelect('user');
         $SQL->addWhereOpr('user_pass', '', '<>');
         $SQL->addLeftJoin('blog', 'blog_id', 'user_blog_id');
+        $SQL->setGroup('user_id');
 
         // blog axis
         ACMS_Filter::blogTree($SQL, $this->bid, $this->blogAxis());
@@ -46,27 +47,27 @@ class ACMS_GET_User_Search extends ACMS_GET
             $SQL->addWhereIn('user_auth', configArray('user_search_auth'));
         }
 
-        // status 2013/02/08 
+        // status 2013/02/08
         if ( configArray('user_search_status') ) {
             $SQL->addWhereIn('user_status', configArray('user_search_status'));
         }
 
-        // mail_magazine 2013/02/08 
+        // mail_magazine 2013/02/08
         if ( $ary_mailmagazine = configArray('user_search_mail_magazine') ) {
-			if( is_array( $ary_mailmagazine ) && count( $ary_mailmagazine ) > 0 ){
-				foreach( $ary_mailmagazine as $key_mailmagazine => $val_mailmagazine ){
-					switch( $val_mailmagazine ){
-						case 'pc':
-							$SQL->addWhereOpr('user_mail_magazine', 'on');
-							$SQL->addWhereOpr('user_mail', '', '<>');
-							break;
-						case 'mobile':
-							$SQL->addWhereOpr('user_mail_mobile_magazine', 'on');
-							$SQL->addWhereOpr('user_mail_mobile', '', '<>');
-							break;
-					}
-				}
-			}
+            if( is_array( $ary_mailmagazine ) && count( $ary_mailmagazine ) > 0 ){
+                foreach( $ary_mailmagazine as $key_mailmagazine => $val_mailmagazine ){
+                    switch( $val_mailmagazine ){
+                        case 'pc':
+                            $SQL->addWhereOpr('user_mail_magazine', 'on');
+                            $SQL->addWhereOpr('user_mail', '', '<>');
+                            break;
+                        case 'mobile':
+                            $SQL->addWhereOpr('user_mail_mobile_magazine', 'on');
+                            $SQL->addWhereOpr('user_mail_mobile', '', '<>');
+                            break;
+                    }
+                }
+            }
         }
 
         // uid

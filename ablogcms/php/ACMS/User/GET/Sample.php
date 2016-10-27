@@ -17,7 +17,7 @@ class ACMS_User_GET_Sample extends ACMS_GET
 {
     function get()
     {
-        $Tpl    = new Template($this->tpl, new ACMS_Corrector());
+        $Tpl = new Template($this->tpl, new ACMS_Corrector());
 
         return $Tpl->get();
     }

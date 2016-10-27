@@ -29,6 +29,8 @@ class ACMS_GET
     
     var $squareSize = null;
 
+    var $isCSRF = false;
+
     /**
      * @var Field
      */
@@ -143,6 +145,28 @@ class ACMS_GET
         $this->mbid = $mbid;
     }
 
+    /**
+     * CSRF Token埋め込み
+     * 
+     * @param string & $tpl
+     */
+    function csrfToken(& $tpl)
+    {
+
+        $Session = ACMS_Session::singleton();
+
+        if ( $Session->get('formToken') ) {
+            $token  = $Session->get('formToken');
+        } else {
+            $token  = sha1(uniqueString().'acms'.session_id());
+            $Session->set('formToken', $token);
+            $Session->save();
+        }
+
+        // token の埋め込み
+        $tpl = preg_replace('@(?=<\s*/\s*form[^\w]*>)@i', '<input type="hidden" name="formToken" value="'.$token.'" />'."\n", $tpl);
+    }
+
     function blogAxis()
     {
         $axis = $this->_axis['bid'];
@@ -192,15 +216,21 @@ class ACMS_GET
 
         //----------------
         // execute & hook
+        $renderd = '';
         if (HOOK_ENABLE) {
             $Hook = ACMS_Hook::singleton();
             $Hook->call('beforeGetFire', array(&$this->tpl, $this));
-            $rv = $this->get();
-            $Hook->call('afterGetFire', array(&$rv, $this));
-            return $rv;
+            $renderd = $this->get();
+            $Hook->call('afterGetFire', array(&$renderd, $this));
         } else {
-            return $this->get();
+            $renderd = $this->get();
         }
+
+        if ( $this->isCSRF ) {
+            $this->csrfToken($renderd);
+        }
+
+        return $renderd;
     }
 
     function get()
@@ -550,7 +580,7 @@ class ACMS_GET
                     'page'      => ($page > 2) ? $page - 1 : false,
                 )),
                 'backNum'   => $limit,
-                'backPage'  => ($page > 2) ? $page - 1 : false, 
+                'backPage'  => ($page > 1) ? $page - 1 : false, 
             ));
         }
         if ( $page <> $lastPage ) {
@@ -1084,7 +1114,7 @@ class ACMS_GET
         $textData  = array();
         if ( $DB->query($q, 'fetch') and ($row = $DB->fetch($q)) ) { do {
             if ( $row['column_align'] === 'hidden' ) continue;
-            $type   = $row['column_type'];
+            $type = detectUnitTypeSpecifier($row['column_type']);
             if ( 'text' == $type ) {
                 $_text  = $row['column_field_1'];
                 switch( $row['column_field_2'] ){

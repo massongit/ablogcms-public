@@ -141,15 +141,16 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //-------
         // image
         } else if ( 'image' == $type ) {
-            foreach ( configArray('column_image_size') as $i => $_size ) {
+            foreach ( configArray('column_image_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'     => $_size,
+                    'value'     => config('column_image_size', '', $i),
                     'label'     => config('column_image_size_label', '', $i),
                     'display'   => config('column_image_display_size', '', $i),
                 );
-                if ( $size == $_size ) {
+                if ( $size == config('column_image_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                 }
+
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $vars);
             }
             $vars  = array(
@@ -314,13 +315,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //-----
         // map
         } else if ( 'map' == $type ) {
-            foreach ( configArray('column_map_size') as $i => $size ) {
+            foreach ( configArray('column_map_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'   => $size,
+                    'value'   => config('column_map_size', '', $i),
                     'label'   => config('column_map_size_label', '', $i),
                     'display' => config('column_map_display_size', '', $i),
                 );
-                if ( $data['size'] == $size ) {
+                if ( $data['size'] == config('column_map_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                 }
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $vars);
@@ -337,13 +338,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //-------
         // yolp
         } else if ( 'yolp' == $type ) {
-            foreach ( configArray('column_map_size') as $i => $size ) {
+            foreach ( configArray('column_map_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'   => $size,
+                    'value'   => config('column_map_size', '', $i),
                     'label'   => config('column_map_size_label', '', $i),
                     'display' => config('column_map_display_size', '', $i),
                 );
-                if ( $data['size'] == $size ) {
+                if ( $data['size'] == config('column_map_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                 }
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $vars);
@@ -370,13 +371,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //---------
         // youtube
         } else if ( 'youtube' == $type ) {
-            foreach ( configArray('column_youtube_size') as $i => $size ) {
+            foreach ( configArray('column_youtube_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'   => $size,
+                    'value'   => config('column_youtube_size', '', $i),
                     'label'   => config('column_youtube_size_label', '', $i),
                     'display' => config('column_youtube_display_size', '', $i),
                 );
-                if ( $data['size'] == $size ) {
+                if ( $data['size'] == config('column_youtube_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                 }
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $vars);
@@ -389,13 +390,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
         //---------
         // video
         } else if ( 'video' == $type ) {
-            foreach ( configArray('column_video_size') as $i => $size ) {
+            foreach ( configArray('column_video_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'   => $size,
+                    'value'   => config('column_video_size', '', $i),
                     'label'   => config('column_video_size_label', '', $i),
                     'display' => config('column_video_display_size', '', $i),
                 );
-                if ( $data['size'] == $size ) {
+                if ( $data['size'] == config('column_video_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                 }
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $vars);
@@ -415,13 +416,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
             }
 
             $match  = false;
-            foreach ( configArray('column_eximage_size') as $i => $_size ) {
+            foreach ( configArray('column_eximage_size_label') as $i => $_label ) {
                 $vars  = array(
-                    'value'   => $_size,
+                    'value'   => config('column_eximage_size', '', $i),
                     'label'   => config('column_eximage_size_label', '', $i),
                     'display' => config('column_eximage_display_size', '', $i),
                 );
-                if ( $size == $_size ) {
+                if ( $size == config('column_eximage_size', '', $i) ) {
                     $vars['selected']  = config('attr_selected');
                     $match  = true;
                 }
@@ -506,13 +507,13 @@ class ACMS_GET_Admin_Entry extends ACMS_GET_Admin
                 }
             }
 
-            foreach ( configArray('column_media_size') as $i => $size ) {
+            foreach ( configArray('column_media_size_label') as $i => $_label ) {
                 $sizeAry  = array(
-                    'value'   => $size,
+                    'value'   => config('column_media_size', '', $i),
                     'label'   => config('column_media_size_label', '', $i),
                     'display' => config('column_media_display_size', '', $i),
                 );
-                if ( $data['size'] == $size ) {
+                if ( $data['size'] == config('column_media_size', '', $i) ) {
                     $sizeAry['selected']  = config('attr_selected');
                 }
                 $Tpl->add(array_merge(array('size:loop', $type), $rootBlock), $sizeAry);

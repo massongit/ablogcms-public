@@ -61,6 +61,10 @@ class ACMS_GET_Admin_Shortcut_Edit extends ACMS_GET_Admin_Edit
             if ( $Shortcut->isNull() ) return false;
         }
 
+        if ( $idKey === 'mid' && !empty($id) ) {
+            $admin = 'module_edit';
+        }
+
         $Url    = array(
             'bid'   => BID,
             'admin' => $admin,

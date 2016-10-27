@@ -27,32 +27,11 @@ class ACMS_GET_Form extends ACMS_GET
 
         // CSRF Token の埋め込み
         $tpl = $Tpl->get();
-        if ( $this->step == 'confirm' && config('form_csrf_enable', 'on') !== 'off' ) {
-            $this->csrf_token($tpl);
+        if ( $this->step !== 'submit' && config('form_csrf_enable', 'on') !== 'off' ) {
+            $this->csrfToken($tpl);
         }
 
         return $tpl;
-    }
-
-    /**
-     * CSRF Token埋め込み
-     * 
-     * @param string & $tpl
-     */
-    function csrf_token(& $tpl)
-    {
-        $Session = ACMS_Session::singleton();
-
-        if ( $Session->get('formToken') ) {
-            $token  = $Session->get('formToken');
-        } else {
-            $token  = sha1(uniqueString().'acms'.session_id());
-            $Session->set('formToken', $token);
-            $Session->save();
-        }
-
-        // token の埋め込み
-        $tpl = preg_replace('@(?=<\s*/\s*form[^\w]*>)@i', '<input type="hidden" name="formToken" value="'.$token.'" />'."\n", $tpl);
     }
 
     /**
